@@ -1,10 +1,10 @@
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
-import { startOfDay, endOfDay, differenceInSeconds, format } from 'date-fns';
+import { startOfDay, endOfDay, differenceInSeconds } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Clock, Timer, FolderKanban, Calendar } from 'lucide-react';
+import { TimeEntryList } from '@/components/time-entry-list';
 
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -56,6 +56,21 @@ export default async function DashboardPage() {
     }
     return acc + differenceInSeconds(now, entry.startTime);
   }, 0);
+
+  const serializedEntries = todayEntries.map((entry) => ({
+    id: entry.id,
+    description: entry.description,
+    startTime: entry.startTime.toISOString(),
+    endTime: entry.endTime?.toISOString() ?? null,
+    duration: entry.duration,
+    source: entry.source,
+    project: entry.project
+      ? { id: entry.project.id, name: entry.project.name, color: entry.project.color }
+      : null,
+    tag: entry.tag
+      ? { id: entry.tag.id, name: entry.tag.name, color: entry.tag.color }
+      : null,
+  }));
 
   return (
     <div className="space-y-6">
@@ -125,69 +140,7 @@ export default async function DashboardPage() {
           <CardTitle>Today&apos;s Entries</CardTitle>
         </CardHeader>
         <CardContent>
-          {todayEntries.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No time entries today. Start tracking or sync your calendar!
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {todayEntries.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="flex items-center justify-between rounded-md border p-3"
-                >
-                  <div className="flex items-center gap-3">
-                    {entry.project && (
-                      <div
-                        className="h-3 w-3 rounded-full"
-                        style={{ backgroundColor: entry.project.color }}
-                      />
-                    )}
-                    <div>
-                      <p className="text-sm font-medium">
-                        {entry.description || 'Untitled'}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        {entry.project && (
-                          <span className="text-xs text-muted-foreground">
-                            {entry.project.name}
-                          </span>
-                        )}
-                        {entry.tag && (
-                          <Badge variant="secondary" className="text-xs">
-                            {entry.tag.name}
-                          </Badge>
-                        )}
-                        {entry.source === 'calendar' && (
-                          <Badge variant="outline" className="text-xs">
-                            Calendar
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">
-                      {entry.endTime
-                        ? formatDuration(
-                            entry.duration ??
-                              differenceInSeconds(
-                                entry.endTime,
-                                entry.startTime,
-                              ),
-                          )
-                        : 'Running...'}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(entry.startTime, 'HH:mm')}
-                      {' - '}
-                      {entry.endTime ? format(entry.endTime, 'HH:mm') : 'now'}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <TimeEntryList entries={serializedEntries} />
         </CardContent>
       </Card>
     </div>
