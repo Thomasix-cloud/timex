@@ -12,16 +12,17 @@ export type CalendarEvent = {
 };
 
 async function getOAuth2Client(userId: string) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+  // Get tokens from Account table (where NextAuth stores them)
+  const account = await prisma.account.findFirst({
+    where: { userId, provider: "google" },
     select: {
-      googleAccessToken: true,
-      googleRefreshToken: true,
-      googleTokenExpiry: true,
+      access_token: true,
+      refresh_token: true,
+      expires_at: true,
     },
   });
 
-  if (!user?.googleAccessToken) {
+  if (!account?.access_token) {
     throw new Error("No Google tokens found. Please reconnect your calendar.");
   }
 
@@ -31,20 +32,20 @@ async function getOAuth2Client(userId: string) {
   );
 
   oauth2Client.setCredentials({
-    access_token: user.googleAccessToken,
-    refresh_token: user.googleRefreshToken,
-    expiry_date: user.googleTokenExpiry?.getTime(),
+    access_token: account.access_token,
+    refresh_token: account.refresh_token,
+    expiry_date: account.expires_at ? account.expires_at * 1000 : undefined,
   });
 
   // Handle token refresh
   oauth2Client.on("tokens", async (tokens) => {
-    await prisma.user.update({
-      where: { id: userId },
+    await prisma.account.updateMany({
+      where: { userId, provider: "google" },
       data: {
-        googleAccessToken: tokens.access_token ?? undefined,
-        ...(tokens.refresh_token && { googleRefreshToken: tokens.refresh_token }),
+        access_token: tokens.access_token ?? undefined,
+        ...(tokens.refresh_token && { refresh_token: tokens.refresh_token }),
         ...(tokens.expiry_date && {
-          googleTokenExpiry: new Date(tokens.expiry_date),
+          expires_at: Math.floor(tokens.expiry_date / 1000),
         }),
       },
     });

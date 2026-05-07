@@ -6,7 +6,9 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+  // Prefer direct TCP connection (required for prisma dev with Client 7.8+)
+  const directUrl = process.env.DIRECT_DATABASE_URL || process.env.DATABASE_URL!;
+  const adapter = new PrismaPg({ connectionString: directUrl });
   return new PrismaClient({ adapter });
 }
 

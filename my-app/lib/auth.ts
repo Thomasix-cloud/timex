@@ -26,7 +26,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async signIn({ user, account }) {
       if (account?.provider === "google" && user.id) {
-        await prisma.user.update({
+        // Store tokens after sign-in; use updateMany to avoid throwing if user not yet created
+        await prisma.user.updateMany({
           where: { id: user.id },
           data: {
             googleAccessToken: account.access_token,
@@ -38,6 +39,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
       }
       return true;
+    },
+  },
+  events: {
+    async linkAccount({ user, account }) {
+      // Called after account is linked (user already exists in DB)
+      if (account.provider === "google") {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            googleAccessToken: account.access_token,
+            googleRefreshToken: account.refresh_token,
+            googleTokenExpiry: account.expires_at
+              ? new Date(account.expires_at * 1000)
+              : null,
+          },
+        });
+      }
     },
   },
   pages: {
