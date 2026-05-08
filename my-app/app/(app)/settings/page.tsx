@@ -102,6 +102,16 @@ export default function SettingsPage() {
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
             Google Calendar
+            <div className="ml-auto">
+              <Button size="sm" onClick={syncNow} disabled={syncing}>
+                {syncing ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                )}
+                Sync Now
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -167,24 +177,17 @@ export default function SettingsPage() {
             </>
           )}
 
-          <Separator />
-
-          <div className="flex items-center gap-3">
-            <Button onClick={syncNow} disabled={syncing}>
-              {syncing ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="mr-2 h-4 w-4" />
-              )}
-              Sync Now
-            </Button>
-            {syncResult && (
-              <span className="text-sm text-muted-foreground">
-                Synced: {syncResult.synced} events, {syncResult.created} new,{' '}
-                {syncResult.updated} updated, {syncResult.skipped} skipped
-              </span>
-            )}
-          </div>
+          {syncResult && (
+            <>
+              <Separator />
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">
+                  Synced: {syncResult.synced} events, {syncResult.created} new,{' '}
+                  {syncResult.updated} updated, {syncResult.skipped} skipped
+                </span>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -7,15 +7,18 @@ type MappingResult = {
   tagId: string | null;
 };
 
-async function applyMappingRules(
-  userId: string,
-  event: CalendarEvent
-): Promise<MappingResult> {
-  const rules = await prisma.mappingRule.findMany({
-    where: { userId, isActive: true },
-    orderBy: { priority: "desc" },
-  });
+type MappingRule = {
+  matchField: string;
+  matchType: string;
+  matchPattern: string;
+  projectId: string | null;
+  tagId: string | null;
+};
 
+function applyMappingRules(
+  rules: MappingRule[],
+  event: CalendarEvent
+): MappingResult {
   for (const rule of rules) {
     let fieldValue = "";
     switch (rule.matchField) {
@@ -59,9 +62,16 @@ async function applyMappingRules(
 }
 
 export async function syncCalendarForUser(userId: string) {
-  const connections = await prisma.calendarConnection.findMany({
-    where: { userId, syncEnabled: true },
-  });
+  // Pre-fetch mapping rules once for this user
+  const [connections, rules] = await Promise.all([
+    prisma.calendarConnection.findMany({
+      where: { userId, syncEnabled: true },
+    }),
+    prisma.mappingRule.findMany({
+      where: { userId, isActive: true },
+      orderBy: { priority: "desc" },
+    }),
+  ]);
 
   if (connections.length === 0) {
     return { synced: 0, created: 0, updated: 0, skipped: 0 };
@@ -74,9 +84,8 @@ export async function syncCalendarForUser(userId: string) {
 
   for (const connection of connections) {
     const now = new Date();
-    // Sync from last sync time (or 24h ago) to 1 hour ahead
     const timeMin = connection.lastSyncAt
-      ? new Date(connection.lastSyncAt.getTime() - 5 * 60 * 1000) // 5min overlap
+      ? new Date(connection.lastSyncAt.getTime() - 5 * 60 * 1000)
       : new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const timeMax = new Date(now.getTime() + 60 * 60 * 1000);
 
@@ -96,70 +105,80 @@ export async function syncCalendarForUser(userId: string) {
       continue;
     }
 
-    for (const event of events) {
-      // Skip all-day events
-      if (event.isAllDay) {
+    // Filter events: skip all-day and future
+    const relevantEvents = events.filter((event) => {
+      if (event.isAllDay || event.start > now) {
         totalSkipped++;
-        continue;
+        return false;
       }
+      return true;
+    });
 
-      // Skip future events (only log past/current events)
-      if (event.start > now) {
-        totalSkipped++;
-        continue;
-      }
-
-      totalSynced++;
-
-      // Check if we already have this event
-      const existing = await prisma.timeEntry.findFirst({
-        where: { calendarEventId: event.id, userId },
+    if (relevantEvents.length === 0) {
+      await prisma.calendarConnection.update({
+        where: { id: connection.id },
+        data: { lastSyncAt: now },
       });
+      continue;
+    }
 
-      const mapping = await applyMappingRules(userId, event);
-      const duration = differenceInSeconds(event.end, event.start);
+    totalSynced += relevantEvents.length;
 
-      if (existing) {
-        // Update if event times changed
-        if (
-          existing.startTime.getTime() !== event.start.getTime() ||
-          (existing.endTime && existing.endTime.getTime() !== event.end.getTime())
-        ) {
-          await prisma.timeEntry.update({
-            where: { id: existing.id },
+    // Batch-fetch all existing entries for these events in one query
+    const eventIds = relevantEvents.map((e) => e.id);
+    const existingEntries = await prisma.timeEntry.findMany({
+      where: { calendarEventId: { in: eventIds }, userId },
+    });
+    const existingByEventId = new Map(
+      existingEntries.map((e) => [e.calendarEventId, e])
+    );
+
+    // Batch writes in a transaction to minimize connection usage
+    await prisma.$transaction(async (tx) => {
+      for (const event of relevantEvents) {
+        const existing = existingByEventId.get(event.id);
+        const mapping = applyMappingRules(rules, event);
+        const duration = differenceInSeconds(event.end, event.start);
+
+        if (existing) {
+          if (
+            existing.startTime.getTime() !== event.start.getTime() ||
+            (existing.endTime && existing.endTime.getTime() !== event.end.getTime())
+          ) {
+            await tx.timeEntry.update({
+              where: { id: existing.id },
+              data: {
+                startTime: event.start,
+                endTime: event.end,
+                duration,
+                description: event.summary,
+                ...(mapping.projectId && !existing.projectId && { projectId: mapping.projectId }),
+                ...(mapping.tagId && !existing.tagId && { tagId: mapping.tagId }),
+              },
+            });
+            totalUpdated++;
+          } else {
+            totalSkipped++;
+          }
+        } else {
+          await tx.timeEntry.create({
             data: {
+              description: event.summary,
               startTime: event.start,
               endTime: event.end,
               duration,
-              description: event.summary,
-              ...(mapping.projectId && !existing.projectId && { projectId: mapping.projectId }),
-              ...(mapping.tagId && !existing.tagId && { tagId: mapping.tagId }),
+              source: "calendar",
+              calendarEventId: event.id,
+              projectId: mapping.projectId,
+              tagId: mapping.tagId,
+              userId,
             },
           });
-          totalUpdated++;
-        } else {
-          totalSkipped++;
+          totalCreated++;
         }
-      } else {
-        // Create new entry
-        await prisma.timeEntry.create({
-          data: {
-            description: event.summary,
-            startTime: event.start,
-            endTime: event.end,
-            duration,
-            source: "calendar",
-            calendarEventId: event.id,
-            projectId: mapping.projectId,
-            tagId: mapping.tagId,
-            userId,
-          },
-        });
-        totalCreated++;
       }
-    }
+    });
 
-    // Update last sync time
     await prisma.calendarConnection.update({
       where: { id: connection.id },
       data: { lastSyncAt: now },
