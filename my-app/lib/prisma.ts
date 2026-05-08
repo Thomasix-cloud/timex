@@ -6,10 +6,11 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  const directUrl = process.env.DIRECT_DATABASE_URL || process.env.DATABASE_URL!;
+  // Use pooled DATABASE_URL for runtime; DIRECT_DATABASE_URL is for migrations only
+  const connectionString = process.env.DATABASE_URL!;
   const adapter = new PrismaPg({
-    connectionString: directUrl,
-    max: 3,
+    connectionString,
+    max: 5,
     idleTimeoutMillis: 20_000,
     connectionTimeoutMillis: 10_000,
   });
