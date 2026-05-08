@@ -196,7 +196,16 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
           ) : (
-            <TimeEntryList entries={entries} onRefresh={() => fetchEntries(period)} />
+            <TimeEntryList
+              entries={entries}
+              onEntryUpdated={(updated) => {
+                if ('_deleted' in updated) {
+                  setEntries((prev) => prev.filter((e) => e.id !== updated.id));
+                } else {
+                  setEntries((prev) => prev.map((e) => e.id === updated.id ? updated : e));
+                }
+              }}
+            />
           )}
         </CardContent>
       </Card>

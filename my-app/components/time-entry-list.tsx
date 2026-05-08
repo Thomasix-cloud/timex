@@ -46,12 +46,12 @@ export function TimeEntryList({
   entries,
   initialProjects,
   initialTags,
-  onRefresh,
+  onEntryUpdated,
 }: {
   entries: SerializedTimeEntry[];
   initialProjects?: Project[];
   initialTags?: Tag[];
-  onRefresh?: () => void;
+  onEntryUpdated?: (entry: SerializedTimeEntry) => void;
 }) {
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>(initialProjects ?? []);
@@ -106,7 +106,20 @@ export function TimeEntryList({
         const data = await res.json();
         if (data.matched) {
           setApplyResult({ id: entryId, message: `✓ ${data.ruleName}`, ok: true });
-          if (onRefresh) onRefresh(); else router.refresh();
+          if (onEntryUpdated && data.entry) {
+            onEntryUpdated({
+              id: data.entry.id,
+              description: data.entry.description,
+              startTime: data.entry.startTime,
+              endTime: data.entry.endTime ?? null,
+              duration: data.entry.duration,
+              source: data.entry.source,
+              project: data.entry.project ? { id: data.entry.project.id, name: data.entry.project.name, color: data.entry.project.color } : null,
+              tag: data.entry.tag ? { id: data.entry.tag.id, name: data.entry.tag.name, color: data.entry.tag.color } : null,
+            });
+          } else {
+            router.refresh();
+          }
         } else {
           setApplyResult({ id: entryId, message: 'No rules matched', ok: false });
         }
@@ -137,7 +150,7 @@ export function TimeEntryList({
     e.preventDefault();
     if (!editEntry) return;
 
-    await fetch(`/api/time-entries/${editEntry.id}`, {
+    const res = await fetch(`/api/time-entries/${editEntry.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -150,12 +163,31 @@ export function TimeEntryList({
     });
 
     setEditOpen(false);
-    router.refresh();
+    if (res.ok && onEntryUpdated) {
+      const data = await res.json();
+      onEntryUpdated({
+        id: data.id,
+        description: data.description,
+        startTime: data.startTime,
+        endTime: data.endTime ?? null,
+        duration: data.duration,
+        source: data.source,
+        project: data.project ? { id: data.project.id, name: data.project.name, color: data.project.color } : null,
+        tag: data.tag ? { id: data.tag.id, name: data.tag.name, color: data.tag.color } : null,
+      });
+    } else {
+      router.refresh();
+    }
   };
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/time-entries/${id}`, { method: 'DELETE' });
-    router.refresh();
+    if (onEntryUpdated) {
+      // Remove from parent state by signaling with null fields
+      onEntryUpdated({ id, description: '', startTime: '', endTime: null, duration: null, source: '', project: null, tag: null, _deleted: true } as SerializedTimeEntry & { _deleted?: boolean });
+    } else {
+      router.refresh();
+    }
   };
 
   if (entries.length === 0) {
