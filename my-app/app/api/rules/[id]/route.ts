@@ -37,7 +37,7 @@ export async function PUT(
     where: { id },
     data: {
       ...(body.name && { name: body.name.trim() }),
-      ...(body.matchPattern && { matchPattern: body.matchPattern.trim() }),
+      ...(body.matchPattern && { matchPattern: body.matchPattern.trim().replace(/^"|"$/g, '') }),
       ...(body.matchField && { matchField: body.matchField }),
       ...(body.matchType && { matchType: body.matchType }),
       ...(body.priority !== undefined && { priority: body.priority }),

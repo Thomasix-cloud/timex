@@ -48,7 +48,7 @@ export async function POST(request: Request) {
   const rule = await prisma.mappingRule.create({
     data: {
       name: name.trim(),
-      matchPattern: matchPattern.trim(),
+      matchPattern: matchPattern.trim().replace(/^"|"$/g, ''),
       matchField: matchField || "title",
       matchType: matchType || "contains",
       priority: priority ?? 0,
