@@ -2,8 +2,15 @@ import type { NextConfig } from "next";
 import { execSync } from "child_process";
 import pkg from "./package.json";
 
-const gitCommit = execSync("git rev-parse --short HEAD").toString().trim();
-const commitDate = execSync("git log -1 --format=%cd --date=format:%y%m%d%H%M").toString().trim();
+let gitCommit = "unknown";
+let commitDate = "unknown";
+try {
+  gitCommit = execSync("git rev-parse --short HEAD").toString().trim();
+  commitDate = execSync("git log -1 --format=%cd --date=format:%y%m%d%H%M").toString().trim();
+} catch {
+  // Not a git repo (e.g. Vercel CLI deploy)
+  gitCommit = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "unknown";
+}
 
 const nextConfig: NextConfig = {
   env: {
