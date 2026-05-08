@@ -251,7 +251,7 @@ export function TimeEntryList({
                 <Label>Project</Label>
                 <Select
                   value={projectId || '_none'}
-                  onValueChange={(v) => setProjectId(v === '_none' ? '' : v)}
+                  onValueChange={(v) => setProjectId(!v || v === '_none' ? '' : v)}
                 >
                   <SelectTrigger className="w-full">
                     <span data-slot="select-value" className="flex flex-1 text-left">
