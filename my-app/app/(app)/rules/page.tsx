@@ -164,6 +164,12 @@ export default function RulesPage() {
         case 'exact':
           matches = testText.toLowerCase() === rule.matchPattern.toLowerCase();
           break;
+        case 'wildcard': {
+          const escaped = rule.matchPattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+          const wildcardRegex = new RegExp('^' + escaped.replace(/\*/g, '.*') + '$', 'i');
+          matches = wildcardRegex.test(testText);
+          break;
+        }
         case 'regex':
           try {
             matches = new RegExp(rule.matchPattern, 'i').test(testText);
@@ -249,6 +255,7 @@ export default function RulesPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="contains">Contains</SelectItem>
+                      <SelectItem value="wildcard">Wildcard (*)</SelectItem>
                       <SelectItem value="exact">Exact Match</SelectItem>
                       <SelectItem value="regex">Regex</SelectItem>
                     </SelectContent>

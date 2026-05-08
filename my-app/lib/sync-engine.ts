@@ -41,6 +41,12 @@ function applyMappingRules(
       case "exact":
         matches = fieldValue.toLowerCase() === rule.matchPattern.toLowerCase();
         break;
+      case "wildcard": {
+        const escaped = rule.matchPattern.replace(/[.+^${}()|[\]\\]/g, "\\$&");
+        const wildcardRegex = new RegExp("^" + escaped.replace(/\*/g, ".*") + "$", "i");
+        matches = wildcardRegex.test(fieldValue);
+        break;
+      }
       case "regex":
         try {
           matches = new RegExp(rule.matchPattern, "i").test(fieldValue);
