@@ -56,6 +56,9 @@ export function Sidebar() {
           );
         })}
       </nav>
+      <div className="border-t px-6 py-3">
+        <span className="text-xs text-sidebar-foreground/40">2605081200-0.1.0</span>
+      </div>
     </aside>
   );
 }
