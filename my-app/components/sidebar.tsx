@@ -57,7 +57,7 @@ export function Sidebar() {
         })}
       </nav>
       <div className="border-t px-6 py-3">
-        <span className="text-xs text-sidebar-foreground/40">2605081200-{process.env.NEXT_PUBLIC_APP_VERSION ?? '0.0.0'}-{process.env.NEXT_PUBLIC_GIT_COMMIT ?? 'dev'}</span>
+        <span className="text-xs text-sidebar-foreground/40">{process.env.NEXT_PUBLIC_COMMIT_DATE ?? '0000000000'}-{process.env.NEXT_PUBLIC_APP_VERSION ?? '0.0.0'}-{process.env.NEXT_PUBLIC_GIT_COMMIT ?? 'dev'}</span>
       </div>
     </aside>
   );

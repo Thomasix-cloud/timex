@@ -21,54 +21,80 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const entries = await prisma.timeEntry.findMany({
-    where: {
-      userId: session.user.id,
-      startTime: { gte: new Date(from), lte: new Date(to) },
-      endTime: { not: null },
-    },
-    include: { project: true, tag: true },
-    orderBy: { startTime: "asc" },
-  });
+  const whereBase = {
+    userId: session.user.id,
+    startTime: { gte: new Date(from), lte: new Date(to) },
+    endTime: { not: null },
+  } as const;
 
-  // Aggregate based on groupBy
   if (groupBy === "project") {
-    const grouped: Record<string, { name: string; color: string; totalSeconds: number; count: number }> = {};
-    for (const entry of entries) {
-      const key = entry.projectId ?? "none";
-      if (!grouped[key]) {
-        grouped[key] = {
-          name: entry.project?.name ?? "No Project",
-          color: entry.project?.color ?? "#94a3b8",
-          totalSeconds: 0,
-          count: 0,
-        };
-      }
-      grouped[key].totalSeconds += entry.duration ?? 0;
-      grouped[key].count++;
-    }
-    return NextResponse.json(Object.values(grouped));
+    const grouped = await prisma.timeEntry.groupBy({
+      by: ["projectId"],
+      where: whereBase,
+      _sum: { duration: true },
+      _count: true,
+    });
+
+    const projectIds = grouped
+      .map((g) => g.projectId)
+      .filter((id): id is string => id !== null);
+    const projects = await prisma.project.findMany({
+      where: { id: { in: projectIds } },
+      select: { id: true, name: true, color: true },
+    });
+    const projectMap = new Map(projects.map((p) => [p.id, p]));
+
+    const result = grouped.map((g) => {
+      const project = g.projectId ? projectMap.get(g.projectId) : null;
+      return {
+        name: project?.name ?? "No Project",
+        color: project?.color ?? "#94a3b8",
+        totalSeconds: g._sum.duration ?? 0,
+        count: g._count,
+      };
+    });
+
+    return NextResponse.json(result);
   }
 
   if (groupBy === "tag") {
-    const grouped: Record<string, { name: string; color: string; totalSeconds: number; count: number }> = {};
-    for (const entry of entries) {
-      const key = entry.tagId ?? "none";
-      if (!grouped[key]) {
-        grouped[key] = {
-          name: entry.tag?.name ?? "No Tag",
-          color: entry.tag?.color ?? "#94a3b8",
-          totalSeconds: 0,
-          count: 0,
-        };
-      }
-      grouped[key].totalSeconds += entry.duration ?? 0;
-      grouped[key].count++;
-    }
-    return NextResponse.json(Object.values(grouped));
+    const grouped = await prisma.timeEntry.groupBy({
+      by: ["tagId"],
+      where: whereBase,
+      _sum: { duration: true },
+      _count: true,
+    });
+
+    const tagIds = grouped
+      .map((g) => g.tagId)
+      .filter((id): id is string => id !== null);
+    const tags = await prisma.tag.findMany({
+      where: { id: { in: tagIds } },
+      select: { id: true, name: true, color: true },
+    });
+    const tagMap = new Map(tags.map((t) => [t.id, t]));
+
+    const result = grouped.map((g) => {
+      const tag = g.tagId ? tagMap.get(g.tagId) : null;
+      return {
+        name: tag?.name ?? "No Tag",
+        color: tag?.color ?? "#94a3b8",
+        totalSeconds: g._sum.duration ?? 0,
+        count: g._count,
+      };
+    });
+
+    return NextResponse.json(result);
   }
 
   if (groupBy === "day") {
+    // For day grouping, use a raw query to group by date
+    const entries = await prisma.timeEntry.findMany({
+      where: whereBase,
+      select: { startTime: true, duration: true },
+      orderBy: { startTime: "asc" },
+    });
+
     const grouped: Record<string, { date: string; totalSeconds: number; count: number }> = {};
     for (const entry of entries) {
       const day = entry.startTime.toISOString().split("T")[0];
@@ -83,5 +109,5 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(entries);
+  return NextResponse.json([]);
 }

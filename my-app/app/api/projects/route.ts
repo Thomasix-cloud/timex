@@ -14,7 +14,9 @@ export async function GET() {
     include: { _count: { select: { timeEntries: true } } },
   });
 
-  return NextResponse.json(projects);
+  return NextResponse.json(projects, {
+    headers: { "Cache-Control": "private, s-maxage=30, stale-while-revalidate=60" },
+  });
 }
 
 export async function POST(request: Request) {

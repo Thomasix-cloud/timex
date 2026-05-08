@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock, Timer, FolderKanban, Calendar } from 'lucide-react';
 import { TimeEntryList } from '@/components/time-entry-list';
 
+export const dynamic = 'force-dynamic';
+
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -20,8 +22,7 @@ export default async function DashboardPage() {
   const todayStart = startOfDay(now);
   const todayEnd = endOfDay(now);
 
-  // Run queries in two batches to stay within pool connection limit
-  const [todayEntries, runningEntry] = await Promise.all([
+  const [todayEntries, runningEntry, projectCount, totalEntriesThisWeek] = await Promise.all([
     prisma.timeEntry.findMany({
       where: {
         userId: session.user.id,
@@ -34,9 +35,6 @@ export default async function DashboardPage() {
       where: { userId: session.user.id, endTime: null },
       include: { project: true },
     }),
-  ]);
-
-  const [projectCount, totalEntriesThisWeek] = await Promise.all([
     prisma.project.count({ where: { userId: session.user.id } }),
     prisma.timeEntry.count({
       where: {

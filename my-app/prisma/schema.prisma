@@ -122,6 +122,7 @@ model TimeEntry {
 
   @@index([userId])
   @@index([userId, startTime])
+  @@index([userId, endTime])
   @@index([calendarEventId])
 }
 

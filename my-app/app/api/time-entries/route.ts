@@ -33,7 +33,9 @@ export async function GET(request: NextRequest) {
     take: 100,
   });
 
-  return NextResponse.json(entries);
+  return NextResponse.json(entries, {
+    headers: { "Cache-Control": "private, s-maxage=5, stale-while-revalidate=10" },
+  });
 }
 
 export async function POST(request: Request) {

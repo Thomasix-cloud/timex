@@ -44,12 +44,16 @@ function formatDuration(seconds: number): string {
 
 export function TimeEntryList({
   entries,
+  initialProjects,
+  initialTags,
 }: {
   entries: SerializedTimeEntry[];
+  initialProjects?: Project[];
+  initialTags?: Tag[];
 }) {
   const router = useRouter();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
+  const [projects, setProjects] = useState<Project[]>(initialProjects ?? []);
+  const [tags, setTags] = useState<Tag[]>(initialTags ?? []);
   const [editOpen, setEditOpen] = useState(false);
   const [editEntry, setEditEntry] = useState<SerializedTimeEntry | null>(null);
   const [desc, setDesc] = useState('');
@@ -59,13 +63,15 @@ export function TimeEntryList({
   const [endTime, setEndTime] = useState('');
 
   const fetchOptions = useCallback(async () => {
+    // Skip fetch if we already have data from props
+    if (initialProjects?.length && initialTags?.length) return;
     const [pRes, tRes] = await Promise.all([
       fetch('/api/projects'),
       fetch('/api/tags'),
     ]);
     if (pRes.ok) setProjects(await pRes.json());
     if (tRes.ok) setTags(await tRes.json());
-  }, []);
+  }, [initialProjects, initialTags]);
 
   useEffect(() => {
     fetchOptions();

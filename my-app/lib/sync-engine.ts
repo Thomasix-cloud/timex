@@ -133,7 +133,9 @@ export async function syncCalendarForUser(userId: string) {
       existingEntries.map((e) => [e.calendarEventId, e])
     );
 
-    // Process events sequentially — each query releases connection back to pool
+    // Collect all DB operations and execute in a single transaction
+    const operations: Parameters<typeof prisma.$transaction>[0] = [];
+
     for (const event of relevantEvents) {
       const existing = existingByEventId.get(event.id);
       const mapping = applyMappingRules(rules, event);
@@ -144,37 +146,45 @@ export async function syncCalendarForUser(userId: string) {
           existing.startTime.getTime() !== event.start.getTime() ||
           (existing.endTime && existing.endTime.getTime() !== event.end.getTime())
         ) {
-          await prisma.timeEntry.update({
-            where: { id: existing.id },
-            data: {
-              startTime: event.start,
-              endTime: event.end,
-              duration,
-              description: event.summary,
-              ...(mapping.projectId && !existing.projectId && { projectId: mapping.projectId }),
-              ...(mapping.tagId && !existing.tagId && { tagId: mapping.tagId }),
-            },
-          });
+          operations.push(
+            prisma.timeEntry.update({
+              where: { id: existing.id },
+              data: {
+                startTime: event.start,
+                endTime: event.end,
+                duration,
+                description: event.summary,
+                ...(mapping.projectId && !existing.projectId && { projectId: mapping.projectId }),
+                ...(mapping.tagId && !existing.tagId && { tagId: mapping.tagId }),
+              },
+            })
+          );
           totalUpdated++;
         } else {
           totalSkipped++;
         }
       } else {
-        await prisma.timeEntry.create({
-          data: {
-            description: event.summary,
-            startTime: event.start,
-            endTime: event.end,
-            duration,
-            source: "calendar",
-            calendarEventId: event.id,
-            projectId: mapping.projectId,
-            tagId: mapping.tagId,
-            userId,
-          },
-        });
+        operations.push(
+          prisma.timeEntry.create({
+            data: {
+              description: event.summary,
+              startTime: event.start,
+              endTime: event.end,
+              duration,
+              source: "calendar",
+              calendarEventId: event.id,
+              projectId: mapping.projectId,
+              tagId: mapping.tagId,
+              userId,
+            },
+          })
+        );
         totalCreated++;
       }
+    }
+
+    if (operations.length > 0) {
+      await prisma.$transaction(operations);
     }
 
     await prisma.calendarConnection.update({

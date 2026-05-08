@@ -14,7 +14,9 @@ export async function GET() {
     include: { _count: { select: { timeEntries: true } } },
   });
 
-  return NextResponse.json(tags);
+  return NextResponse.json(tags, {
+    headers: { "Cache-Control": "private, s-maxage=30, stale-while-revalidate=60" },
+  });
 }
 
 export async function POST(request: Request) {
