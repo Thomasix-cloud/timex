@@ -8,15 +8,13 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const projects = await prisma.project.findMany({
+  const clients = await prisma.client.findMany({
     where: { userId: session.user.id },
-    orderBy: { createdAt: "desc" },
-    include: { client: true, _count: { select: { timeEntries: true } } },
+    orderBy: { name: "asc" },
+    include: { _count: { select: { timeEntries: true } } },
   });
 
-  return NextResponse.json(projects, {
-    headers: { "Cache-Control": "private, s-maxage=30, stale-while-revalidate=60" },
-  });
+  return NextResponse.json(clients);
 }
 
 export async function POST(request: Request) {
@@ -26,7 +24,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { name, color, clientId } = body;
+  const { name, color, isDefault } = body;
 
   if (!name || typeof name !== "string" || name.trim().length === 0) {
     return NextResponse.json(
@@ -35,15 +33,22 @@ export async function POST(request: Request) {
     );
   }
 
-  const project = await prisma.project.create({
+  // If setting as default, unset any existing default
+  if (isDefault) {
+    await prisma.client.updateMany({
+      where: { userId: session.user.id, isDefault: true },
+      data: { isDefault: false },
+    });
+  }
+
+  const client = await prisma.client.create({
     data: {
       name: name.trim(),
-      color: color || "#6366f1",
-      clientId: clientId || null,
+      color: color || "#3b82f6",
+      isDefault: isDefault || false,
       userId: session.user.id,
     },
-    include: { client: true },
   });
 
-  return NextResponse.json(project, { status: 201 });
+  return NextResponse.json(client, { status: 201 });
 }

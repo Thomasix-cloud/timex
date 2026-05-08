@@ -42,8 +42,10 @@ export type TimeEntryMinAggregateOutputType = {
   duration: number | null
   source: string | null
   calendarEventId: string | null
+  billable: boolean | null
   projectId: string | null
   tagId: string | null
+  clientId: string | null
   userId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -57,8 +59,10 @@ export type TimeEntryMaxAggregateOutputType = {
   duration: number | null
   source: string | null
   calendarEventId: string | null
+  billable: boolean | null
   projectId: string | null
   tagId: string | null
+  clientId: string | null
   userId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -72,8 +76,10 @@ export type TimeEntryCountAggregateOutputType = {
   duration: number
   source: number
   calendarEventId: number
+  billable: number
   projectId: number
   tagId: number
+  clientId: number
   userId: number
   createdAt: number
   updatedAt: number
@@ -97,8 +103,10 @@ export type TimeEntryMinAggregateInputType = {
   duration?: true
   source?: true
   calendarEventId?: true
+  billable?: true
   projectId?: true
   tagId?: true
+  clientId?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -112,8 +120,10 @@ export type TimeEntryMaxAggregateInputType = {
   duration?: true
   source?: true
   calendarEventId?: true
+  billable?: true
   projectId?: true
   tagId?: true
+  clientId?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -127,8 +137,10 @@ export type TimeEntryCountAggregateInputType = {
   duration?: true
   source?: true
   calendarEventId?: true
+  billable?: true
   projectId?: true
   tagId?: true
+  clientId?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -229,8 +241,10 @@ export type TimeEntryGroupByOutputType = {
   duration: number | null
   source: string
   calendarEventId: string | null
+  billable: boolean
   projectId: string | null
   tagId: string | null
+  clientId: string | null
   userId: string
   createdAt: Date
   updatedAt: Date
@@ -267,13 +281,16 @@ export type TimeEntryWhereInput = {
   duration?: Prisma.IntNullableFilter<"TimeEntry"> | number | null
   source?: Prisma.StringFilter<"TimeEntry"> | string
   calendarEventId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
+  billable?: Prisma.BoolFilter<"TimeEntry"> | boolean
   projectId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   tagId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
+  clientId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   userId?: Prisma.StringFilter<"TimeEntry"> | string
   createdAt?: Prisma.DateTimeFilter<"TimeEntry"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TimeEntry"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
   tag?: Prisma.XOR<Prisma.TagNullableScalarRelationFilter, Prisma.TagWhereInput> | null
+  client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -285,13 +302,16 @@ export type TimeEntryOrderByWithRelationInput = {
   duration?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
   calendarEventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  billable?: Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   tagId?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   project?: Prisma.ProjectOrderByWithRelationInput
   tag?: Prisma.TagOrderByWithRelationInput
+  client?: Prisma.ClientOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -306,13 +326,16 @@ export type TimeEntryWhereUniqueInput = Prisma.AtLeast<{
   duration?: Prisma.IntNullableFilter<"TimeEntry"> | number | null
   source?: Prisma.StringFilter<"TimeEntry"> | string
   calendarEventId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
+  billable?: Prisma.BoolFilter<"TimeEntry"> | boolean
   projectId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   tagId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
+  clientId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   userId?: Prisma.StringFilter<"TimeEntry"> | string
   createdAt?: Prisma.DateTimeFilter<"TimeEntry"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TimeEntry"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
   tag?: Prisma.XOR<Prisma.TagNullableScalarRelationFilter, Prisma.TagWhereInput> | null
+  client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
@@ -324,8 +347,10 @@ export type TimeEntryOrderByWithAggregationInput = {
   duration?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
   calendarEventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  billable?: Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   tagId?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -347,8 +372,10 @@ export type TimeEntryScalarWhereWithAggregatesInput = {
   duration?: Prisma.IntNullableWithAggregatesFilter<"TimeEntry"> | number | null
   source?: Prisma.StringWithAggregatesFilter<"TimeEntry"> | string
   calendarEventId?: Prisma.StringNullableWithAggregatesFilter<"TimeEntry"> | string | null
+  billable?: Prisma.BoolWithAggregatesFilter<"TimeEntry"> | boolean
   projectId?: Prisma.StringNullableWithAggregatesFilter<"TimeEntry"> | string | null
   tagId?: Prisma.StringNullableWithAggregatesFilter<"TimeEntry"> | string | null
+  clientId?: Prisma.StringNullableWithAggregatesFilter<"TimeEntry"> | string | null
   userId?: Prisma.StringWithAggregatesFilter<"TimeEntry"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TimeEntry"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TimeEntry"> | Date | string
@@ -362,10 +389,12 @@ export type TimeEntryCreateInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   project?: Prisma.ProjectCreateNestedOneWithoutTimeEntriesInput
   tag?: Prisma.TagCreateNestedOneWithoutTimeEntriesInput
+  client?: Prisma.ClientCreateNestedOneWithoutTimeEntriesInput
   user: Prisma.UserCreateNestedOneWithoutTimeEntriesInput
 }
 
@@ -377,8 +406,10 @@ export type TimeEntryUncheckedCreateInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   projectId?: string | null
   tagId?: string | null
+  clientId?: string | null
   userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -392,10 +423,12 @@ export type TimeEntryUpdateInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneWithoutTimeEntriesNestedInput
   tag?: Prisma.TagUpdateOneWithoutTimeEntriesNestedInput
+  client?: Prisma.ClientUpdateOneWithoutTimeEntriesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTimeEntriesNestedInput
 }
 
@@ -407,8 +440,10 @@ export type TimeEntryUncheckedUpdateInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -422,8 +457,10 @@ export type TimeEntryCreateManyInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   projectId?: string | null
   tagId?: string | null
+  clientId?: string | null
   userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -437,6 +474,7 @@ export type TimeEntryUpdateManyMutationInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -449,8 +487,10 @@ export type TimeEntryUncheckedUpdateManyInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -474,8 +514,10 @@ export type TimeEntryCountOrderByAggregateInput = {
   duration?: Prisma.SortOrder
   source?: Prisma.SortOrder
   calendarEventId?: Prisma.SortOrder
+  billable?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   tagId?: Prisma.SortOrder
+  clientId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -493,8 +535,10 @@ export type TimeEntryMaxOrderByAggregateInput = {
   duration?: Prisma.SortOrder
   source?: Prisma.SortOrder
   calendarEventId?: Prisma.SortOrder
+  billable?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   tagId?: Prisma.SortOrder
+  clientId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -508,8 +552,10 @@ export type TimeEntryMinOrderByAggregateInput = {
   duration?: Prisma.SortOrder
   source?: Prisma.SortOrder
   calendarEventId?: Prisma.SortOrder
+  billable?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   tagId?: Prisma.SortOrder
+  clientId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -645,6 +691,52 @@ export type TimeEntryUncheckedUpdateManyWithoutTagNestedInput = {
   deleteMany?: Prisma.TimeEntryScalarWhereInput | Prisma.TimeEntryScalarWhereInput[]
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type TimeEntryCreateNestedManyWithoutClientInput = {
+  create?: Prisma.XOR<Prisma.TimeEntryCreateWithoutClientInput, Prisma.TimeEntryUncheckedCreateWithoutClientInput> | Prisma.TimeEntryCreateWithoutClientInput[] | Prisma.TimeEntryUncheckedCreateWithoutClientInput[]
+  connectOrCreate?: Prisma.TimeEntryCreateOrConnectWithoutClientInput | Prisma.TimeEntryCreateOrConnectWithoutClientInput[]
+  createMany?: Prisma.TimeEntryCreateManyClientInputEnvelope
+  connect?: Prisma.TimeEntryWhereUniqueInput | Prisma.TimeEntryWhereUniqueInput[]
+}
+
+export type TimeEntryUncheckedCreateNestedManyWithoutClientInput = {
+  create?: Prisma.XOR<Prisma.TimeEntryCreateWithoutClientInput, Prisma.TimeEntryUncheckedCreateWithoutClientInput> | Prisma.TimeEntryCreateWithoutClientInput[] | Prisma.TimeEntryUncheckedCreateWithoutClientInput[]
+  connectOrCreate?: Prisma.TimeEntryCreateOrConnectWithoutClientInput | Prisma.TimeEntryCreateOrConnectWithoutClientInput[]
+  createMany?: Prisma.TimeEntryCreateManyClientInputEnvelope
+  connect?: Prisma.TimeEntryWhereUniqueInput | Prisma.TimeEntryWhereUniqueInput[]
+}
+
+export type TimeEntryUpdateManyWithoutClientNestedInput = {
+  create?: Prisma.XOR<Prisma.TimeEntryCreateWithoutClientInput, Prisma.TimeEntryUncheckedCreateWithoutClientInput> | Prisma.TimeEntryCreateWithoutClientInput[] | Prisma.TimeEntryUncheckedCreateWithoutClientInput[]
+  connectOrCreate?: Prisma.TimeEntryCreateOrConnectWithoutClientInput | Prisma.TimeEntryCreateOrConnectWithoutClientInput[]
+  upsert?: Prisma.TimeEntryUpsertWithWhereUniqueWithoutClientInput | Prisma.TimeEntryUpsertWithWhereUniqueWithoutClientInput[]
+  createMany?: Prisma.TimeEntryCreateManyClientInputEnvelope
+  set?: Prisma.TimeEntryWhereUniqueInput | Prisma.TimeEntryWhereUniqueInput[]
+  disconnect?: Prisma.TimeEntryWhereUniqueInput | Prisma.TimeEntryWhereUniqueInput[]
+  delete?: Prisma.TimeEntryWhereUniqueInput | Prisma.TimeEntryWhereUniqueInput[]
+  connect?: Prisma.TimeEntryWhereUniqueInput | Prisma.TimeEntryWhereUniqueInput[]
+  update?: Prisma.TimeEntryUpdateWithWhereUniqueWithoutClientInput | Prisma.TimeEntryUpdateWithWhereUniqueWithoutClientInput[]
+  updateMany?: Prisma.TimeEntryUpdateManyWithWhereWithoutClientInput | Prisma.TimeEntryUpdateManyWithWhereWithoutClientInput[]
+  deleteMany?: Prisma.TimeEntryScalarWhereInput | Prisma.TimeEntryScalarWhereInput[]
+}
+
+export type TimeEntryUncheckedUpdateManyWithoutClientNestedInput = {
+  create?: Prisma.XOR<Prisma.TimeEntryCreateWithoutClientInput, Prisma.TimeEntryUncheckedCreateWithoutClientInput> | Prisma.TimeEntryCreateWithoutClientInput[] | Prisma.TimeEntryUncheckedCreateWithoutClientInput[]
+  connectOrCreate?: Prisma.TimeEntryCreateOrConnectWithoutClientInput | Prisma.TimeEntryCreateOrConnectWithoutClientInput[]
+  upsert?: Prisma.TimeEntryUpsertWithWhereUniqueWithoutClientInput | Prisma.TimeEntryUpsertWithWhereUniqueWithoutClientInput[]
+  createMany?: Prisma.TimeEntryCreateManyClientInputEnvelope
+  set?: Prisma.TimeEntryWhereUniqueInput | Prisma.TimeEntryWhereUniqueInput[]
+  disconnect?: Prisma.TimeEntryWhereUniqueInput | Prisma.TimeEntryWhereUniqueInput[]
+  delete?: Prisma.TimeEntryWhereUniqueInput | Prisma.TimeEntryWhereUniqueInput[]
+  connect?: Prisma.TimeEntryWhereUniqueInput | Prisma.TimeEntryWhereUniqueInput[]
+  update?: Prisma.TimeEntryUpdateWithWhereUniqueWithoutClientInput | Prisma.TimeEntryUpdateWithWhereUniqueWithoutClientInput[]
+  updateMany?: Prisma.TimeEntryUpdateManyWithWhereWithoutClientInput | Prisma.TimeEntryUpdateManyWithWhereWithoutClientInput[]
+  deleteMany?: Prisma.TimeEntryScalarWhereInput | Prisma.TimeEntryScalarWhereInput[]
+}
+
 export type TimeEntryCreateWithoutUserInput = {
   id?: string
   description?: string
@@ -653,10 +745,12 @@ export type TimeEntryCreateWithoutUserInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   project?: Prisma.ProjectCreateNestedOneWithoutTimeEntriesInput
   tag?: Prisma.TagCreateNestedOneWithoutTimeEntriesInput
+  client?: Prisma.ClientCreateNestedOneWithoutTimeEntriesInput
 }
 
 export type TimeEntryUncheckedCreateWithoutUserInput = {
@@ -667,8 +761,10 @@ export type TimeEntryUncheckedCreateWithoutUserInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   projectId?: string | null
   tagId?: string | null
+  clientId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -710,8 +806,10 @@ export type TimeEntryScalarWhereInput = {
   duration?: Prisma.IntNullableFilter<"TimeEntry"> | number | null
   source?: Prisma.StringFilter<"TimeEntry"> | string
   calendarEventId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
+  billable?: Prisma.BoolFilter<"TimeEntry"> | boolean
   projectId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   tagId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
+  clientId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   userId?: Prisma.StringFilter<"TimeEntry"> | string
   createdAt?: Prisma.DateTimeFilter<"TimeEntry"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TimeEntry"> | Date | string
@@ -725,9 +823,11 @@ export type TimeEntryCreateWithoutProjectInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   tag?: Prisma.TagCreateNestedOneWithoutTimeEntriesInput
+  client?: Prisma.ClientCreateNestedOneWithoutTimeEntriesInput
   user: Prisma.UserCreateNestedOneWithoutTimeEntriesInput
 }
 
@@ -739,7 +839,9 @@ export type TimeEntryUncheckedCreateWithoutProjectInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   tagId?: string | null
+  clientId?: string | null
   userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -779,9 +881,11 @@ export type TimeEntryCreateWithoutTagInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   project?: Prisma.ProjectCreateNestedOneWithoutTimeEntriesInput
+  client?: Prisma.ClientCreateNestedOneWithoutTimeEntriesInput
   user: Prisma.UserCreateNestedOneWithoutTimeEntriesInput
 }
 
@@ -793,7 +897,9 @@ export type TimeEntryUncheckedCreateWithoutTagInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   projectId?: string | null
+  clientId?: string | null
   userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -825,6 +931,64 @@ export type TimeEntryUpdateManyWithWhereWithoutTagInput = {
   data: Prisma.XOR<Prisma.TimeEntryUpdateManyMutationInput, Prisma.TimeEntryUncheckedUpdateManyWithoutTagInput>
 }
 
+export type TimeEntryCreateWithoutClientInput = {
+  id?: string
+  description?: string
+  startTime: Date | string
+  endTime?: Date | string | null
+  duration?: number | null
+  source?: string
+  calendarEventId?: string | null
+  billable?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  project?: Prisma.ProjectCreateNestedOneWithoutTimeEntriesInput
+  tag?: Prisma.TagCreateNestedOneWithoutTimeEntriesInput
+  user: Prisma.UserCreateNestedOneWithoutTimeEntriesInput
+}
+
+export type TimeEntryUncheckedCreateWithoutClientInput = {
+  id?: string
+  description?: string
+  startTime: Date | string
+  endTime?: Date | string | null
+  duration?: number | null
+  source?: string
+  calendarEventId?: string | null
+  billable?: boolean
+  projectId?: string | null
+  tagId?: string | null
+  userId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TimeEntryCreateOrConnectWithoutClientInput = {
+  where: Prisma.TimeEntryWhereUniqueInput
+  create: Prisma.XOR<Prisma.TimeEntryCreateWithoutClientInput, Prisma.TimeEntryUncheckedCreateWithoutClientInput>
+}
+
+export type TimeEntryCreateManyClientInputEnvelope = {
+  data: Prisma.TimeEntryCreateManyClientInput | Prisma.TimeEntryCreateManyClientInput[]
+  skipDuplicates?: boolean
+}
+
+export type TimeEntryUpsertWithWhereUniqueWithoutClientInput = {
+  where: Prisma.TimeEntryWhereUniqueInput
+  update: Prisma.XOR<Prisma.TimeEntryUpdateWithoutClientInput, Prisma.TimeEntryUncheckedUpdateWithoutClientInput>
+  create: Prisma.XOR<Prisma.TimeEntryCreateWithoutClientInput, Prisma.TimeEntryUncheckedCreateWithoutClientInput>
+}
+
+export type TimeEntryUpdateWithWhereUniqueWithoutClientInput = {
+  where: Prisma.TimeEntryWhereUniqueInput
+  data: Prisma.XOR<Prisma.TimeEntryUpdateWithoutClientInput, Prisma.TimeEntryUncheckedUpdateWithoutClientInput>
+}
+
+export type TimeEntryUpdateManyWithWhereWithoutClientInput = {
+  where: Prisma.TimeEntryScalarWhereInput
+  data: Prisma.XOR<Prisma.TimeEntryUpdateManyMutationInput, Prisma.TimeEntryUncheckedUpdateManyWithoutClientInput>
+}
+
 export type TimeEntryCreateManyUserInput = {
   id?: string
   description?: string
@@ -833,8 +997,10 @@ export type TimeEntryCreateManyUserInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   projectId?: string | null
   tagId?: string | null
+  clientId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -847,10 +1013,12 @@ export type TimeEntryUpdateWithoutUserInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneWithoutTimeEntriesNestedInput
   tag?: Prisma.TagUpdateOneWithoutTimeEntriesNestedInput
+  client?: Prisma.ClientUpdateOneWithoutTimeEntriesNestedInput
 }
 
 export type TimeEntryUncheckedUpdateWithoutUserInput = {
@@ -861,8 +1029,10 @@ export type TimeEntryUncheckedUpdateWithoutUserInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -875,8 +1045,10 @@ export type TimeEntryUncheckedUpdateManyWithoutUserInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -889,7 +1061,9 @@ export type TimeEntryCreateManyProjectInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   tagId?: string | null
+  clientId?: string | null
   userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -903,9 +1077,11 @@ export type TimeEntryUpdateWithoutProjectInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tag?: Prisma.TagUpdateOneWithoutTimeEntriesNestedInput
+  client?: Prisma.ClientUpdateOneWithoutTimeEntriesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTimeEntriesNestedInput
 }
 
@@ -917,7 +1093,9 @@ export type TimeEntryUncheckedUpdateWithoutProjectInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -931,7 +1109,9 @@ export type TimeEntryUncheckedUpdateManyWithoutProjectInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -945,7 +1125,9 @@ export type TimeEntryCreateManyTagInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  billable?: boolean
   projectId?: string | null
+  clientId?: string | null
   userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -959,9 +1141,11 @@ export type TimeEntryUpdateWithoutTagInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneWithoutTimeEntriesNestedInput
+  client?: Prisma.ClientUpdateOneWithoutTimeEntriesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTimeEntriesNestedInput
 }
 
@@ -973,7 +1157,9 @@ export type TimeEntryUncheckedUpdateWithoutTagInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -987,7 +1173,73 @@ export type TimeEntryUncheckedUpdateManyWithoutTagInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TimeEntryCreateManyClientInput = {
+  id?: string
+  description?: string
+  startTime: Date | string
+  endTime?: Date | string | null
+  duration?: number | null
+  source?: string
+  calendarEventId?: string | null
+  billable?: boolean
+  projectId?: string | null
+  tagId?: string | null
+  userId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TimeEntryUpdateWithoutClientInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneWithoutTimeEntriesNestedInput
+  tag?: Prisma.TagUpdateOneWithoutTimeEntriesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutTimeEntriesNestedInput
+}
+
+export type TimeEntryUncheckedUpdateWithoutClientInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TimeEntryUncheckedUpdateManyWithoutClientInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1003,13 +1255,16 @@ export type TimeEntrySelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   duration?: boolean
   source?: boolean
   calendarEventId?: boolean
+  billable?: boolean
   projectId?: boolean
   tagId?: boolean
+  clientId?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.TimeEntry$projectArgs<ExtArgs>
   tag?: boolean | Prisma.TimeEntry$tagArgs<ExtArgs>
+  client?: boolean | Prisma.TimeEntry$clientArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["timeEntry"]>
 
@@ -1021,13 +1276,16 @@ export type TimeEntrySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   duration?: boolean
   source?: boolean
   calendarEventId?: boolean
+  billable?: boolean
   projectId?: boolean
   tagId?: boolean
+  clientId?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.TimeEntry$projectArgs<ExtArgs>
   tag?: boolean | Prisma.TimeEntry$tagArgs<ExtArgs>
+  client?: boolean | Prisma.TimeEntry$clientArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["timeEntry"]>
 
@@ -1039,13 +1297,16 @@ export type TimeEntrySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   duration?: boolean
   source?: boolean
   calendarEventId?: boolean
+  billable?: boolean
   projectId?: boolean
   tagId?: boolean
+  clientId?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.TimeEntry$projectArgs<ExtArgs>
   tag?: boolean | Prisma.TimeEntry$tagArgs<ExtArgs>
+  client?: boolean | Prisma.TimeEntry$clientArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["timeEntry"]>
 
@@ -1057,27 +1318,32 @@ export type TimeEntrySelectScalar = {
   duration?: boolean
   source?: boolean
   calendarEventId?: boolean
+  billable?: boolean
   projectId?: boolean
   tagId?: boolean
+  clientId?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TimeEntryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "description" | "startTime" | "endTime" | "duration" | "source" | "calendarEventId" | "projectId" | "tagId" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["timeEntry"]>
+export type TimeEntryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "description" | "startTime" | "endTime" | "duration" | "source" | "calendarEventId" | "billable" | "projectId" | "tagId" | "clientId" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["timeEntry"]>
 export type TimeEntryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.TimeEntry$projectArgs<ExtArgs>
   tag?: boolean | Prisma.TimeEntry$tagArgs<ExtArgs>
+  client?: boolean | Prisma.TimeEntry$clientArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type TimeEntryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.TimeEntry$projectArgs<ExtArgs>
   tag?: boolean | Prisma.TimeEntry$tagArgs<ExtArgs>
+  client?: boolean | Prisma.TimeEntry$clientArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type TimeEntryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.TimeEntry$projectArgs<ExtArgs>
   tag?: boolean | Prisma.TimeEntry$tagArgs<ExtArgs>
+  client?: boolean | Prisma.TimeEntry$clientArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
@@ -1086,6 +1352,7 @@ export type $TimeEntryPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {
     project: Prisma.$ProjectPayload<ExtArgs> | null
     tag: Prisma.$TagPayload<ExtArgs> | null
+    client: Prisma.$ClientPayload<ExtArgs> | null
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1096,8 +1363,10 @@ export type $TimeEntryPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     duration: number | null
     source: string
     calendarEventId: string | null
+    billable: boolean
     projectId: string | null
     tagId: string | null
+    clientId: string | null
     userId: string
     createdAt: Date
     updatedAt: Date
@@ -1497,6 +1766,7 @@ export interface Prisma__TimeEntryClient<T, Null = never, ExtArgs extends runtim
   readonly [Symbol.toStringTag]: "PrismaPromise"
   project<T extends Prisma.TimeEntry$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TimeEntry$projectArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tag<T extends Prisma.TimeEntry$tagArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TimeEntry$tagArgs<ExtArgs>>): Prisma.Prisma__TagClient<runtime.Types.Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  client<T extends Prisma.TimeEntry$clientArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TimeEntry$clientArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1534,8 +1804,10 @@ export interface TimeEntryFieldRefs {
   readonly duration: Prisma.FieldRef<"TimeEntry", 'Int'>
   readonly source: Prisma.FieldRef<"TimeEntry", 'String'>
   readonly calendarEventId: Prisma.FieldRef<"TimeEntry", 'String'>
+  readonly billable: Prisma.FieldRef<"TimeEntry", 'Boolean'>
   readonly projectId: Prisma.FieldRef<"TimeEntry", 'String'>
   readonly tagId: Prisma.FieldRef<"TimeEntry", 'String'>
+  readonly clientId: Prisma.FieldRef<"TimeEntry", 'String'>
   readonly userId: Prisma.FieldRef<"TimeEntry", 'String'>
   readonly createdAt: Prisma.FieldRef<"TimeEntry", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TimeEntry", 'DateTime'>
@@ -1975,6 +2247,25 @@ export type TimeEntry$tagArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   include?: Prisma.TagInclude<ExtArgs> | null
   where?: Prisma.TagWhereInput
+}
+
+/**
+ * TimeEntry.client
+ */
+export type TimeEntry$clientArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Client
+   */
+  select?: Prisma.ClientSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Client
+   */
+  omit?: Prisma.ClientOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClientInclude<ExtArgs> | null
+  where?: Prisma.ClientWhereInput
 }
 
 /**

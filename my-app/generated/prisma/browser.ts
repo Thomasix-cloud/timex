@@ -62,3 +62,8 @@ export type MappingRule = Prisma.MappingRuleModel
  * 
  */
 export type CalendarConnection = Prisma.CalendarConnectionModel
+/**
+ * Model Client
+ * 
+ */
+export type Client = Prisma.ClientModel

@@ -6,26 +6,19 @@ import { cn } from '@/lib/utils';
 import {
   Clock,
   LayoutDashboard,
-  Timer,
-  FolderKanban,
-  Tags,
-  Wand2,
   BarChart3,
   Settings,
 } from 'lucide-react';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/tracker', label: 'Tracker', icon: Timer },
-  { href: '/projects', label: 'Projects', icon: FolderKanban },
-  { href: '/tags', label: 'Tags', icon: Tags },
-  { href: '/rules', label: 'Rules', icon: Wand2 },
   { href: '/reports', label: 'Reports', icon: BarChart3 },
-  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+
+  const settingsActive = pathname.startsWith('/settings');
 
   return (
     <aside className="flex h-full w-64 flex-col border-r bg-sidebar text-sidebar-foreground">
@@ -56,6 +49,20 @@ export function Sidebar() {
           );
         })}
       </nav>
+      <div className="border-t p-3">
+        <Link
+          href="/settings"
+          className={cn(
+            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+            settingsActive
+              ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+              : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground',
+          )}
+        >
+          <Settings className="h-4 w-4" />
+          Settings
+        </Link>
+      </div>
       <div className="border-t px-6 py-3">
         <span className="text-xs text-sidebar-foreground/40">{process.env.NEXT_PUBLIC_COMMIT_DATE ?? '0000000000'}-{process.env.NEXT_PUBLIC_APP_VERSION ?? '0.0.0'}-{process.env.NEXT_PUBLIC_GIT_COMMIT ?? 'dev'}</span>
       </div>

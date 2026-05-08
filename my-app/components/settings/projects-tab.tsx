@@ -44,7 +44,7 @@ const COLORS = [
   '#64748b',
 ];
 
-export default function ProjectsPage() {
+export function ProjectsTab() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [open, setOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -119,7 +119,7 @@ export default function ProjectsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Projects</h1>
+        <div />
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger
             onClick={openCreate}
@@ -136,9 +136,9 @@ export default function ProjectsPage() {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="proj-name">Name</Label>
                 <Input
-                  id="name"
+                  id="proj-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Project name"

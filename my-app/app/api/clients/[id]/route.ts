@@ -13,9 +13,9 @@ export async function PUT(
 
   const { id } = await params;
   const body = await request.json();
-  const { name, color, clientId } = body;
+  const { name, color, isDefault } = body;
 
-  const existing = await prisma.project.findFirst({
+  const existing = await prisma.client.findFirst({
     where: { id, userId: session.user.id },
   });
 
@@ -23,17 +23,24 @@ export async function PUT(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const project = await prisma.project.update({
+  // If setting as default, unset any existing default
+  if (isDefault) {
+    await prisma.client.updateMany({
+      where: { userId: session.user.id, isDefault: true, id: { not: id } },
+      data: { isDefault: false },
+    });
+  }
+
+  const client = await prisma.client.update({
     where: { id },
     data: {
       ...(name && { name: name.trim() }),
       ...(color && { color }),
-      ...(clientId !== undefined && { clientId: clientId || null }),
+      ...(isDefault !== undefined && { isDefault }),
     },
-    include: { client: true },
   });
 
-  return NextResponse.json(project);
+  return NextResponse.json(client);
 }
 
 export async function DELETE(
@@ -47,7 +54,7 @@ export async function DELETE(
 
   const { id } = await params;
 
-  const existing = await prisma.project.findFirst({
+  const existing = await prisma.client.findFirst({
     where: { id, userId: session.user.id },
   });
 
@@ -55,7 +62,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  await prisma.project.delete({ where: { id } });
+  await prisma.client.delete({ where: { id } });
 
   return NextResponse.json({ success: true });
 }

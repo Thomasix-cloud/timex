@@ -26,6 +26,7 @@ model User {
   sessions           Session[]
   projects           Project[]
   tags               Tag[]
+  clients            Client[]
   timeEntries        TimeEntry[]
   mappingRules       MappingRule[]
   calendarConnections CalendarConnection[]
@@ -68,15 +69,17 @@ model VerificationToken {
 }
 
 model Project {
-  id     String @id @default(cuid())
-  name   String
-  color  String @default("#6366f1")
-  userId String
+  id       String  @id @default(cuid())
+  name     String
+  color    String  @default("#6366f1")
+  userId   String
+  clientId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client       Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
   timeEntries  TimeEntry[]
   mappingRules MappingRule[]
 
@@ -106,11 +109,13 @@ model TimeEntry {
   endTime     DateTime?
   duration    Int?     // in seconds, computed on stop
 
-  source          String @default("manual") // "manual" | "calendar"
+  source          String @default("manual") // "manual" | "calendar" | "tracker"
   calendarEventId String?
+  billable        Boolean @default(true)
 
   projectId String?
   tagId     String?
+  clientId  String?
   userId    String
 
   createdAt DateTime @default(now())
@@ -118,6 +123,7 @@ model TimeEntry {
 
   project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
   tag     Tag?     @relation(fields: [tagId], references: [id], onDelete: SetNull)
+  client  Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -164,5 +170,22 @@ model CalendarConnection {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, provider, calendarId])
+  @@index([userId])
+}
+
+model Client {
+  id        String  @id @default(cuid())
+  name      String
+  color     String  @default("#3b82f6")
+  isDefault Boolean @default(false)
+  userId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timeEntries TimeEntry[]
+  projects    Project[]
+
   @@index([userId])
 }

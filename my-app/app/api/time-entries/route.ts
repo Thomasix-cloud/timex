@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 
   const entries = await prisma.timeEntry.findMany({
     where,
-    include: { project: true, tag: true },
+    include: { project: true, tag: true, client: true },
     orderBy: { startTime: "desc" },
     take: 100,
   });
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { description, startTime, endTime, projectId, tagId, source, calendarEventId } = body;
+  const { description, startTime, endTime, projectId, tagId, clientId, source, calendarEventId, billable } = body;
 
   if (!startTime) {
     return NextResponse.json(
@@ -66,11 +66,13 @@ export async function POST(request: Request) {
       duration,
       projectId: projectId || null,
       tagId: tagId || null,
+      clientId: clientId || null,
       source: source || "manual",
       calendarEventId: calendarEventId || null,
+      billable: billable !== undefined ? billable : true,
       userId: session.user.id,
     },
-    include: { project: true, tag: true },
+    include: { project: true, tag: true, client: true },
   });
 
   return NextResponse.json(entry, { status: 201 });

@@ -36,8 +36,10 @@ export async function PUT(
       duration,
       ...(body.projectId !== undefined && { projectId: body.projectId || null }),
       ...(body.tagId !== undefined && { tagId: body.tagId || null }),
+      ...(body.clientId !== undefined && { clientId: body.clientId || null }),
+      ...(body.billable !== undefined && { billable: body.billable }),
     },
-    include: { project: true, tag: true },
+    include: { project: true, tag: true, client: true },
   });
 
   return NextResponse.json(entry);

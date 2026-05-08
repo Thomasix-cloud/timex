@@ -3,7 +3,22 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, Timer, FolderKanban, Calendar, Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Clock, Timer, FolderKanban, Calendar, Loader2, RefreshCw, Play, Square, Plus } from 'lucide-react';
 import { TimeEntryList, type SerializedTimeEntry } from '@/components/time-entry-list';
 import {
   startOfDay,
@@ -15,14 +30,19 @@ import {
   subWeeks,
   subMonths,
   differenceInSeconds,
+  format,
 } from 'date-fns';
 
+type Project = { id: string; name: string; color: string };
+type Tag = { id: string; name: string; color: string };
+type Client = { id: string; name: string; color: string; isDefault?: boolean };
+
 const periods = [
-  { key: 'today', label: 'Dnes' },
-  { key: 'this-week', label: 'Tento týden' },
-  { key: 'last-week', label: 'Minulý týden' },
-  { key: 'this-month', label: 'Tento měsíc' },
-  { key: 'last-month', label: 'Minulý měsíc' },
+  { key: 'today', label: 'Today' },
+  { key: 'this-week', label: 'This Week' },
+  { key: 'last-week', label: 'Last Week' },
+  { key: 'this-month', label: 'This Month' },
+  { key: 'last-month', label: 'Last Month' },
 ] as const;
 
 type PeriodKey = (typeof periods)[number]['key'];
@@ -59,19 +79,152 @@ type Props = {
 };
 
 export function DashboardClient({ projectCount, runningEntry }: Props) {
-  const [period, setPeriod] = useState<PeriodKey>('today');
+  const [period, setPeriod] = useState<PeriodKey>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dashboard-period');
+      if (saved && periods.some((p) => p.key === saved)) return saved as PeriodKey;
+    }
+    return 'today';
+  });
+
+  const changePeriod = (p: PeriodKey) => {
+    setPeriod(p);
+    localStorage.setItem('dashboard-period', p);
+  };
   const [entries, setEntries] = useState<SerializedTimeEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+
+  const sourceFilters = [
+    { key: 'all', label: 'All' },
+    { key: 'tracker', label: 'Tracker' },
+    { key: 'calendar', label: 'Calendar' },
+    { key: 'manual', label: 'Manual' },
+  ] as const;
+  type SourceKey = (typeof sourceFilters)[number]['key'];
+  const [sourceFilter, setSourceFilter] = useState<SourceKey>('all');
+
+  // Tracker state
+  const [trackerDesc, setTrackerDesc] = useState('');
+  const [trackerProjectId, setTrackerProjectId] = useState('');
+  const [trackerTagId, setTrackerTagId] = useState('');
+  const [trackerClientId, setTrackerClientId] = useState('');
+  const [trackerRunning, setTrackerRunning] = useState<{ id: string; startTime: string; projectName: string | null } | null>(runningEntry ? { id: '', startTime: runningEntry.startTime, projectName: runningEntry.projectName } : null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [clientFilter, setClientFilter] = useState<string>('all');
+  const [billableFilter, setBillableFilter] = useState<string>('all');
+
+  // Manual entry dialog state
+  const [manualOpen, setManualOpen] = useState(false);
+  const [manualDesc, setManualDesc] = useState('');
+  const [manualProjectId, setManualProjectId] = useState('');
+  const [manualTagId, setManualTagId] = useState('');
+  const [manualClientId, setManualClientId] = useState('');
+  const [manualStart, setManualStart] = useState('');
+  const [manualEnd, setManualEnd] = useState('');
+
+  const fetchOptions = useCallback(async () => {
+    const [pRes, tRes, cRes] = await Promise.all([
+      fetch('/api/projects'),
+      fetch('/api/tags'),
+      fetch('/api/clients'),
+    ]);
+    if (pRes.ok) setProjects(await pRes.json());
+    if (tRes.ok) setTags(await tRes.json());
+    if (cRes.ok) {
+      const clientsData = await cRes.json();
+      setClients(clientsData);
+      const defaultClient = clientsData.find((c: Client) => c.isDefault);
+      if (defaultClient) {
+        setTrackerClientId(defaultClient.id);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOptions();
+  }, [fetchOptions]);
+
+  const startTimer = async () => {
+    const res = await fetch('/api/time-entries/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        description: trackerDesc,
+        projectId: trackerProjectId || undefined,
+        tagId: trackerTagId || undefined,
+        clientId: trackerClientId || undefined,
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setTrackerRunning({ id: data.id, startTime: data.startTime, projectName: data.project?.name ?? null });
+    }
+    setTrackerDesc('');
+    setTrackerProjectId('');
+    setTrackerTagId('');
+    const defaultClient = clients.find((c) => c.isDefault);
+    setTrackerClientId(defaultClient?.id ?? '');
+    await fetchEntries(period);
+  };
+
+  const stopTimer = async () => {
+    await fetch('/api/time-entries/stop', { method: 'POST' });
+    setTrackerRunning(null);
+    await fetchEntries(period);
+  };
+
+  const openManualEntry = () => {
+    setManualDesc('');
+    setManualProjectId('');
+    setManualTagId('');
+    const defaultClient = clients.find((c) => c.isDefault);
+    setManualClientId(defaultClient?.id ?? '');
+    const now = new Date();
+    setManualStart(format(now, "yyyy-MM-dd'T'HH:mm"));
+    setManualEnd(format(now, "yyyy-MM-dd'T'HH:mm"));
+    setManualOpen(true);
+  };
+
+  const handleManualSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await fetch('/api/time-entries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        description: manualDesc,
+        startTime: new Date(manualStart).toISOString(),
+        endTime: manualEnd ? new Date(manualEnd).toISOString() : undefined,
+        projectId: manualProjectId || null,
+        tagId: manualTagId || null,
+        clientId: manualClientId || null,
+      }),
+    });
+    setManualOpen(false);
+    await fetchEntries(period);
+  };
+
+  const syncCalendar = async () => {
+    setSyncing(true);
+    try {
+      await fetch('/api/calendar/sync', { method: 'POST' });
+      await fetchEntries(period);
+    } catch {
+      // ignore
+    }
+    setSyncing(false);
+  };
 
   const fetchEntries = useCallback(async (p: PeriodKey) => {
-    setLoading(true);
     const { from, to } = getRange(p);
     const params = new URLSearchParams({
       from: from.toISOString(),
       to: to.toISOString(),
     });
     try {
-      const res = await fetch(`/api/time-entries?${params}`);
+      const res = await fetch(`/api/time-entries?${params}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setEntries(
@@ -82,11 +235,15 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
             endTime: e.endTime ?? null,
             duration: e.duration,
             source: e.source,
+            billable: e.billable !== false,
             project: e.project
               ? { id: (e.project as Record<string, string>).id, name: (e.project as Record<string, string>).name, color: (e.project as Record<string, string>).color }
               : null,
             tag: e.tag
               ? { id: (e.tag as Record<string, string>).id, name: (e.tag as Record<string, string>).name, color: (e.tag as Record<string, string>).color }
+              : null,
+            client: e.client
+              ? { id: (e.client as Record<string, string>).id, name: (e.client as Record<string, string>).name, color: (e.client as Record<string, string>).color }
               : null,
           })),
         );
@@ -101,7 +258,15 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
     fetchEntries(period);
   }, [period, fetchEntries]);
 
-  const totalSeconds = entries.reduce((acc, entry) => {
+  const filteredEntries = entries.filter((e) => {
+    if (sourceFilter !== 'all' && e.source !== sourceFilter) return false;
+    if (clientFilter !== 'all' && (e.client?.id ?? '') !== clientFilter) return false;
+    if (billableFilter === 'billable' && !e.billable) return false;
+    if (billableFilter === 'non-billable' && e.billable) return false;
+    return true;
+  });
+
+  const totalSeconds = filteredEntries.reduce((acc, entry) => {
     if (entry.duration) return acc + entry.duration;
     if (entry.endTime) {
       return acc + differenceInSeconds(new Date(entry.endTime), new Date(entry.startTime));
@@ -109,11 +274,20 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
     return acc + differenceInSeconds(new Date(), new Date(entry.startTime));
   }, 0);
 
+  const billableSeconds = filteredEntries.filter((e) => e.billable).reduce((acc, entry) => {
+    if (entry.duration) return acc + entry.duration;
+    if (entry.endTime) return acc + differenceInSeconds(new Date(entry.endTime), new Date(entry.startTime));
+    return acc + differenceInSeconds(new Date(), new Date(entry.startTime));
+  }, 0);
+  const nonBillableSeconds = totalSeconds - billableSeconds;
+
   const periodLabel = periods.find((p) => p.key === period)?.label ?? '';
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -125,9 +299,10 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
             <div className="text-2xl font-bold">
               {formatDuration(totalSeconds)}
             </div>
-            <p className="text-xs text-muted-foreground">
-              {entries.length} entries
-            </p>
+            <div className="mt-1 flex gap-3 text-xs text-muted-foreground">
+              <span className="text-green-600">$ {formatDuration(billableSeconds)}</span>
+              <span>{formatDuration(nonBillableSeconds)}</span>
+            </div>
           </CardContent>
         </Card>
 
@@ -138,15 +313,15 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {runningEntry ? (
+              {trackerRunning ? (
                 <span className="text-green-600">Active</span>
               ) : (
                 <span className="text-muted-foreground">None</span>
               )}
             </div>
-            {runningEntry && (
+            {trackerRunning && (
               <p className="text-xs text-muted-foreground">
-                {runningEntry.projectName ?? 'No project'}
+                {trackerRunning.projectName ?? 'No project'}
               </p>
             )}
           </CardContent>
@@ -168,26 +343,164 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{entries.length}</div>
+            <div className="text-2xl font-bold">{filteredEntries.length}</div>
             <p className="text-xs text-muted-foreground">entries</p>
           </CardContent>
         </Card>
       </div>
 
+      {/* Timer Bar */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Entries</CardTitle>
-          <div className="flex flex-wrap gap-1">
-            {periods.map((p) => (
+        <CardContent className="flex items-center gap-4 py-4">
+          <Button variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={openManualEntry} title="Manual Entry">
+            <Plus className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={syncCalendar} disabled={syncing} title="Sync Calendar">
+            <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+          </Button>
+          <Input
+            placeholder="What are you working on?"
+            value={trackerDesc}
+            onChange={(e) => setTrackerDesc(e.target.value)}
+            className="flex-[5]"
+            disabled={!!trackerRunning}
+          />
+          <Select
+            value={trackerProjectId || '_none'}
+            onValueChange={(v) => setTrackerProjectId(!v || v === '_none' ? '' : v)}
+            disabled={!!trackerRunning}
+          >
+            <SelectTrigger className="w-32">
+              <span data-slot="select-value" className="flex flex-1 text-left">
+                {trackerProjectId
+                  ? projects.find((p) => p.id === trackerProjectId)?.name ?? 'Project'
+                  : 'Project'}
+              </span>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="_none">None</SelectItem>
+              {projects.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: p.color }}
+                    />
+                    {p.name}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={trackerTagId || '_none'}
+            onValueChange={(v) => setTrackerTagId(!v || v === '_none' ? '' : v)}
+            disabled={!!trackerRunning}
+          >
+            <SelectTrigger className="w-32">
+              <span data-slot="select-value" className="flex flex-1 text-left">
+                {trackerTagId
+                  ? tags.find((t) => t.id === trackerTagId)?.name ?? 'Tag'
+                  : 'Tag'}
+              </span>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="_none">None</SelectItem>
+              {tags.map((t) => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {trackerRunning ? (
+            <Button size="icon" variant="destructive" onClick={stopTimer}>
+              <Square className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button size="icon" onClick={startTimer}>
+              <Play className="h-4 w-4" />
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="space-y-3">
+          <div className="flex items-center justify-between">
+            <CardTitle>Entries</CardTitle>
+          </div>
+          <div className="flex items-center gap-3 overflow-x-auto pb-2">
+            <div className="flex gap-1 shrink-0">
+              {periods.map((p) => (
+                <Button
+                  key={p.key}
+                  variant={period === p.key ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => changePeriod(p.key)}
+                >
+                  {p.label}
+                </Button>
+              ))}
+            </div>
+            <div className="h-5 w-px bg-border shrink-0" />
+            <div className="flex gap-1 shrink-0">
+              {sourceFilters.map((s) => (
+                <Button
+                  key={s.key}
+                  variant={sourceFilter === s.key ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSourceFilter(s.key)}
+                >
+                  {s.label}
+                </Button>
+              ))}
+            </div>
+            <div className="h-5 w-px bg-border shrink-0" />
+            <div className="flex gap-1 shrink-0">
               <Button
-                key={p.key}
-                variant={period === p.key ? 'default' : 'outline'}
+                variant={clientFilter === 'all' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setPeriod(p.key)}
+                onClick={() => setClientFilter('all')}
               >
-                {p.label}
+                All Clients
               </Button>
-            ))}
+              {clients.map((c) => (
+                <Button
+                  key={c.id}
+                  variant={clientFilter === c.id ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setClientFilter(c.id)}
+                >
+                  <div className="mr-1.5 h-2 w-2 rounded-full" style={{ backgroundColor: c.color }} />
+                  {c.name}
+                </Button>
+              ))}
+            </div>
+            <div className="h-5 w-px bg-border shrink-0" />
+            <div className="flex gap-1 shrink-0">
+              <Button
+                variant={billableFilter === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setBillableFilter('all')}
+              >
+                All
+              </Button>
+              <Button
+                variant={billableFilter === 'billable' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setBillableFilter('billable')}
+              >
+                $ Billable
+              </Button>
+              <Button
+                variant={billableFilter === 'non-billable' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setBillableFilter('non-billable')}
+              >
+                Non-billable
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -197,7 +510,7 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
             </div>
           ) : (
             <TimeEntryList
-              entries={entries}
+              entries={filteredEntries}
               onEntryUpdated={(updated) => {
                 if ('_deleted' in updated) {
                   setEntries((prev) => prev.filter((e) => e.id !== updated.id));
@@ -209,6 +522,130 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
           )}
         </CardContent>
       </Card>
+
+      {/* Manual Entry Dialog */}
+      <Dialog open={manualOpen} onOpenChange={setManualOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Manual Entry</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleManualSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Input
+                value={manualDesc}
+                onChange={(e) => setManualDesc(e.target.value)}
+                placeholder="What did you work on?"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Start</Label>
+                <Input
+                  type="datetime-local"
+                  value={manualStart}
+                  onChange={(e) => setManualStart(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>End</Label>
+                <Input
+                  type="datetime-local"
+                  value={manualEnd}
+                  onChange={(e) => setManualEnd(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Project</Label>
+                <Select
+                  value={manualProjectId || '_none'}
+                  onValueChange={(v) => setManualProjectId(!v || v === '_none' ? '' : v)}
+                >
+                  <SelectTrigger className="w-full">
+                    <span data-slot="select-value" className="flex flex-1 text-left">
+                      {manualProjectId
+                        ? projects.find((p) => p.id === manualProjectId)?.name ?? 'Select project'
+                        : 'None'}
+                    </span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_none">None</SelectItem>
+                    {projects.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: p.color }}
+                          />
+                          {p.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Tag</Label>
+                <Select
+                  value={manualTagId || '_none'}
+                  onValueChange={(v) => setManualTagId(!v || v === '_none' ? '' : v)}
+                >
+                  <SelectTrigger className="w-full">
+                    <span data-slot="select-value" className="flex flex-1 text-left">
+                      {manualTagId
+                        ? tags.find((t) => t.id === manualTagId)?.name ?? 'Select tag'
+                        : 'None'}
+                    </span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_none">None</SelectItem>
+                    {tags.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Client</Label>
+              <Select
+                value={manualClientId || '_none'}
+                onValueChange={(v) => setManualClientId(!v || v === '_none' ? '' : v)}
+              >
+                <SelectTrigger className="w-full">
+                  <span data-slot="select-value" className="flex flex-1 text-left">
+                    {manualClientId
+                      ? clients.find((c) => c.id === manualClientId)?.name ?? 'Select client'
+                      : 'None'}
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_none">None</SelectItem>
+                  {clients.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: c.color }}
+                        />
+                        {c.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button type="submit" className="w-full">
+              Add Entry
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

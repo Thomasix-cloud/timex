@@ -59,7 +59,8 @@ export const ModelName = {
   Tag: 'Tag',
   TimeEntry: 'TimeEntry',
   MappingRule: 'MappingRule',
-  CalendarConnection: 'CalendarConnection'
+  CalendarConnection: 'CalendarConnection',
+  Client: 'Client'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -136,6 +137,7 @@ export const ProjectScalarFieldEnum = {
   name: 'name',
   color: 'color',
   userId: 'userId',
+  clientId: 'clientId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -163,8 +165,10 @@ export const TimeEntryScalarFieldEnum = {
   duration: 'duration',
   source: 'source',
   calendarEventId: 'calendarEventId',
+  billable: 'billable',
   projectId: 'projectId',
   tagId: 'tagId',
+  clientId: 'clientId',
   userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -204,6 +208,19 @@ export const CalendarConnectionScalarFieldEnum = {
 } as const
 
 export type CalendarConnectionScalarFieldEnum = (typeof CalendarConnectionScalarFieldEnum)[keyof typeof CalendarConnectionScalarFieldEnum]
+
+
+export const ClientScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  color: 'color',
+  isDefault: 'isDefault',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof ClientScalarFieldEnum]
 
 
 export const SortOrder = {

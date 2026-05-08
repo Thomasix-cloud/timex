@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { description, projectId, tagId } = body;
+  const { description, projectId, tagId, clientId } = body;
 
   const entry = await prisma.timeEntry.create({
     data: {
@@ -29,10 +29,11 @@ export async function POST(request: Request) {
       startTime: new Date(),
       projectId: projectId || null,
       tagId: tagId || null,
-      source: "manual",
+      clientId: clientId || null,
+      source: "tracker",
       userId: session.user.id,
     },
-    include: { project: true, tag: true },
+    include: { project: true, tag: true, client: true },
   });
 
   return NextResponse.json(entry, { status: 201 });

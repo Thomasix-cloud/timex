@@ -12,26 +12,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Star } from 'lucide-react';
 
-type Client = { id: string; name: string; color: string; isDefault?: boolean };
-
-type Project = {
+type Client = {
   id: string;
   name: string;
   color: string;
-  client?: Client | null;
+  isDefault: boolean;
   _count?: { timeEntries: number };
 };
 
 const COLORS = [
+  '#3b82f6',
   '#6366f1',
   '#8b5cf6',
   '#ec4899',
@@ -40,23 +32,16 @@ const COLORS = [
   '#eab308',
   '#22c55e',
   '#06b6d4',
-  '#3b82f6',
   '#64748b',
 ];
 
-export default function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
+export default function ClientsPage() {
+  const [clients, setClients] = useState<Client[]>([]);
   const [open, setOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [name, setName] = useState('');
   const [color, setColor] = useState(COLORS[0]);
-  const [clientId, setClientId] = useState('');
-  const [clients, setClients] = useState<Client[]>([]);
-
-  const fetchProjects = async () => {
-    const res = await fetch('/api/projects');
-    if (res.ok) setProjects(await res.json());
-  };
+  const [isDefault, setIsDefault] = useState(false);
 
   const fetchClients = async () => {
     const res = await fetch('/api/clients');
@@ -64,7 +49,6 @@ export default function ProjectsPage() {
   };
 
   useEffect(() => {
-    fetchProjects();
     fetchClients();
   }, []);
 
@@ -72,66 +56,74 @@ export default function ProjectsPage() {
     e.preventDefault();
     if (!name.trim()) return;
 
-    if (editingProject) {
-      await fetch(`/api/projects/${editingProject.id}`, {
+    if (editingClient) {
+      await fetch(`/api/clients/${editingClient.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, color, clientId: clientId || null }),
+        body: JSON.stringify({ name, color, isDefault }),
       });
     } else {
-      await fetch('/api/projects', {
+      await fetch('/api/clients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, color, clientId: clientId || null }),
+        body: JSON.stringify({ name, color, isDefault }),
       });
     }
 
     setName('');
     setColor(COLORS[0]);
-    setClientId('');
-    setEditingProject(null);
+    setIsDefault(false);
+    setEditingClient(null);
     setOpen(false);
-    fetchProjects();
+    fetchClients();
   };
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/projects/${id}`, { method: 'DELETE' });
-    fetchProjects();
+    await fetch(`/api/clients/${id}`, { method: 'DELETE' });
+    fetchClients();
   };
 
-  const openEdit = (project: Project) => {
-    setEditingProject(project);
-    setName(project.name);
-    setColor(project.color);
-    setClientId(project.client?.id ?? '');
+  const openEdit = (client: Client) => {
+    setEditingClient(client);
+    setName(client.name);
+    setColor(client.color);
+    setIsDefault(client.isDefault);
     setOpen(true);
   };
 
   const openCreate = () => {
-    setEditingProject(null);
+    setEditingClient(null);
     setName('');
     setColor(COLORS[0]);
-    const defaultClient = clients.find((c) => c.isDefault);
-    setClientId(defaultClient?.id ?? '');
+    setIsDefault(false);
     setOpen(true);
+  };
+
+  const toggleDefault = async (client: Client) => {
+    await fetch(`/api/clients/${client.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isDefault: !client.isDefault }),
+    });
+    fetchClients();
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Projects</h1>
+        <h1 className="text-2xl font-bold">Clients</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger
             onClick={openCreate}
             className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs hover:bg-primary/90 transition-colors cursor-pointer"
           >
             <Plus className="h-4 w-4" />
-            New Project
+            New Client
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {editingProject ? 'Edit Project' : 'New Project'}
+                {editingClient ? 'Edit Client' : 'New Client'}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -141,7 +133,7 @@ export default function ProjectsPage() {
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Project name"
+                  placeholder="Client name"
                   required
                 />
               </div>
@@ -163,67 +155,57 @@ export default function ProjectsPage() {
                   ))}
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label>Client</Label>
-                <Select
-                  value={clientId || '_none'}
-                  onValueChange={(v) => setClientId(!v || v === '_none' ? '' : v)}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className={`flex h-8 w-8 items-center justify-center rounded-md border ${isDefault ? 'border-yellow-500 bg-yellow-50 text-yellow-600' : 'border-muted text-muted-foreground'}`}
+                  onClick={() => setIsDefault(!isDefault)}
                 >
-                  <SelectTrigger className="w-full">
-                    <span data-slot="select-value" className="flex flex-1 text-left">
-                      {clientId
-                        ? clients.find((c) => c.id === clientId)?.name ?? 'Select client'
-                        : 'None'}
-                    </span>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="_none">None</SelectItem>
-                    {clients.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="h-2.5 w-2.5 rounded-full"
-                            style={{ backgroundColor: c.color }}
-                          />
-                          {c.name}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <Star className="h-4 w-4" fill={isDefault ? 'currentColor' : 'none'} />
+                </button>
+                <Label className="text-sm">{isDefault ? 'Default client' : 'Not default'}</Label>
               </div>
               <Button type="submit" className="w-full">
-                {editingProject ? 'Save Changes' : 'Create Project'}
+                {editingClient ? 'Save Changes' : 'Create Client'}
               </Button>
             </form>
           </DialogContent>
         </Dialog>
       </div>
 
-      {projects.length === 0 ? (
+      {clients.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center text-muted-foreground">
-            No projects yet. Create one to start tracking time.
+            No clients yet. Create one to start organizing your time entries.
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
-            <Card key={project.id}>
+          {clients.map((client) => (
+            <Card key={client.id}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="flex items-center gap-3">
                   <div
                     className="h-4 w-4 rounded-full"
-                    style={{ backgroundColor: project.color }}
+                    style={{ backgroundColor: client.color }}
                   />
-                  <CardTitle className="text-base">{project.name}</CardTitle>
+                  <CardTitle className="text-base">{client.name}</CardTitle>
                 </div>
                 <div className="flex gap-1">
                   <Button
                     variant="ghost"
                     size="icon"
+                    className={`h-8 w-8 ${client.isDefault ? 'text-yellow-500' : 'text-muted-foreground'}`}
+                    title={client.isDefault ? 'Remove default' : 'Set as default'}
+                    onClick={() => toggleDefault(client)}
+                  >
+                    <Star className="h-3.5 w-3.5" fill={client.isDefault ? 'currentColor' : 'none'} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="h-8 w-8"
-                    onClick={() => openEdit(project)}
+                    onClick={() => openEdit(client)}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
@@ -231,23 +213,16 @@ export default function ProjectsPage() {
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive"
-                    onClick={() => handleDelete(project.id)}
+                    onClick={() => handleDelete(client.id)}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-2">
-                  <p className="text-sm text-muted-foreground">
-                    {project._count?.timeEntries ?? 0} entries
-                  </p>
-                  {project.client && (
-                    <Badge variant="outline" className="text-xs" style={{ borderColor: project.client.color, color: project.client.color }}>
-                      {project.client.name}
-                    </Badge>
-                  )}
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  {client._count?.timeEntries ?? 0} entries
+                </p>
               </CardContent>
             </Card>
           ))}

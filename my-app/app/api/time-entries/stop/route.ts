@@ -26,7 +26,7 @@ export async function POST() {
   const entry = await prisma.timeEntry.update({
     where: { id: running.id },
     data: { endTime: now, duration },
-    include: { project: true, tag: true },
+    include: { project: true, tag: true, client: true },
   });
 
   return NextResponse.json(entry);

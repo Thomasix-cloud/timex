@@ -19,11 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Pencil, Trash2, Play } from 'lucide-react';
+import { Pencil, Trash2, Play, DollarSign } from 'lucide-react';
 import { format, differenceInSeconds } from 'date-fns';
 
 type Project = { id: string; name: string; color: string };
 type Tag = { id: string; name: string; color: string };
+type Client = { id: string; name: string; color: string };
 
 export type SerializedTimeEntry = {
   id: string;
@@ -32,8 +33,10 @@ export type SerializedTimeEntry = {
   endTime: string | null;
   duration: number | null;
   source: string;
+  billable: boolean;
   project: Project | null;
   tag: Tag | null;
+  client: Client | null;
 };
 
 function formatDuration(seconds: number): string {
@@ -56,23 +59,26 @@ export function TimeEntryList({
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>(initialProjects ?? []);
   const [tags, setTags] = useState<Tag[]>(initialTags ?? []);
+  const [clients, setClients] = useState<Client[]>([]);
   const [editOpen, setEditOpen] = useState(false);
   const [editEntry, setEditEntry] = useState<SerializedTimeEntry | null>(null);
   const [desc, setDesc] = useState('');
   const [projectId, setProjectId] = useState('');
   const [tagId, setTagId] = useState('');
+  const [clientId, setClientId] = useState('');
+  const [billable, setBillable] = useState(true);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
 
   const fetchOptions = useCallback(async () => {
-    // Skip fetch if we already have data from props
-    if (initialProjects?.length && initialTags?.length) return;
-    const [pRes, tRes] = await Promise.all([
-      fetch('/api/projects'),
-      fetch('/api/tags'),
+    const [pRes, tRes, cRes] = await Promise.all([
+      initialProjects?.length ? null : fetch('/api/projects'),
+      initialTags?.length ? null : fetch('/api/tags'),
+      fetch('/api/clients'),
     ]);
-    if (pRes.ok) setProjects(await pRes.json());
-    if (tRes.ok) setTags(await tRes.json());
+    if (pRes?.ok) setProjects(await pRes.json());
+    if (tRes?.ok) setTags(await tRes.json());
+    if (cRes?.ok) setClients(await cRes.json());
   }, [initialProjects, initialTags]);
 
   useEffect(() => {
@@ -94,6 +100,13 @@ export function TimeEntryList({
     return Array.from(map.values());
   }, [tags, entries]);
 
+  const allClients = useMemo(() => {
+    const map = new Map<string, Client>();
+    entries.forEach((e) => { if (e.client) map.set(e.client.id, e.client); });
+    clients.forEach((c) => map.set(c.id, c));
+    return Array.from(map.values());
+  }, [clients, entries]);
+
   const [applyingId, setApplyingId] = useState<string | null>(null);
   const [applyResult, setApplyResult] = useState<{ id: string; message: string; ok: boolean } | null>(null);
 
@@ -114,8 +127,10 @@ export function TimeEntryList({
               endTime: data.entry.endTime ?? null,
               duration: data.entry.duration,
               source: data.entry.source,
+              billable: data.entry.billable !== false,
               project: data.entry.project ? { id: data.entry.project.id, name: data.entry.project.name, color: data.entry.project.color } : null,
               tag: data.entry.tag ? { id: data.entry.tag.id, name: data.entry.tag.name, color: data.entry.tag.color } : null,
+              client: data.entry.client ? { id: data.entry.client.id, name: data.entry.client.name, color: data.entry.client.color } : null,
             });
           } else {
             router.refresh();
@@ -137,6 +152,8 @@ export function TimeEntryList({
     setDesc(entry.description);
     setProjectId(entry.project?.id ?? '');
     setTagId(entry.tag?.id ?? '');
+    setClientId(entry.client?.id ?? '');
+    setBillable(entry.billable);
     setStartTime(format(new Date(entry.startTime), "yyyy-MM-dd'T'HH:mm"));
     setEndTime(
       entry.endTime
@@ -159,6 +176,8 @@ export function TimeEntryList({
         endTime: endTime ? new Date(endTime).toISOString() : undefined,
         projectId: projectId || null,
         tagId: tagId || null,
+        clientId: clientId || null,
+        billable,
       }),
     });
 
@@ -172,8 +191,10 @@ export function TimeEntryList({
         endTime: data.endTime ?? null,
         duration: data.duration,
         source: data.source,
+        billable: data.billable,
         project: data.project ? { id: data.project.id, name: data.project.name, color: data.project.color } : null,
         tag: data.tag ? { id: data.tag.id, name: data.tag.name, color: data.tag.color } : null,
+        client: data.client ? { id: data.client.id, name: data.client.name, color: data.client.color } : null,
       });
     } else {
       router.refresh();
@@ -184,7 +205,7 @@ export function TimeEntryList({
     await fetch(`/api/time-entries/${id}`, { method: 'DELETE' });
     if (onEntryUpdated) {
       // Remove from parent state by signaling with null fields
-      onEntryUpdated({ id, description: '', startTime: '', endTime: null, duration: null, source: '', project: null, tag: null, _deleted: true } as SerializedTimeEntry & { _deleted?: boolean });
+      onEntryUpdated({ id, description: '', startTime: '', endTime: null, duration: null, source: '', billable: true, project: null, tag: null, client: null, _deleted: true } as SerializedTimeEntry & { _deleted?: boolean });
     } else {
       router.refresh();
     }
@@ -207,6 +228,36 @@ export function TimeEntryList({
             className="flex items-center justify-between rounded-md border p-3"
           >
             <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-7 w-7 ${entry.billable ? 'text-green-600' : 'text-muted-foreground'}`}
+                title={entry.billable ? 'Billable' : 'Non-billable'}
+                onClick={async () => {
+                  const res = await fetch(`/api/time-entries/${entry.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ billable: !entry.billable }),
+                  });
+                  if (res.ok && onEntryUpdated) {
+                    const data = await res.json();
+                    onEntryUpdated({
+                      id: data.id,
+                      description: data.description,
+                      startTime: data.startTime,
+                      endTime: data.endTime ?? null,
+                      duration: data.duration,
+                      source: data.source,
+                      billable: data.billable,
+                      project: data.project ? { id: data.project.id, name: data.project.name, color: data.project.color } : null,
+                      tag: data.tag ? { id: data.tag.id, name: data.tag.name, color: data.tag.color } : null,
+                      client: data.client ? { id: data.client.id, name: data.client.name, color: data.client.color } : null,
+                    });
+                  }
+                }}
+              >
+                <DollarSign className="h-3.5 w-3.5" />
+              </Button>
               {entry.project && (
                 <div
                   className="h-3 w-3 rounded-full"
@@ -226,6 +277,11 @@ export function TimeEntryList({
                   {entry.tag && (
                     <Badge variant="secondary" className="text-xs">
                       {entry.tag.name}
+                    </Badge>
+                  )}
+                  {entry.client && (
+                    <Badge variant="outline" className="text-xs" style={{ borderColor: entry.client.color, color: entry.client.color }}>
+                      {entry.client.name}
                     </Badge>
                   )}
                   {entry.source === 'calendar' && (
@@ -379,6 +435,46 @@ export function TimeEntryList({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Client</Label>
+              <Select
+                value={clientId || '_none'}
+                onValueChange={(v) => setClientId(!v || v === '_none' ? '' : v)}
+              >
+                <SelectTrigger className="w-full">
+                  <span data-slot="select-value" className="flex flex-1 text-left">
+                    {clientId
+                      ? allClients.find((c) => c.id === clientId)?.name ?? 'Select client'
+                      : 'None'}
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_none">None</SelectItem>
+                  {allClients.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: c.color }}
+                        />
+                        {c.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className={`flex h-8 w-8 items-center justify-center rounded-md border ${billable ? 'border-green-600 bg-green-50 text-green-600' : 'border-muted text-muted-foreground'}`}
+                onClick={() => setBillable(!billable)}
+                title={billable ? 'Billable' : 'Non-billable'}
+              >
+                <DollarSign className="h-4 w-4" />
+              </button>
+              <Label className="text-sm">{billable ? 'Billable' : 'Non-billable'}</Label>
             </div>
             <Button type="submit" className="w-full">
               Save Changes

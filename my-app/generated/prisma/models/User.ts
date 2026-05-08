@@ -226,6 +226,7 @@ export type UserWhereInput = {
   sessions?: Prisma.SessionListRelationFilter
   projects?: Prisma.ProjectListRelationFilter
   tags?: Prisma.TagListRelationFilter
+  clients?: Prisma.ClientListRelationFilter
   timeEntries?: Prisma.TimeEntryListRelationFilter
   mappingRules?: Prisma.MappingRuleListRelationFilter
   calendarConnections?: Prisma.CalendarConnectionListRelationFilter
@@ -246,6 +247,7 @@ export type UserOrderByWithRelationInput = {
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   projects?: Prisma.ProjectOrderByRelationAggregateInput
   tags?: Prisma.TagOrderByRelationAggregateInput
+  clients?: Prisma.ClientOrderByRelationAggregateInput
   timeEntries?: Prisma.TimeEntryOrderByRelationAggregateInput
   mappingRules?: Prisma.MappingRuleOrderByRelationAggregateInput
   calendarConnections?: Prisma.CalendarConnectionOrderByRelationAggregateInput
@@ -269,6 +271,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   sessions?: Prisma.SessionListRelationFilter
   projects?: Prisma.ProjectListRelationFilter
   tags?: Prisma.TagListRelationFilter
+  clients?: Prisma.ClientListRelationFilter
   timeEntries?: Prisma.TimeEntryListRelationFilter
   mappingRules?: Prisma.MappingRuleListRelationFilter
   calendarConnections?: Prisma.CalendarConnectionListRelationFilter
@@ -321,6 +324,7 @@ export type UserCreateInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
@@ -341,6 +345,7 @@ export type UserUncheckedCreateInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
@@ -361,6 +366,7 @@ export type UserUpdateInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
@@ -381,6 +387,7 @@ export type UserUncheckedUpdateInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
@@ -583,6 +590,20 @@ export type UserUpdateOneRequiredWithoutCalendarConnectionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCalendarConnectionsInput, Prisma.UserUpdateWithoutCalendarConnectionsInput>, Prisma.UserUncheckedUpdateWithoutCalendarConnectionsInput>
 }
 
+export type UserCreateNestedOneWithoutClientsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutClientsInput, Prisma.UserUncheckedCreateWithoutClientsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutClientsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutClientsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutClientsInput, Prisma.UserUncheckedCreateWithoutClientsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutClientsInput
+  upsert?: Prisma.UserUpsertWithoutClientsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutClientsInput, Prisma.UserUpdateWithoutClientsInput>, Prisma.UserUncheckedUpdateWithoutClientsInput>
+}
+
 export type UserCreateWithoutAccountsInput = {
   id?: string
   name?: string | null
@@ -597,6 +618,7 @@ export type UserCreateWithoutAccountsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
@@ -616,6 +638,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
@@ -651,6 +674,7 @@ export type UserUpdateWithoutAccountsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
@@ -670,6 +694,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
@@ -689,6 +714,7 @@ export type UserCreateWithoutSessionsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
@@ -708,6 +734,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
@@ -743,6 +770,7 @@ export type UserUpdateWithoutSessionsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
@@ -762,6 +790,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
@@ -781,6 +810,7 @@ export type UserCreateWithoutProjectsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
@@ -800,6 +830,7 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
@@ -835,6 +866,7 @@ export type UserUpdateWithoutProjectsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
@@ -854,6 +886,7 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
@@ -873,6 +906,7 @@ export type UserCreateWithoutTagsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
@@ -892,6 +926,7 @@ export type UserUncheckedCreateWithoutTagsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
@@ -927,6 +962,7 @@ export type UserUpdateWithoutTagsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
@@ -946,6 +982,7 @@ export type UserUncheckedUpdateWithoutTagsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
@@ -966,6 +1003,7 @@ export type UserCreateWithoutTimeEntriesInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
 }
@@ -985,6 +1023,7 @@ export type UserUncheckedCreateWithoutTimeEntriesInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1020,6 +1059,7 @@ export type UserUpdateWithoutTimeEntriesInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
 }
@@ -1039,6 +1079,7 @@ export type UserUncheckedUpdateWithoutTimeEntriesInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1058,6 +1099,7 @@ export type UserCreateWithoutMappingRulesInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
 }
@@ -1077,6 +1119,7 @@ export type UserUncheckedCreateWithoutMappingRulesInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1112,6 +1155,7 @@ export type UserUpdateWithoutMappingRulesInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
 }
@@ -1131,6 +1175,7 @@ export type UserUncheckedUpdateWithoutMappingRulesInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1150,6 +1195,7 @@ export type UserCreateWithoutCalendarConnectionsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
 }
@@ -1169,6 +1215,7 @@ export type UserUncheckedCreateWithoutCalendarConnectionsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1204,6 +1251,7 @@ export type UserUpdateWithoutCalendarConnectionsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
 }
@@ -1223,8 +1271,105 @@ export type UserUncheckedUpdateWithoutCalendarConnectionsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutClientsInput = {
+  id?: string
+  name?: string | null
+  email: string
+  emailVerified?: Date | string | null
+  image?: string | null
+  googleAccessToken?: string | null
+  googleRefreshToken?: string | null
+  googleTokenExpiry?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
+  tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
+  mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
+  calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutClientsInput = {
+  id?: string
+  name?: string | null
+  email: string
+  emailVerified?: Date | string | null
+  image?: string | null
+  googleAccessToken?: string | null
+  googleRefreshToken?: string | null
+  googleTokenExpiry?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
+  mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
+  calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutClientsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutClientsInput, Prisma.UserUncheckedCreateWithoutClientsInput>
+}
+
+export type UserUpsertWithoutClientsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutClientsInput, Prisma.UserUncheckedUpdateWithoutClientsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutClientsInput, Prisma.UserUncheckedCreateWithoutClientsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutClientsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutClientsInput, Prisma.UserUncheckedUpdateWithoutClientsInput>
+}
+
+export type UserUpdateWithoutClientsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
+  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
+  mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
+  calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutClientsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
+  mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
+  calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1237,6 +1382,7 @@ export type UserCountOutputType = {
   sessions: number
   projects: number
   tags: number
+  clients: number
   timeEntries: number
   mappingRules: number
   calendarConnections: number
@@ -1247,6 +1393,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   projects?: boolean | UserCountOutputTypeCountProjectsArgs
   tags?: boolean | UserCountOutputTypeCountTagsArgs
+  clients?: boolean | UserCountOutputTypeCountClientsArgs
   timeEntries?: boolean | UserCountOutputTypeCountTimeEntriesArgs
   mappingRules?: boolean | UserCountOutputTypeCountMappingRulesArgs
   calendarConnections?: boolean | UserCountOutputTypeCountCalendarConnectionsArgs
@@ -1293,6 +1440,13 @@ export type UserCountOutputTypeCountTagsArgs<ExtArgs extends runtime.Types.Exten
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountClientsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClientWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountTimeEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TimeEntryWhereInput
 }
@@ -1327,6 +1481,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
   tags?: boolean | Prisma.User$tagsArgs<ExtArgs>
+  clients?: boolean | Prisma.User$clientsArgs<ExtArgs>
   timeEntries?: boolean | Prisma.User$timeEntriesArgs<ExtArgs>
   mappingRules?: boolean | Prisma.User$mappingRulesArgs<ExtArgs>
   calendarConnections?: boolean | Prisma.User$calendarConnectionsArgs<ExtArgs>
@@ -1378,6 +1533,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
   tags?: boolean | Prisma.User$tagsArgs<ExtArgs>
+  clients?: boolean | Prisma.User$clientsArgs<ExtArgs>
   timeEntries?: boolean | Prisma.User$timeEntriesArgs<ExtArgs>
   mappingRules?: boolean | Prisma.User$mappingRulesArgs<ExtArgs>
   calendarConnections?: boolean | Prisma.User$calendarConnectionsArgs<ExtArgs>
@@ -1393,6 +1549,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     projects: Prisma.$ProjectPayload<ExtArgs>[]
     tags: Prisma.$TagPayload<ExtArgs>[]
+    clients: Prisma.$ClientPayload<ExtArgs>[]
     timeEntries: Prisma.$TimeEntryPayload<ExtArgs>[]
     mappingRules: Prisma.$MappingRulePayload<ExtArgs>[]
     calendarConnections: Prisma.$CalendarConnectionPayload<ExtArgs>[]
@@ -1806,6 +1963,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   projects<T extends Prisma.User$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tags<T extends Prisma.User$tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  clients<T extends Prisma.User$clientsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$clientsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   timeEntries<T extends Prisma.User$timeEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$timeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mappingRules<T extends Prisma.User$mappingRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mappingRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MappingRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   calendarConnections<T extends Prisma.User$calendarConnectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$calendarConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CalendarConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2334,6 +2492,30 @@ export type User$tagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   take?: number
   skip?: number
   distinct?: Prisma.TagScalarFieldEnum | Prisma.TagScalarFieldEnum[]
+}
+
+/**
+ * User.clients
+ */
+export type User$clientsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Client
+   */
+  select?: Prisma.ClientSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Client
+   */
+  omit?: Prisma.ClientOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClientInclude<ExtArgs> | null
+  where?: Prisma.ClientWhereInput
+  orderBy?: Prisma.ClientOrderByWithRelationInput | Prisma.ClientOrderByWithRelationInput[]
+  cursor?: Prisma.ClientWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ClientScalarFieldEnum | Prisma.ClientScalarFieldEnum[]
 }
 
 /**

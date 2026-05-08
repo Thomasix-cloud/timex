@@ -653,10 +653,6 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type MappingRuleCreateWithoutUserInput = {
   id?: string
   name: string
