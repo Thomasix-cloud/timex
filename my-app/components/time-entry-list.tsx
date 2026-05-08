@@ -93,19 +93,27 @@ export function TimeEntryList({
   }, [tags, entries]);
 
   const [applyingId, setApplyingId] = useState<string | null>(null);
+  const [applyResult, setApplyResult] = useState<{ id: string; message: string; ok: boolean } | null>(null);
 
   const applyRules = async (entryId: string) => {
     setApplyingId(entryId);
+    setApplyResult(null);
     try {
       const res = await fetch(`/api/time-entries/${entryId}/apply-rules`, { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
         if (data.matched) {
+          setApplyResult({ id: entryId, message: `✓ ${data.ruleName}`, ok: true });
           router.refresh();
+        } else {
+          setApplyResult({ id: entryId, message: 'No rules matched', ok: false });
         }
+      } else {
+        setApplyResult({ id: entryId, message: 'Error', ok: false });
       }
     } finally {
       setApplyingId(null);
+      setTimeout(() => setApplyResult(null), 3000);
     }
   };
 
@@ -215,6 +223,11 @@ export function TimeEntryList({
                     : 'now'}
                 </p>
               </div>
+              {applyResult?.id === entry.id && (
+                <span className={`text-xs ${applyResult.ok ? 'text-green-600' : 'text-muted-foreground'}`}>
+                  {applyResult.message}
+                </span>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
