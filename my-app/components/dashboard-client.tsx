@@ -79,13 +79,14 @@ type Props = {
 };
 
 export function DashboardClient({ projectCount, runningEntry }: Props) {
-  const [period, setPeriod] = useState<PeriodKey>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('dashboard-period');
-      if (saved && periods.some((p) => p.key === saved)) return saved as PeriodKey;
+  const [period, setPeriod] = useState<PeriodKey>('today');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('dashboard-period');
+    if (saved && periods.some((p) => p.key === saved)) {
+      setPeriod(saved as PeriodKey);
     }
-    return 'today';
-  });
+  }, []);
 
   const changePeriod = (p: PeriodKey) => {
     setPeriod(p);
