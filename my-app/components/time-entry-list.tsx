@@ -46,10 +46,12 @@ export function TimeEntryList({
   entries,
   initialProjects,
   initialTags,
+  onRefresh,
 }: {
   entries: SerializedTimeEntry[];
   initialProjects?: Project[];
   initialTags?: Tag[];
+  onRefresh?: () => void;
 }) {
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>(initialProjects ?? []);
@@ -104,7 +106,7 @@ export function TimeEntryList({
         const data = await res.json();
         if (data.matched) {
           setApplyResult({ id: entryId, message: `✓ ${data.ruleName}`, ok: true });
-          router.refresh();
+          if (onRefresh) onRefresh(); else router.refresh();
         } else {
           setApplyResult({ id: entryId, message: 'No rules matched', ok: false });
         }
