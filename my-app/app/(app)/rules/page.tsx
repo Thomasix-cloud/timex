@@ -65,7 +65,11 @@ export default function RulesPage() {
       fetch('/api/projects'),
       fetch('/api/tags'),
     ]);
-    if (rulesRes.ok) setRules(await rulesRes.json());
+    if (rulesRes.ok) {
+      const data: MappingRule[] = await rulesRes.json();
+      data.sort((a, b) => a.name.localeCompare(b.name, 'cs'));
+      setRules(data);
+    }
     if (projectsRes.ok) setProjects(await projectsRes.json());
     if (tagsRes.ok) setTags(await tagsRes.json());
   };
