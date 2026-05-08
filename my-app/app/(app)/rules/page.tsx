@@ -290,7 +290,20 @@ export default function RulesPage() {
                     onValueChange={(v) => setProjectId(v ?? '')}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="None" />
+                      <SelectValue placeholder="None">
+                        {projectId ? (() => {
+                          const p = projects.find((p) => p.id === projectId);
+                          return p ? (
+                            <span className="flex items-center gap-2">
+                              <span
+                                className="h-2.5 w-2.5 rounded-full inline-block"
+                                style={{ backgroundColor: p.color }}
+                              />
+                              {p.name}
+                            </span>
+                          ) : null;
+                        })() : null}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {projects.map((p) => (
@@ -314,7 +327,9 @@ export default function RulesPage() {
                     onValueChange={(v) => setTagId(v ?? '')}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="None" />
+                      <SelectValue placeholder="None">
+                        {tagId ? tags.find((t) => t.id === tagId)?.name ?? null : null}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {tags.map((t) => (
