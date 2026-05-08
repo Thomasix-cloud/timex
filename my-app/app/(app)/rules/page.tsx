@@ -21,7 +21,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Pencil, Trash2, Wand2, TestTube, Play } from 'lucide-react';
+import { Plus, Pencil, Trash2, Wand2, TestTube } from 'lucide-react';
 
 type Project = { id: string; name: string; color: string };
 type Tag = { id: string; name: string; color: string };
@@ -58,23 +58,6 @@ export default function RulesPage() {
   const [testResult, setTestResult] = useState<string | null>(null);
   const [testPattern, setTestPattern] = useState('');
   const [testMatchType, setTestMatchType] = useState('wildcard');
-
-  const [applyingRule, setApplyingRule] = useState<string | null>(null);
-
-  const applyRule = async (ruleId: string) => {
-    setApplyingRule(ruleId);
-    try {
-      const res = await fetch(`/api/rules/${ruleId}/apply`, { method: 'POST' });
-      if (res.ok) {
-        const { matched } = await res.json();
-        alert(`Rule applied to ${matched} time ${matched === 1 ? 'entry' : 'entries'}.`);
-      } else {
-        alert('Failed to apply rule.');
-      }
-    } finally {
-      setApplyingRule(null);
-    }
-  };
 
   const fetchAll = async () => {
     const [rulesRes, projectsRes, tagsRes] = await Promise.all([
@@ -499,16 +482,6 @@ export default function RulesPage() {
                   </p>
                 </div>
                 <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-green-600"
-                    title="Apply rule to all time entries"
-                    disabled={applyingRule === rule.id}
-                    onClick={() => applyRule(rule.id)}
-                  >
-                    <Play className="h-3.5 w-3.5" />
-                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"

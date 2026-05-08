@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Play } from 'lucide-react';
 import { format, differenceInSeconds } from 'date-fns';
 
 type Project = { id: string; name: string; color: string };
@@ -91,6 +91,23 @@ export function TimeEntryList({
     tags.forEach((t) => map.set(t.id, t));
     return Array.from(map.values());
   }, [tags, entries]);
+
+  const [applyingId, setApplyingId] = useState<string | null>(null);
+
+  const applyRules = async (entryId: string) => {
+    setApplyingId(entryId);
+    try {
+      const res = await fetch(`/api/time-entries/${entryId}/apply-rules`, { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.matched) {
+          router.refresh();
+        }
+      }
+    } finally {
+      setApplyingId(null);
+    }
+  };
 
   const openEdit = (entry: SerializedTimeEntry) => {
     setEditEntry(entry);
@@ -198,6 +215,16 @@ export function TimeEntryList({
                     : 'now'}
                 </p>
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-green-600"
+                title="Apply mapping rules"
+                disabled={applyingId === entry.id}
+                onClick={() => applyRules(entry.id)}
+              >
+                <Play className="h-3.5 w-3.5" />
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"
