@@ -134,7 +134,8 @@ export async function syncCalendarForUser(userId: string) {
     );
 
     // Collect all DB operations and execute in a single transaction
-    const operations: Parameters<typeof prisma.$transaction>[0] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const operations: any[] = [];
 
     for (const event of relevantEvents) {
       const existing = existingByEventId.get(event.id);
