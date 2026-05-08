@@ -56,6 +56,8 @@ export default function RulesPage() {
   // Test state
   const [testText, setTestText] = useState('');
   const [testResult, setTestResult] = useState<string | null>(null);
+  const [testPattern, setTestPattern] = useState('');
+  const [testMatchType, setTestMatchType] = useState('wildcard');
 
   const fetchAll = async () => {
     const [rulesRes, projectsRes, tagsRes] = await Promise.all([
@@ -340,21 +342,68 @@ export default function RulesPage() {
             Test Rules
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex gap-3">
-          <Input
-            placeholder="Paste an event title to test matching..."
-            value={testText}
-            onChange={(e) => setTestText(e.target.value)}
-            className="flex-1"
-          />
-          <Button variant="outline" onClick={testRules}>
-            Test
-          </Button>
+        <CardContent className="space-y-3">
+          <div className="flex gap-3">
+            <Input
+              placeholder="Paste an event title to test matching..."
+              value={testText}
+              onChange={(e) => setTestText(e.target.value)}
+              className="flex-1"
+            />
+            <Button variant="outline" onClick={testRules}>
+              Test All Rules
+            </Button>
+          </div>
           {testResult && (
-            <span className="flex items-center text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground">
               {testResult}
             </span>
           )}
+          <Separator />
+          <p className="text-xs text-muted-foreground">Quick pattern test</p>
+          <div className="flex gap-3">
+            <Select value={testMatchType} onValueChange={(v) => setTestMatchType(v ?? 'wildcard')}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="contains">Contains</SelectItem>
+                <SelectItem value="wildcard">Wildcard (*)</SelectItem>
+                <SelectItem value="exact">Exact Match</SelectItem>
+                <SelectItem value="regex">Regex</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              placeholder="Pattern e.g. Tipsport*issues"
+              value={testPattern}
+              onChange={(e) => setTestPattern(e.target.value)}
+              className="flex-1"
+            />
+            <Button variant="outline" onClick={() => {
+              if (!testText.trim() || !testPattern.trim()) return;
+              let matches = false;
+              switch (testMatchType) {
+                case 'contains':
+                  matches = testText.toLowerCase().includes(testPattern.toLowerCase());
+                  break;
+                case 'exact':
+                  matches = testText.toLowerCase() === testPattern.toLowerCase();
+                  break;
+                case 'wildcard': {
+                  const escaped = testPattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+                  const wcRegex = new RegExp('^' + escaped.replace(/\*/g, '.*') + '$', 'i');
+                  matches = wcRegex.test(testText);
+                  break;
+                }
+                case 'regex':
+                  try { matches = new RegExp(testPattern, 'i').test(testText); } catch { matches = false; }
+                  break;
+              }
+              setTestResult(matches ? `Pattern matches!` : `Pattern does not match.`);
+            }}>
+              Test Pattern
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
