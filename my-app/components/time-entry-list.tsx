@@ -280,7 +280,7 @@ export function TimeEntryList({
                 <Label>Tag</Label>
                 <Select
                   value={tagId || '_none'}
-                  onValueChange={(v) => setTagId(v === '_none' ? '' : v)}
+                  onValueChange={(v) => setTagId(!v || v === '_none' ? '' : v)}
                 >
                   <SelectTrigger className="w-full">
                     <span data-slot="select-value" className="flex flex-1 text-left">
