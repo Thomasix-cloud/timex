@@ -153,21 +153,28 @@ export async function syncCalendarForUser(userId: string) {
       const duration = differenceInSeconds(event.end, event.start);
 
       if (existing) {
-        if (
+        const timeChanged =
           existing.startTime.getTime() !== event.start.getTime() ||
-          (existing.endTime && existing.endTime.getTime() !== event.end.getTime())
-        ) {
+          (existing.endTime && existing.endTime.getTime() !== event.end.getTime());
+
+        // Build update data for missing fields (project, tag, client)
+        const missingFields: Record<string, string> = {};
+        if (mapping.projectId && !existing.projectId) missingFields.projectId = mapping.projectId;
+        if (mapping.tagId && !existing.tagId) missingFields.tagId = mapping.tagId;
+        if (mapping.clientId && !existing.clientId) missingFields.clientId = mapping.clientId;
+
+        if (timeChanged || Object.keys(missingFields).length > 0) {
           operations.push(
             prisma.timeEntry.update({
               where: { id: existing.id },
               data: {
-                startTime: event.start,
-                endTime: event.end,
-                duration,
-                description: event.summary,
-                ...(mapping.projectId && !existing.projectId && { projectId: mapping.projectId }),
-                ...(mapping.tagId && !existing.tagId && { tagId: mapping.tagId }),
-                ...(mapping.clientId && !existing.clientId && { clientId: mapping.clientId }),
+                ...(timeChanged && {
+                  startTime: event.start,
+                  endTime: event.end,
+                  duration,
+                  description: event.summary,
+                }),
+                ...missingFields,
               },
             })
           );

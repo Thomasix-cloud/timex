@@ -231,7 +231,7 @@ export function TimeEntryList({
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-7 w-7 ${entry.billable ? 'text-green-600' : 'text-muted-foreground'}`}
+                className="h-7 w-7 p-0"
                 title={entry.billable ? 'Billable' : 'Non-billable'}
                 onClick={async () => {
                   const res = await fetch(`/api/time-entries/${entry.id}`, {
@@ -256,32 +256,26 @@ export function TimeEntryList({
                   }
                 }}
               >
-                <DollarSign className="h-3.5 w-3.5" />
+                <span className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold ${entry.billable ? 'bg-green-600 text-white' : 'border border-gray-400 text-gray-400'}`}>$</span>
               </Button>
-              {entry.project && (
-                <div
-                  className="h-3 w-3 rounded-full"
-                  style={{ backgroundColor: entry.project.color }}
-                />
-              )}
               <div>
                 <p className="text-sm font-medium">
                   {entry.description || 'Untitled'}
                 </p>
                 <div className="flex items-center gap-2">
-                  {entry.project && (
-                    <span className="text-xs text-muted-foreground">
-                      {entry.project.name}
-                    </span>
-                  )}
-                  {entry.tag && (
-                    <Badge variant="secondary" className="text-xs">
-                      {entry.tag.name}
+                  {entry.client && (
+                    <Badge variant="outline" className="text-xs text-foreground" style={{ borderColor: entry.client.color }}>
+                      {entry.client.name}
                     </Badge>
                   )}
-                  {entry.client && (
-                    <Badge variant="outline" className="text-xs" style={{ borderColor: entry.client.color, color: entry.client.color }}>
-                      {entry.client.name}
+                  {entry.project && (
+                    <Badge variant="outline" className="text-xs font-medium text-foreground" style={{ borderColor: entry.project.color }}>
+                      {entry.project.name}
+                    </Badge>
+                  )}
+                  {entry.tag && (
+                    <Badge variant="secondary" className="text-xs text-foreground" style={{ backgroundColor: entry.tag.color + '20' }}>
+                      {entry.tag.name}
                     </Badge>
                   )}
                   {entry.source === 'calendar' && (
@@ -468,11 +462,11 @@ export function TimeEntryList({
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                className={`flex h-8 w-8 items-center justify-center rounded-md border ${billable ? 'border-green-600 bg-green-50 text-green-600' : 'border-muted text-muted-foreground'}`}
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-muted"
                 onClick={() => setBillable(!billable)}
                 title={billable ? 'Billable' : 'Non-billable'}
               >
-                <DollarSign className="h-4 w-4" />
+                <span className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold ${billable ? 'bg-green-600 text-white' : 'border border-gray-400 text-gray-400'}`}>$</span>
               </button>
               <Label className="text-sm">{billable ? 'Billable' : 'Non-billable'}</Label>
             </div>
