@@ -7,6 +7,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: true,
   trustHost: true,
   adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -22,13 +23,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session, user }) {
-      session.user.id = user.id;
-      return session;
-    },
-    async signIn({ user, account }) {
-      if (account?.provider === "google" && user.id) {
-        // Store tokens after sign-in; use updateMany to avoid throwing if user not yet created
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id;
+      }
+      if (account?.provider === "google" && user?.id) {
         await prisma.user.updateMany({
           where: { id: user.id },
           data: {
@@ -40,12 +39,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           },
         });
       }
-      return true;
+      return token;
+    },
+    async session({ session, token }) {
+      if (token?.id) {
+        session.user.id = token.id as string;
+      }
+      return session;
     },
   },
   events: {
     async linkAccount({ user, account }) {
-      // Called after account is linked (user already exists in DB)
       if (account.provider === "google") {
         await prisma.user.update({
           where: { id: user.id },
