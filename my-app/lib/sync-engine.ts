@@ -71,8 +71,8 @@ function applyMappingRules(
 }
 
 export async function syncCalendarForUser(userId: string) {
-  // Pre-fetch mapping rules once for this user
-  const [connections, rules] = await Promise.all([
+  // Pre-fetch mapping rules and all projects (for clientId resolution) once
+  const [connections, rules, projects] = await Promise.all([
     prisma.calendarConnection.findMany({
       where: { userId, syncEnabled: true },
     }),
@@ -81,7 +81,15 @@ export async function syncCalendarForUser(userId: string) {
       orderBy: { priority: "desc" },
       include: { project: { select: { clientId: true } } },
     }),
+    prisma.project.findMany({
+      where: { userId },
+      select: { id: true, clientId: true },
+    }),
   ]);
+
+  const projectClientMap = new Map(
+    projects.map((p) => [p.id, p.clientId])
+  );
 
   if (connections.length === 0) {
     return { synced: 0, created: 0, updated: 0, skipped: 0 };
@@ -138,6 +146,7 @@ export async function syncCalendarForUser(userId: string) {
     const eventIds = relevantEvents.map((e) => e.id);
     const existingEntries = await prisma.timeEntry.findMany({
       where: { calendarEventId: { in: eventIds }, userId },
+      include: { project: { select: { clientId: true } } },
     });
     const existingByEventId = new Map(
       existingEntries.map((e) => [e.calendarEventId, e])
@@ -161,7 +170,13 @@ export async function syncCalendarForUser(userId: string) {
         const missingFields: Record<string, string> = {};
         if (mapping.projectId && !existing.projectId) missingFields.projectId = mapping.projectId;
         if (mapping.tagId && !existing.tagId) missingFields.tagId = mapping.tagId;
-        if (mapping.clientId && !existing.clientId) missingFields.clientId = mapping.clientId;
+        if (!existing.clientId) {
+          // Resolve clientId: from mapping, from existing entry's project, or from newly assigned project
+          const resolvedClientId = mapping.clientId
+            ?? (existing.projectId ? projectClientMap.get(existing.projectId) ?? null : null)
+            ?? (missingFields.projectId ? projectClientMap.get(missingFields.projectId) ?? null : null);
+          if (resolvedClientId) missingFields.clientId = resolvedClientId;
+        }
 
         if (timeChanged || Object.keys(missingFields).length > 0) {
           operations.push(
@@ -183,6 +198,9 @@ export async function syncCalendarForUser(userId: string) {
           totalSkipped++;
         }
       } else {
+        // Resolve clientId from mapping or from project's client
+        const clientId = mapping.clientId
+          ?? (mapping.projectId ? projectClientMap.get(mapping.projectId) ?? null : null);
         operations.push(
           prisma.timeEntry.create({
             data: {
@@ -194,7 +212,7 @@ export async function syncCalendarForUser(userId: string) {
               calendarEventId: event.id,
               projectId: mapping.projectId,
               tagId: mapping.tagId,
-              clientId: mapping.clientId,
+              clientId,
               userId,
             },
           })
