@@ -260,8 +260,8 @@ export default function RulesPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="contains">Contains</SelectItem>
                       <SelectItem value="wildcard">Wildcard (*)</SelectItem>
+                      <SelectItem value="contains">Contains</SelectItem>
                       <SelectItem value="exact">Exact Match</SelectItem>
                       <SelectItem value="regex">Regex</SelectItem>
                     </SelectContent>
