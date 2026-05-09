@@ -59,15 +59,25 @@ export async function POST(
     }
 
     if (matches) {
-      const data: { projectId?: string | null; tagId?: string | null } = {};
-      if (rule.projectId) data.projectId = rule.projectId;
+      const data: { projectId?: string | null; tagId?: string | null; clientId?: string | null } = {};
+      if (rule.projectId) {
+        data.projectId = rule.projectId;
+        // Resolve clientId from the project
+        const project = await prisma.project.findUnique({
+          where: { id: rule.projectId },
+          select: { clientId: true },
+        });
+        if (project?.clientId) {
+          data.clientId = project.clientId;
+        }
+      }
       if (rule.tagId) data.tagId = rule.tagId;
 
       if (Object.keys(data).length > 0) {
         const updated = await prisma.timeEntry.update({
           where: { id: entry.id },
           data,
-          include: { project: true, tag: true },
+          include: { project: true, tag: true, client: true },
         });
         return NextResponse.json({ matched: true, ruleName: rule.name, entry: updated });
       }
