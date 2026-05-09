@@ -1,10 +1,10 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  debug: true,
-  trustHost: true,
+  adapter: PrismaAdapter(prisma),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -19,58 +19,43 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, account, profile }) {
-      if (account && profile) {
-        try {
-          // First sign-in: find or create user in DB
-          let user = await prisma.user.findUnique({
-            where: { email: profile.email! },
-          });
-          if (!user) {
-            user = await prisma.user.create({
-              data: {
-                email: profile.email!,
-                name: profile.name ?? null,
-                image: (profile as Record<string, unknown>).picture as string ?? null,
-              },
-            });
-          }
-          token.sub = user.id;
-          token.name = user.name;
-          token.email = user.email;
-          token.picture = user.image;
-
-          // Store Google tokens for Calendar API
-          await prisma.user.update({
-            where: { id: user.id },
-            data: {
-              name: profile.name ?? user.name,
-              image: (profile as Record<string, unknown>).picture as string ?? user.image,
-              googleAccessToken: account.access_token,
-              googleRefreshToken: account.refresh_token,
-              googleTokenExpiry: account.expires_at
-                ? new Date(account.expires_at * 1000)
-                : null,
-            },
-          });
-        } catch (error) {
-          console.error("[AUTH] JWT callback error:", error);
-          // Still set basic info from profile so sign-in doesn't completely fail
-          token.email = profile.email;
-          token.name = profile.name;
-          token.picture = (profile as Record<string, unknown>).picture as string;
-        }
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      session.user.id = token.sub!;
-      session.user.name = token.name;
-      session.user.email = token.email!;
-      session.user.image = token.picture as string;
+    async session({ session, user }) {
+      session.user.id = user.id;
       return session;
+    },
+    async signIn({ user, account }) {
+      if (account?.provider === "google" && user.id) {
+        // Store tokens after sign-in; use updateMany to avoid throwing if user not yet created
+        await prisma.user.updateMany({
+          where: { id: user.id },
+          data: {
+            googleAccessToken: account.access_token,
+            googleRefreshToken: account.refresh_token,
+            googleTokenExpiry: account.expires_at
+              ? new Date(account.expires_at * 1000)
+              : null,
+          },
+        });
+      }
+      return true;
+    },
+  },
+  events: {
+    async linkAccount({ user, account }) {
+      // Called after account is linked (user already exists in DB)
+      if (account.provider === "google") {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            googleAccessToken: account.access_token,
+            googleRefreshToken: account.refresh_token,
+            googleTokenExpiry: account.expires_at
+              ? new Date(account.expires_at * 1000)
+              : null,
+          },
+        });
+      }
     },
   },
   pages: {
