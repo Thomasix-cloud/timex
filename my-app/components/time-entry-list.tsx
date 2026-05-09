@@ -300,6 +300,8 @@ export function TimeEntryList({
                     : 'Running...'}
                 </p>
                 <p className="text-xs text-muted-foreground">
+                  {format(new Date(entry.startTime), 'd.M.')}
+                  {' '}
                   {format(new Date(entry.startTime), 'HH:mm')}
                   {' - '}
                   {entry.endTime
