@@ -292,11 +292,11 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between px-4 py-3 pb-1">
             <CardTitle className="text-sm font-medium">{periodLabel}</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 pb-3 pt-0">
             <div className="text-2xl font-bold">
               {formatDuration(totalSeconds)}
             </div>
@@ -308,11 +308,11 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between px-4 py-3 pb-1">
             <CardTitle className="text-sm font-medium">Running</CardTitle>
             <Timer className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 pb-3 pt-0">
             <div className="text-2xl font-bold">
               {trackerRunning ? (
                 <span className="text-green-600">Active</span>
@@ -329,21 +329,21 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between px-4 py-3 pb-1">
             <CardTitle className="text-sm font-medium">Projects</CardTitle>
             <FolderKanban className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 pb-3 pt-0">
             <div className="text-2xl font-bold">{projectCount}</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between px-4 py-3 pb-1">
             <CardTitle className="text-sm font-medium">Period</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 pb-3 pt-0">
             <div className="text-2xl font-bold">{filteredEntries.length}</div>
             <p className="text-xs text-muted-foreground">entries</p>
           </CardContent>
