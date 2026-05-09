@@ -102,9 +102,11 @@ export async function syncCalendarForUser(userId: string) {
 
   for (const connection of connections) {
     const now = new Date();
+    // Always sync at least current + previous month to catch older entries
+    const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const timeMin = connection.lastSyncAt
-      ? new Date(connection.lastSyncAt.getTime() - 5 * 60 * 1000)
-      : new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      ? new Date(Math.min(connection.lastSyncAt.getTime() - 5 * 60 * 1000, firstOfLastMonth.getTime()))
+      : firstOfLastMonth;
     const timeMax = new Date(now.getTime() + 60 * 60 * 1000);
 
     let events: CalendarEvent[];
