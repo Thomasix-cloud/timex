@@ -224,7 +224,12 @@ export async function syncCalendarForUser(userId: string) {
     }
 
     if (operations.length > 0) {
-      await prisma.$transaction(operations);
+      // Batch operations in chunks to avoid Vercel timeout
+      const BATCH_SIZE = 50;
+      for (let i = 0; i < operations.length; i += BATCH_SIZE) {
+        const batch = operations.slice(i, i + BATCH_SIZE);
+        await prisma.$transaction(batch);
+      }
     }
 
     await prisma.calendarConnection.update({
