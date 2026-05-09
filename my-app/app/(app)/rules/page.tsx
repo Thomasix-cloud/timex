@@ -253,6 +253,7 @@ export default function RulesPage() {
                 <div className="space-y-2">
                   <Label>Match Type</Label>
                   <Select
+                    key={`matchType-${editingRule?.id ?? 'new'}-${matchType}`}
                     value={matchType}
                     onValueChange={(v) => setMatchType(v ?? 'wildcard')}
                   >
