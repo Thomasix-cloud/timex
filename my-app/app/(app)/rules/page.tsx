@@ -254,7 +254,7 @@ export default function RulesPage() {
                   <Label>Match Type</Label>
                   <Select
                     value={matchType}
-                    onValueChange={(v) => setMatchType(v ?? 'contains')}
+                    onValueChange={(v) => setMatchType(v ?? 'wildcard')}
                   >
                     <SelectTrigger>
                       <SelectValue />
