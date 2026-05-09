@@ -5,6 +5,7 @@ import { differenceInSeconds } from "date-fns";
 type MappingResult = {
   projectId: string | null;
   tagId: string | null;
+  clientId: string | null;
 };
 
 type MappingRule = {
@@ -13,6 +14,7 @@ type MappingRule = {
   matchPattern: string;
   projectId: string | null;
   tagId: string | null;
+  project: { clientId: string | null } | null;
 };
 
 function applyMappingRules(
@@ -60,11 +62,12 @@ function applyMappingRules(
       return {
         projectId: rule.projectId,
         tagId: rule.tagId,
+        clientId: rule.project?.clientId ?? null,
       };
     }
   }
 
-  return { projectId: null, tagId: null };
+  return { projectId: null, tagId: null, clientId: null };
 }
 
 export async function syncCalendarForUser(userId: string) {
@@ -76,6 +79,7 @@ export async function syncCalendarForUser(userId: string) {
     prisma.mappingRule.findMany({
       where: { userId, isActive: true },
       orderBy: { priority: "desc" },
+      include: { project: { select: { clientId: true } } },
     }),
   ]);
 
@@ -163,6 +167,7 @@ export async function syncCalendarForUser(userId: string) {
                 description: event.summary,
                 ...(mapping.projectId && !existing.projectId && { projectId: mapping.projectId }),
                 ...(mapping.tagId && !existing.tagId && { tagId: mapping.tagId }),
+                ...(mapping.clientId && !existing.clientId && { clientId: mapping.clientId }),
               },
             })
           );
@@ -182,6 +187,7 @@ export async function syncCalendarForUser(userId: string) {
               calendarEventId: event.id,
               projectId: mapping.projectId,
               tagId: mapping.tagId,
+              clientId: mapping.clientId,
               userId,
             },
           })
