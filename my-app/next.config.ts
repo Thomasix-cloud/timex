@@ -10,6 +10,8 @@ try {
 } catch {
   // Not a git repo (e.g. Vercel CLI deploy)
   gitCommit = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "unknown";
+  const now = new Date();
+  commitDate = `${String(now.getFullYear()).slice(2)}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
 }
 
 const nextConfig: NextConfig = {
