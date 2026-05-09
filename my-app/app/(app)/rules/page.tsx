@@ -48,7 +48,7 @@ export default function RulesPage() {
   const [name, setName] = useState('');
   const [matchPattern, setMatchPattern] = useState('');
   const [matchField, setMatchField] = useState('title');
-  const [matchType, setMatchType] = useState('contains');
+  const [matchType, setMatchType] = useState('wildcard');
   const [priority, setPriority] = useState(0);
   const [projectId, setProjectId] = useState('');
   const [tagId, setTagId] = useState('');
@@ -82,7 +82,7 @@ export default function RulesPage() {
     setName('');
     setMatchPattern('');
     setMatchField('title');
-    setMatchType('contains');
+    setMatchType('wildcard');
     setPriority(0);
     setProjectId('');
     setTagId('');
