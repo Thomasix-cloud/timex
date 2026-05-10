@@ -439,82 +439,50 @@ export default function RulesPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {rules.map((rule) => (
-            <Card key={rule.id} className={rule.isActive ? '' : 'opacity-50'}>
-              <CardContent className="flex items-center justify-between py-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium">{rule.name}</p>
-                    <Badge variant="outline" className="text-xs">
-                      Priority: {rule.priority}
+        <Card>
+          <CardContent className="p-0 divide-y">
+            {rules.map((rule) => (
+              <div
+                key={rule.id}
+                className={`flex items-center justify-between px-3 py-1.5 ${rule.isActive ? '' : 'opacity-50'}`}
+              >
+                <div className="flex items-center gap-2 min-w-0 text-sm">
+                  <span className="font-medium truncate">{rule.name}</span>
+                  <span className="text-muted-foreground shrink-0">
+                    {rule.matchField} {rule.matchType} &quot;{rule.matchPattern}&quot;
+                  </span>
+                  {rule.project && (
+                    <span className="shrink-0 font-medium" style={{ color: rule.project.color }}>
+                      → {rule.project.name}
+                    </span>
+                  )}
+                  {rule.tag && (
+                    <Badge
+                      style={{ backgroundColor: rule.tag.color, color: 'white' }}
+                      className="text-[10px] px-1.5 py-0 leading-4 shrink-0"
+                    >
+                      {rule.tag.name}
                     </Badge>
-                    {!rule.isActive && (
-                      <Badge variant="secondary" className="text-xs">
-                        Disabled
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    If <strong>{rule.matchField}</strong>{' '}
-                    <strong>{rule.matchType}</strong> &quot;{rule.matchPattern}
-                    &quot;
-                    {rule.project && (
-                      <>
-                        {' → '}
-                        <span
-                          className="font-medium"
-                          style={{ color: rule.project.color }}
-                        >
-                          {rule.project.name}
-                        </span>
-                      </>
-                    )}
-                    {rule.tag && (
-                      <>
-                        {' + '}
-                        <Badge
-                          style={{
-                            backgroundColor: rule.tag.color,
-                            color: 'white',
-                          }}
-                          className="text-xs"
-                        >
-                          {rule.tag.name}
-                        </Badge>
-                      </>
-                    )}
-                  </p>
+                  )}
+                  {!rule.isActive && (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 leading-4 shrink-0">Off</Badge>
+                  )}
                 </div>
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleRule(rule)}
-                  >
-                    {rule.isActive ? 'Disable' : 'Enable'}
+                <div className="flex items-center gap-0 shrink-0">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toggleRule(rule)} title={rule.isActive ? 'Disable' : 'Enable'}>
+                    <span className="text-xs">{rule.isActive ? '●' : '○'}</span>
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => openEdit(rule)}
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(rule)}>
+                    <Pencil className="h-3 w-3" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive"
-                    onClick={() => deleteRule(rule.id)}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteRule(rule.id)}>
+                    <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       )}
     </div>
   );
