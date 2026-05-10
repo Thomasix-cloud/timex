@@ -56,6 +56,7 @@ type DetailEntry = {
   description: string;
   hours: number;
   client: string;
+  billable: boolean;
 };
 
 function formatDuration(seconds: number): string {
@@ -72,6 +73,9 @@ export default function ReportsPage() {
   const [period, setPeriod] = useState<PeriodKey>('this-week');
   const [projectData, setProjectData] = useState<ProjectReport[]>([]);
   const [dayData, setDayData] = useState<DayReport[]>([]);
+  const [detailData, setDetailData] = useState<DetailEntry[]>([]);
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
+  const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [filtersReady, setFiltersReady] = useState(false);
 
@@ -147,13 +151,15 @@ export default function ReportsPage() {
       if (billableFilter === 'billable') params.set('billable', 'true');
       if (billableFilter === 'non-billable') params.set('billable', 'false');
 
-      const [projectRes, dayRes] = await Promise.all([
+      const [projectRes, dayRes, detailRes] = await Promise.all([
         fetch(`/api/reports?${params}&groupBy=project`),
         fetch(`/api/reports?${params}&groupBy=day`),
+        fetch(`/api/reports?${params}&groupBy=detail`),
       ]);
 
       if (projectRes.ok) setProjectData(await projectRes.json());
       if (dayRes.ok) setDayData(await dayRes.json());
+      if (detailRes.ok) setDetailData(await detailRes.json());
       setLoading(false);
     };
 
@@ -345,58 +351,51 @@ export default function ReportsPage() {
       {/* Filters */}
       <Card>
         <CardContent className="py-3">
-          <div className="flex items-center gap-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <div className="flex gap-1 shrink-0">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-semibold text-sm">Filters</span>
+            <div className="flex gap-0.5 shrink-0">
               {periods.map((p) => (
                 <Button
                   key={p.key}
                   variant={period === p.key ? 'default' : 'outline'}
                   size="sm"
+                  className="h-7 px-2 text-xs"
                   onClick={() => setPeriod(p.key)}
                 >
                   {p.label}
                 </Button>
               ))}
             </div>
-            <div className="h-5 w-px bg-border shrink-0" />
-            <div className="flex gap-1 shrink-0">
-              {sourceFilters.map((s) => (
-                <Button
-                  key={s.key}
-                  variant={sourceFilter === s.key ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSourceFilter(s.key)}
-                >
-                  {s.label}
-                </Button>
-              ))}
-            </div>
-            <div className="h-5 w-px bg-border shrink-0" />
-            <div className="flex gap-1 shrink-0">
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex gap-0.5 shrink-0">
               <Button
                 variant={clientFilter === 'all' ? 'default' : 'outline'}
                 size="sm"
+                className="h-7 px-2 text-xs"
                 onClick={() => setClientFilter('all')}
               >
-                All Clients
+                All
               </Button>
               {clients.map((c) => (
                 <Button
                   key={c.id}
                   variant={clientFilter === c.id ? 'default' : 'outline'}
                   size="sm"
+                  className="h-7 px-2 text-xs"
                   onClick={() => setClientFilter(c.id)}
                 >
-                  <div className="mr-1.5 h-2 w-2 rounded-full" style={{ backgroundColor: c.color }} />
+                  <div className="mr-1 h-2 w-2 rounded-full" style={{ backgroundColor: c.color }} />
                   {c.name}
                 </Button>
               ))}
             </div>
-            <div className="h-5 w-px bg-border shrink-0" />
-            <div className="flex gap-1 shrink-0">
+            <div className="h-4 w-px bg-border shrink-0" />
+            <div className="flex gap-0.5 shrink-0">
               <Button
                 variant={billableFilter === 'all' ? 'default' : 'outline'}
                 size="sm"
+                className="h-7 px-2 text-xs"
                 onClick={() => setBillableFilter('all')}
               >
                 All
@@ -404,16 +403,18 @@ export default function ReportsPage() {
               <Button
                 variant={billableFilter === 'billable' ? 'default' : 'outline'}
                 size="sm"
+                className="h-7 px-2 text-xs"
                 onClick={() => setBillableFilter('billable')}
               >
-                $ Billable
+                Bill
               </Button>
               <Button
                 variant={billableFilter === 'non-billable' ? 'default' : 'outline'}
                 size="sm"
+                className="h-7 px-2 text-xs"
                 onClick={() => setBillableFilter('non-billable')}
               >
-                Non-billable
+                NonBill
               </Button>
             </div>
           </div>
@@ -421,26 +422,78 @@ export default function ReportsPage() {
       </Card>
 
       {/* Summary */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Total Time</p>
-            <p className="text-3xl font-bold">{formatDuration(totalSeconds)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Total Hours</p>
-            <p className="text-3xl font-bold">{formatHours(totalSeconds)}h</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Projects Active</p>
-            <p className="text-3xl font-bold">{projectData.length}</p>
-          </CardContent>
-        </Card>
-      </div>
+      {(() => {
+        const billableHours = detailData.filter(e => e.billable).reduce((s, e) => s + e.hours, 0);
+        const nonBillableHours = detailData.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0);
+        const totalHrs = billableHours + nonBillableHours;
+        const billablePct = totalHrs > 0 ? Math.round((billableHours / totalHrs) * 100) : 0;
+        // Gauge: semicircle from 180° to 0° (left to right)
+        const r = 34;
+        const halfC = Math.PI * r; // semicircle circumference
+        const fillArc = (billablePct / 100) * halfC;
+        return (
+          <div className="flex items-center gap-4">
+            <Card className="flex-1">
+              <CardContent className="flex items-center justify-between py-3 px-4">
+                <div className="flex items-center gap-5">
+                  {/* Gauge */}
+                  <div className="relative shrink-0" style={{ width: 80, height: 48 }}>
+                    <svg width="80" height="48" viewBox="0 0 80 48" className="overflow-visible">
+                      {/* Background arc */}
+                      <path
+                        d="M 6 44 A 34 34 0 0 1 74 44"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="7"
+                        strokeLinecap="round"
+                        className="text-muted/40"
+                      />
+                      {/* Filled arc */}
+                      {totalHrs > 0 && (
+                        <path
+                          d="M 6 44 A 34 34 0 0 1 74 44"
+                          fill="none"
+                          stroke="#22c55e"
+                          strokeWidth="7"
+                          strokeLinecap="round"
+                          strokeDasharray={`${fillArc} ${halfC}`}
+                        />
+                      )}
+                    </svg>
+                    {/* Center label */}
+                    <div className="absolute inset-0 flex items-end justify-center pb-0.5">
+                      <span className="text-sm font-bold">{billablePct}%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Total</p>
+                    <p className="text-xl font-bold">{totalHrs.toFixed(1)}h</p>
+                  </div>
+                  <div className="h-8 w-px bg-border" />
+                  <div className="flex items-center gap-1.5">
+                    <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-muted-foreground">Billable</p>
+                      <p className="text-sm font-bold text-green-600">{billableHours.toFixed(1)}h</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-muted-foreground">Non-billable</p>
+                      <p className="text-sm font-bold text-muted-foreground">{nonBillableHours.toFixed(1)}h</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Projects</p>
+                  <p className="text-xl font-bold">{projectData.length}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+      })()}
 
       <Tabs defaultValue="byProject">
         <TabsList>
@@ -460,7 +513,7 @@ export default function ReportsPage() {
                   <p>No data for this period</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {projectData
                     .sort((a, b) => b.totalSeconds - a.totalSeconds)
                     .map((project) => {
@@ -468,32 +521,84 @@ export default function ReportsPage() {
                         totalSeconds > 0
                           ? (project.totalSeconds / totalSeconds) * 100
                           : 0;
+                      const isExpanded = expandedProject === project.name;
+                      const projectEntries = detailData.filter((e) => e.project === project.name);
                       return (
-                        <div key={project.name} className="space-y-1">
-                          <div className="flex items-center justify-between text-sm">
-                            <div className="flex items-center gap-2">
-                              <div
-                                className="h-3 w-3 rounded-full"
-                                style={{ backgroundColor: project.color }}
-                              />
-                              <span className="font-medium">
-                                {project.name}
+                        <div key={project.name}>
+                          <div
+                            className="space-y-1 cursor-pointer rounded-md p-2 hover:bg-muted/50 transition-colors"
+                            onClick={() => setExpandedProject(isExpanded ? null : project.name)}
+                          >
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-2">
+                                <svg
+                                  className={`h-3 w-3 shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
+                                <div
+                                  className="h-3 w-3 rounded-full shrink-0"
+                                  style={{ backgroundColor: project.color }}
+                                />
+                                <span className="font-medium">
+                                  {project.name}
+                                </span>
+                              </div>
+                              <span className="text-muted-foreground flex items-center gap-2">
+                                <span className="text-foreground font-medium">{formatHours(project.totalSeconds)}h</span>
+                                <span>({percent.toFixed(0)}%)</span>
+                                {billableFilter === 'all' && <span>{projectEntries.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0).toFixed(1)}h</span>}
+                                {billableFilter === 'all' && <span className="text-green-600">{projectEntries.filter(e => e.billable).reduce((s, e) => s + e.hours, 0).toFixed(1)}h</span>}
                               </span>
                             </div>
-                            <span className="text-muted-foreground">
-                              {formatDuration(project.totalSeconds)} (
-                              {percent.toFixed(0)}%)
-                            </span>
+                            <div className="h-2 rounded-full bg-muted ml-8">
+                              <div
+                                className="h-2 rounded-full transition-all"
+                                style={{
+                                  width: `${percent}%`,
+                                  backgroundColor: project.color,
+                                }}
+                              />
+                            </div>
                           </div>
-                          <div className="h-2 rounded-full bg-muted">
-                            <div
-                              className="h-2 rounded-full transition-all"
-                              style={{
-                                width: `${percent}%`,
-                                backgroundColor: project.color,
-                              }}
-                            />
-                          </div>
+                          {isExpanded && projectEntries.length > 0 && (
+                            <div className="ml-8 mt-1 mb-2 overflow-x-auto rounded-md border">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b bg-muted/50">
+                                    <th className="px-3 py-1.5 text-left font-medium">Datum</th>
+                                    <th className="px-3 py-1.5 text-left font-medium">Úloha</th>
+                                    <th className="px-3 py-1.5 text-left font-medium">Popis</th>
+                                    {billableFilter !== 'billable' && <th className="pl-1 pr-2 py-1.5 text-right font-medium w-16">Hodiny(0)</th>}
+                                    {billableFilter !== 'non-billable' && <th className="pl-1 pr-2 py-1.5 text-right font-medium w-16">Hodiny($)</th>}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {projectEntries.map((e, i) => (
+                                    <tr key={i} className="border-b last:border-0 hover:bg-muted/30">
+                                      <td className="px-3 py-1 whitespace-nowrap">{format(new Date(e.date), 'dd.MM.yyyy')}</td>
+                                      <td className="px-3 py-1">{e.tag}</td>
+                                      <td className="px-3 py-1">{e.description}</td>
+                                      {billableFilter !== 'billable' && <td className="pl-1 pr-2 py-1 text-right whitespace-nowrap">{!e.billable ? e.hours.toFixed(2).replace('.', ',') : ''}</td>}
+                                      {billableFilter !== 'non-billable' && <td className="pl-1 pr-2 py-1 text-right whitespace-nowrap">{e.billable ? e.hours.toFixed(2).replace('.', ',') : ''}</td>}
+                                    </tr>
+                                  ))}
+                                </tbody>
+                                <tfoot>
+                                  <tr className="border-t bg-muted/50 font-medium">
+                                    <td className="px-3 py-1.5" colSpan={3}>Celkem</td>
+                                    {billableFilter !== 'billable' && <td className="pl-1 pr-2 py-1.5 text-right">
+                                      {projectEntries.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0).toFixed(2).replace('.', ',')}
+                                    </td>}
+                                    {billableFilter !== 'non-billable' && <td className="pl-1 pr-2 py-1.5 text-right">
+                                      {projectEntries.filter(e => e.billable).reduce((s, e) => s + e.hours, 0).toFixed(2).replace('.', ',')}
+                                    </td>}
+                                  </tr>
+                                </tfoot>
+                              </table>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
@@ -515,26 +620,82 @@ export default function ReportsPage() {
                   <p>No data for this period</p>
                 </div>
               ) : (
-                <div className="flex items-end gap-2" style={{ height: 200 }}>
+                <div className="space-y-2">
                   {dayData.map((day) => {
-                    const height = (day.totalSeconds / maxDaySeconds) * 100;
+                    const percent = maxDaySeconds > 0 ? (day.totalSeconds / maxDaySeconds) * 100 : 0;
+                    const isExpanded = expandedDay === day.date;
+                    const dayEntries = detailData.filter((e) => e.date === day.date);
                     return (
-                      <div
-                        key={day.date}
-                        className="flex flex-1 flex-col items-center gap-1"
-                      >
-                        <span className="text-xs text-muted-foreground">
-                          {formatHours(day.totalSeconds)}h
-                        </span>
+                      <div key={day.date}>
                         <div
-                          className="w-full rounded-t bg-primary transition-all"
-                          style={{
-                            height: `${Math.max(height, 2)}%`,
-                          }}
-                        />
-                        <span className="text-xs text-muted-foreground">
-                          {format(new Date(day.date), 'EEE')}
-                        </span>
+                          className="space-y-1 cursor-pointer rounded-md p-2 hover:bg-muted/50 transition-colors"
+                          onClick={() => setExpandedDay(isExpanded ? null : day.date)}
+                        >
+                          <div className="flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2">
+                              <svg
+                                className={`h-3 w-3 shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                              </svg>
+                              <span className="font-medium">
+                                {format(new Date(day.date), 'EEE dd.MM.yyyy')}
+                              </span>
+                              <span className="text-muted-foreground text-xs">
+                                ({day.count} {day.count === 1 ? 'entry' : 'entries'})
+                              </span>
+                            </div>
+                            <span className="text-muted-foreground flex items-center gap-2">
+                              <span className="text-foreground font-medium">{formatHours(day.totalSeconds)}h</span>
+                              {billableFilter === 'all' && <span>{dayEntries.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0).toFixed(1)}h</span>}
+                              {billableFilter === 'all' && <span className="text-green-600">{dayEntries.filter(e => e.billable).reduce((s, e) => s + e.hours, 0).toFixed(1)}h</span>}
+                            </span>
+                          </div>
+                          <div className="h-4 rounded-full bg-muted ml-5">
+                            <div
+                              className="h-4 rounded-full transition-all"
+                              style={{ width: `${percent}%`, backgroundColor: '#8bc34a' }}
+                            />
+                          </div>
+                        </div>
+                        {isExpanded && dayEntries.length > 0 && (
+                          <div className="ml-8 mt-1 mb-2 overflow-x-auto rounded-md border">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b bg-muted/50">
+                                  <th className="px-3 py-1.5 text-left font-medium">Zakázka</th>
+                                  <th className="px-3 py-1.5 text-left font-medium">Úloha</th>
+                                  <th className="px-3 py-1.5 text-left font-medium">Popis</th>
+                                  {billableFilter !== 'billable' && <th className="pl-1 pr-2 py-1.5 text-right font-medium w-16">Hodiny(0)</th>}
+                                  {billableFilter !== 'non-billable' && <th className="pl-1 pr-2 py-1.5 text-right font-medium w-16">Hodiny($)</th>}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {dayEntries.map((e, i) => (
+                                  <tr key={i} className="border-b last:border-0 hover:bg-muted/30">
+                                    <td className="px-3 py-1">{e.project}</td>
+                                    <td className="px-3 py-1">{e.tag}</td>
+                                    <td className="px-3 py-1">{e.description}</td>
+                                    {billableFilter !== 'billable' && <td className="pl-1 pr-2 py-1 text-right whitespace-nowrap">{!e.billable ? e.hours.toFixed(2).replace('.', ',') : ''}</td>}
+                                    {billableFilter !== 'non-billable' && <td className="pl-1 pr-2 py-1 text-right whitespace-nowrap">{e.billable ? e.hours.toFixed(2).replace('.', ',') : ''}</td>}
+                                  </tr>
+                                ))}
+                              </tbody>
+                              <tfoot>
+                                <tr className="border-t bg-muted/50 font-medium">
+                                  <td className="px-3 py-1.5" colSpan={3}>Celkem</td>
+                                  {billableFilter !== 'billable' && <td className="pl-1 pr-2 py-1.5 text-right">
+                                    {dayEntries.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0).toFixed(2).replace('.', ',')}
+                                  </td>}
+                                  {billableFilter !== 'non-billable' && <td className="pl-1 pr-2 py-1.5 text-right">
+                                    {dayEntries.filter(e => e.billable).reduce((s, e) => s + e.hours, 0).toFixed(2).replace('.', ',')}
+                                  </td>}
+                                </tr>
+                              </tfoot>
+                            </table>
+                          </div>
+                        )}
                       </div>
                     );
                   })}

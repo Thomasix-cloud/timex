@@ -135,6 +135,7 @@ export async function GET(request: NextRequest) {
       description: e.description,
       hours: e.duration ? +(e.duration / 3600).toFixed(2) : 0,
       client: e.client?.name ?? "",
+      billable: e.billable,
     }));
 
     return NextResponse.json(result);

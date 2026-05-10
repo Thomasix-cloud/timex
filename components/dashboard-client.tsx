@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Clock, Timer, FolderKanban, Calendar, Loader2, RefreshCw, Play, Square, Plus } from 'lucide-react';
+import { Timer, Loader2, RefreshCw, Play, Square, Plus } from 'lucide-react';
 import { TimeEntryList, type SerializedTimeEntry } from '@/components/time-entry-list';
 import {
   startOfDay,
@@ -289,72 +289,10 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
   }, 0);
   const nonBillableSeconds = totalSeconds - billableSeconds;
 
-  const periodLabel = periods.find((p) => p.key === period)?.label ?? '';
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between px-4 py-3 pb-1">
-            <CardTitle className="text-sm font-medium">{periodLabel}</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="px-4 pb-3 pt-0">
-            <div className="text-2xl font-bold">
-              {formatDuration(totalSeconds)}
-            </div>
-            <div className="mt-1 flex gap-3 text-xs text-muted-foreground">
-              <span className="text-green-600">$ {formatDuration(billableSeconds)}</span>
-              <span>{formatDuration(nonBillableSeconds)}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between px-4 py-3 pb-1">
-            <CardTitle className="text-sm font-medium">Running</CardTitle>
-            <Timer className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="px-4 pb-3 pt-0">
-            <div className="text-2xl font-bold">
-              {trackerRunning ? (
-                <span className="text-green-600">Active</span>
-              ) : (
-                <span className="text-muted-foreground">None</span>
-              )}
-            </div>
-            {trackerRunning && (
-              <p className="text-xs text-muted-foreground">
-                {trackerRunning.projectName ?? 'No project'}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between px-4 py-3 pb-1">
-            <CardTitle className="text-sm font-medium">Projects</CardTitle>
-            <FolderKanban className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="px-4 pb-3 pt-0">
-            <div className="text-2xl font-bold">{projectCount}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between px-4 py-3 pb-1">
-            <CardTitle className="text-sm font-medium">Period</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="px-4 pb-3 pt-0">
-            <div className="text-2xl font-bold">{filteredEntries.length}</div>
-            <p className="text-xs text-muted-foreground">entries</p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Timer Bar */}
@@ -433,63 +371,137 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
         </CardContent>
       </Card>
 
+      {(() => {
+        const billablePct = totalSeconds > 0 ? Math.round((billableSeconds / totalSeconds) * 100) : 0;
+        const r = 34;
+        const halfC = Math.PI * r;
+        const fillArc = (billablePct / 100) * halfC;
+        return (
+          <Card>
+            <CardContent className="flex items-center justify-between py-3 px-4">
+              <div className="flex items-center gap-5">
+                {/* Gauge */}
+                <div className="relative shrink-0" style={{ width: 80, height: 48 }}>
+                  <svg width="80" height="48" viewBox="0 0 80 48" className="overflow-visible">
+                    <path
+                      d="M 6 44 A 34 34 0 0 1 74 44"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="7"
+                      strokeLinecap="round"
+                      className="text-muted/40"
+                    />
+                    {totalSeconds > 0 && (
+                      <path
+                        d="M 6 44 A 34 34 0 0 1 74 44"
+                        fill="none"
+                        stroke="#22c55e"
+                        strokeWidth="7"
+                        strokeLinecap="round"
+                        strokeDasharray={`${fillArc} ${halfC}`}
+                      />
+                    )}
+                  </svg>
+                  <div className="absolute inset-0 flex items-end justify-center pb-0.5">
+                    <span className="text-sm font-bold">{billablePct}%</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Total</p>
+                  <p className="text-xl font-bold">{formatDuration(totalSeconds)}</p>
+                </div>
+                <div className="h-8 w-px bg-border" />
+                <div className="flex items-center gap-1.5">
+                  <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
+                  <div>
+                    <p className="text-[10px] text-muted-foreground">Billable</p>
+                    <p className="text-sm font-bold text-green-600">{formatDuration(billableSeconds)}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
+                  <div>
+                    <p className="text-[10px] text-muted-foreground">Non-billable</p>
+                    <p className="text-sm font-bold text-muted-foreground">{formatDuration(nonBillableSeconds)}</p>
+                  </div>
+                </div>
+                <div className="h-8 w-px bg-border" />
+                <div className="flex items-center gap-1.5">
+                  <Timer className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                  <div>
+                    <p className="text-[10px] text-muted-foreground">Running</p>
+                    <p className="text-sm font-bold">
+                      {trackerRunning ? (
+                        <span className="text-green-600">Active</span>
+                      ) : (
+                        <span className="text-muted-foreground">None</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-5">
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Projects</p>
+                  <p className="text-xl font-bold">{projectCount}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Entries</p>
+                  <p className="text-xl font-bold">{filteredEntries.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
+
       <Card>
         <CardHeader className="space-y-3">
           <div className="flex items-center justify-between">
             <CardTitle>Entries</CardTitle>
-          </div>
-          <div className="flex items-center gap-3 overflow-x-auto pb-2">
-            <div className="flex gap-1 shrink-0">
+            <div className="flex gap-0.5 shrink-0">
               {periods.map((p) => (
                 <Button
                   key={p.key}
                   variant={period === p.key ? 'default' : 'outline'}
                   size="sm"
+                  className="h-7 px-2 text-xs"
                   onClick={() => changePeriod(p.key)}
                 >
                   {p.label}
                 </Button>
               ))}
             </div>
-            <div className="h-5 w-px bg-border shrink-0" />
-            <div className="flex gap-1 shrink-0">
-              {sourceFilters.map((s) => (
-                <Button
-                  key={s.key}
-                  variant={sourceFilter === s.key ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSourceFilter(s.key)}
-                >
-                  {s.label}
-                </Button>
-              ))}
-            </div>
-            <div className="h-5 w-px bg-border shrink-0" />
-            <div className="flex gap-1 shrink-0">
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex gap-0.5 shrink-0">
               <Button
                 variant={clientFilter === 'all' ? 'default' : 'outline'}
                 size="sm"
+                className="h-7 px-2 text-xs"
                 onClick={() => setClientFilter('all')}
               >
-                All Clients
+                All
               </Button>
               {clients.map((c) => (
                 <Button
                   key={c.id}
                   variant={clientFilter === c.id ? 'default' : 'outline'}
                   size="sm"
+                  className="h-7 px-2 text-xs"
                   onClick={() => setClientFilter(c.id)}
                 >
-                  <div className="mr-1.5 h-2 w-2 rounded-full" style={{ backgroundColor: c.color }} />
+                  <div className="mr-1 h-2 w-2 rounded-full" style={{ backgroundColor: c.color }} />
                   {c.name}
                 </Button>
               ))}
             </div>
-            <div className="h-5 w-px bg-border shrink-0" />
-            <div className="flex gap-1 shrink-0">
+            <div className="h-4 w-px bg-border shrink-0" />
+            <div className="flex gap-0.5 shrink-0">
               <Button
                 variant={billableFilter === 'all' ? 'default' : 'outline'}
                 size="sm"
+                className="h-7 px-2 text-xs"
                 onClick={() => setBillableFilter('all')}
               >
                 All
@@ -497,17 +509,33 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
               <Button
                 variant={billableFilter === 'billable' ? 'default' : 'outline'}
                 size="sm"
+                className="h-7 px-2 text-xs"
                 onClick={() => setBillableFilter('billable')}
               >
-                $ Billable
+                Bill
               </Button>
               <Button
                 variant={billableFilter === 'non-billable' ? 'default' : 'outline'}
                 size="sm"
+                className="h-7 px-2 text-xs"
                 onClick={() => setBillableFilter('non-billable')}
               >
-                Non-billable
+                NonBill
               </Button>
+            </div>
+            <div className="h-4 w-px bg-border shrink-0" />
+            <div className="flex gap-0.5 shrink-0">
+              {sourceFilters.map((s) => (
+                <Button
+                  key={s.key}
+                  variant={sourceFilter === s.key ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => setSourceFilter(s.key)}
+                >
+                  {s.label}
+                </Button>
+              ))}
             </div>
           </div>
         </CardHeader>
