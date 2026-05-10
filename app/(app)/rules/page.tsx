@@ -21,9 +21,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Pencil, Trash2, Wand2, TestTube } from 'lucide-react';
+import { Plus, Pencil, Trash2, Wand2, TestTube, Copy } from 'lucide-react';
 
-type Project = { id: string; name: string; color: string };
+type Client = { id: string; name: string };
+type Project = { id: string; name: string; color: string; client?: Client | null };
 type Tag = { id: string; name: string; color: string };
 type MappingRule = {
   id: string;
@@ -104,6 +105,28 @@ export default function RulesPage() {
     setProjectId(rule.project?.id ?? '');
     setTagId(rule.tag?.id ?? '');
     setOpen(true);
+  };
+
+  const copyRule = async (rule: MappingRule) => {
+    const body = {
+      name: `${rule.name} (copy)`,
+      matchPattern: rule.matchPattern,
+      matchField: rule.matchField,
+      matchType: rule.matchType,
+      priority: rule.priority,
+      projectId: rule.project?.id ?? null,
+      tagId: rule.tag?.id ?? null,
+    };
+    const res = await fetch('/api/rules', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) {
+      const created: MappingRule = await res.json();
+      await fetchAll();
+      openEdit(created);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -346,6 +369,13 @@ export default function RulesPage() {
                   </Select>
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label>Client</Label>
+                <Input
+                  value={projectId ? (projects.find((p) => p.id === projectId)?.client?.name ?? '—') : '—'}
+                  readOnly
+                />
+              </div>
               <Button type="submit" className="w-full">
                 {editingRule ? 'Save Changes' : 'Create Rule'}
               </Button>
@@ -444,38 +474,39 @@ export default function RulesPage() {
             {rules.map((rule) => (
               <div
                 key={rule.id}
-                className={`flex items-center justify-between px-3 py-1.5 ${rule.isActive ? '' : 'opacity-50'}`}
+                className={`flex items-center justify-between px-3 py-0.5 ${rule.isActive ? '' : 'opacity-50'}`}
               >
-                <div className="flex items-center gap-2 min-w-0 text-sm">
+                <div className="flex items-center gap-1.5 min-w-0 text-xs">
+                  <span className="text-muted-foreground shrink-0">{rule.priority}</span>
                   <span className="font-medium truncate">{rule.name}</span>
                   <span className="text-muted-foreground shrink-0">
                     {rule.matchField} {rule.matchType} &quot;{rule.matchPattern}&quot;
                   </span>
                   {rule.project && (
-                    <span className="shrink-0 font-medium" style={{ color: rule.project.color }}>
+                    <span className="shrink-0 text-muted-foreground">
                       → {rule.project.name}
                     </span>
                   )}
                   {rule.tag && (
-                    <Badge
-                      style={{ backgroundColor: rule.tag.color, color: 'white' }}
-                      className="text-[10px] px-1.5 py-0 leading-4 shrink-0"
-                    >
-                      {rule.tag.name}
-                    </Badge>
+                    <span className="shrink-0 text-muted-foreground">
+                      #{rule.tag.name}
+                    </span>
                   )}
                   {!rule.isActive && (
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 leading-4 shrink-0">Off</Badge>
+                    <span className="shrink-0 text-muted-foreground">[off]</span>
                   )}
                 </div>
                 <div className="flex items-center gap-0 shrink-0">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toggleRule(rule)} title={rule.isActive ? 'Disable' : 'Enable'}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleRule(rule)} title={rule.isActive ? 'Disable' : 'Enable'}>
                     <span className="text-xs">{rule.isActive ? '●' : '○'}</span>
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(rule)}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyRule(rule)} title="Copy">
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEdit(rule)}>
                     <Pencil className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteRule(rule.id)}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deleteRule(rule.id)}>
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
