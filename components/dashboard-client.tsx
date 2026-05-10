@@ -80,12 +80,14 @@ type Props = {
 
 export function DashboardClient({ projectCount, runningEntry }: Props) {
   const [period, setPeriod] = useState<PeriodKey>('today');
+  const [periodReady, setPeriodReady] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('dashboard-period');
     if (saved && periods.some((p) => p.key === saved)) {
       setPeriod(saved as PeriodKey);
     }
+    setPeriodReady(true);
   }, []);
 
   const changePeriod = (p: PeriodKey) => {
@@ -218,14 +220,15 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
     setSyncing(false);
   };
 
-  const fetchEntries = useCallback(async (p: PeriodKey) => {
+  const fetchEntries = useCallback(async (p: PeriodKey, signal?: AbortSignal) => {
+    setLoading(true);
     const { from, to } = getRange(p);
     const params = new URLSearchParams({
       from: from.toISOString(),
       to: to.toISOString(),
     });
     try {
-      const res = await fetch(`/api/time-entries?${params}`, { cache: 'no-store' });
+      const res = await fetch(`/api/time-entries?${params}`, { cache: 'no-store', signal });
       if (res.ok) {
         const data = await res.json();
         setEntries(
@@ -249,15 +252,19 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
           })),
         );
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
     }
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    fetchEntries(period);
-  }, [period, fetchEntries]);
+    if (periodReady) {
+      const controller = new AbortController();
+      fetchEntries(period, controller.signal);
+      return () => controller.abort();
+    }
+  }, [period, periodReady, fetchEntries]);
 
   const filteredEntries = entries.filter((e) => {
     if (sourceFilter !== 'all' && e.source !== sourceFilter) return false;
