@@ -10,7 +10,7 @@ export async function GET() {
 
   const rules = await prisma.mappingRule.findMany({
     where: { userId: session.user.id },
-    include: { project: true, tag: true },
+    include: { project: { include: { client: true } }, tag: true },
     orderBy: { priority: "desc" },
   });
 

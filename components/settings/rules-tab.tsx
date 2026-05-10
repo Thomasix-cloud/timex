@@ -42,16 +42,18 @@ export function RulesTab() {
   const [rules, setRules] = useState<MappingRule[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [open, setOpen] = useState(false);
   const [editingRule, setEditingRule] = useState<MappingRule | null>(null);
 
   const [name, setName] = useState('');
   const [matchPattern, setMatchPattern] = useState('');
   const [matchField, setMatchField] = useState('title');
-  const [matchType, setMatchType] = useState('contains');
+  const [matchType, setMatchType] = useState('wildcard');
   const [priority, setPriority] = useState(0);
   const [projectId, setProjectId] = useState('');
   const [tagId, setTagId] = useState('');
+  const [clientId, setClientId] = useState('');
 
   const [testText, setTestText] = useState('');
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -59,10 +61,11 @@ export function RulesTab() {
   const [testMatchType, setTestMatchType] = useState('wildcard');
 
   const fetchAll = async () => {
-    const [rulesRes, projectsRes, tagsRes] = await Promise.all([
+    const [rulesRes, projectsRes, tagsRes, clientsRes] = await Promise.all([
       fetch('/api/rules'),
       fetch('/api/projects'),
       fetch('/api/tags'),
+      fetch('/api/clients'),
     ]);
     if (rulesRes.ok) {
       const data: MappingRule[] = await rulesRes.json();
@@ -71,6 +74,7 @@ export function RulesTab() {
     }
     if (projectsRes.ok) setProjects(await projectsRes.json());
     if (tagsRes.ok) setTags(await tagsRes.json());
+    if (clientsRes.ok) setClients(await clientsRes.json());
   };
 
   useEffect(() => {
@@ -81,10 +85,11 @@ export function RulesTab() {
     setName('');
     setMatchPattern('');
     setMatchField('title');
-    setMatchType('contains');
+    setMatchType('wildcard');
     setPriority(0);
     setProjectId('');
     setTagId('');
+    setClientId('');
     setEditingRule(null);
   };
 
@@ -269,7 +274,7 @@ export function RulesTab() {
                   <Label>Match Type</Label>
                   <Select
                     value={matchType}
-                    onValueChange={(v) => setMatchType(v ?? 'contains')}
+                    onValueChange={(v) => setMatchType(v ?? 'wildcard')}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -305,8 +310,8 @@ export function RulesTab() {
                 <div className="space-y-2">
                   <Label>Assign Project</Label>
                   <Select
-                    value={projectId}
-                    onValueChange={(v) => setProjectId(v ?? '')}
+                    value={projectId || '__none__'}
+                    onValueChange={(v) => setProjectId(v === '__none__' ? '' : v ?? '')}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="None">
@@ -325,6 +330,7 @@ export function RulesTab() {
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__none__">None</SelectItem>
                       {projects.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
                           <div className="flex items-center gap-2">
@@ -342,8 +348,8 @@ export function RulesTab() {
                 <div className="space-y-2">
                   <Label>Assign Tag</Label>
                   <Select
-                    value={tagId}
-                    onValueChange={(v) => setTagId(v ?? '')}
+                    value={tagId || '__none__'}
+                    onValueChange={(v) => setTagId(v === '__none__' ? '' : v ?? '')}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="None">
@@ -351,6 +357,7 @@ export function RulesTab() {
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__none__">None</SelectItem>
                       {tags.map((t) => (
                         <SelectItem key={t.id} value={t.id}>
                           {t.name}
@@ -362,10 +369,28 @@ export function RulesTab() {
               </div>
               <div className="space-y-2">
                 <Label>Client</Label>
-                <Input
-                  value={projectId ? (projects.find((p) => p.id === projectId)?.client?.name ?? '—') : '—'}
-                  readOnly
-                />
+                {projectId ? (
+                  <Input
+                    value={projects.find((p) => p.id === projectId)?.client?.name ?? '—'}
+                    readOnly
+                  />
+                ) : (
+                  <Select
+                    value={clientId}
+                    onValueChange={(v) => setClientId(v ?? '')}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="None" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clients.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               <Button type="submit" className="w-full">
                 {editingRule ? 'Save Changes' : 'Create Rule'}
@@ -474,6 +499,11 @@ export function RulesTab() {
                   {rule.project && (
                     <span className="shrink-0 text-muted-foreground">
                       → {rule.project.name}
+                    </span>
+                  )}
+                  {(rule.project?.client) && (
+                    <span className="shrink-0 text-muted-foreground">
+                      @{rule.project.client.name}
                     </span>
                   )}
                   {rule.tag && (

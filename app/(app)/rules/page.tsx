@@ -42,6 +42,7 @@ export default function RulesPage() {
   const [rules, setRules] = useState<MappingRule[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [open, setOpen] = useState(false);
   const [editingRule, setEditingRule] = useState<MappingRule | null>(null);
 
@@ -53,6 +54,7 @@ export default function RulesPage() {
   const [priority, setPriority] = useState(0);
   const [projectId, setProjectId] = useState('');
   const [tagId, setTagId] = useState('');
+  const [clientId, setClientId] = useState('');
 
   // Test state
   const [testText, setTestText] = useState('');
@@ -61,10 +63,11 @@ export default function RulesPage() {
   const [testMatchType, setTestMatchType] = useState('wildcard');
 
   const fetchAll = async () => {
-    const [rulesRes, projectsRes, tagsRes] = await Promise.all([
+    const [rulesRes, projectsRes, tagsRes, clientsRes] = await Promise.all([
       fetch('/api/rules'),
       fetch('/api/projects'),
       fetch('/api/tags'),
+      fetch('/api/clients'),
     ]);
     if (rulesRes.ok) {
       const data: MappingRule[] = await rulesRes.json();
@@ -73,6 +76,7 @@ export default function RulesPage() {
     }
     if (projectsRes.ok) setProjects(await projectsRes.json());
     if (tagsRes.ok) setTags(await tagsRes.json());
+    if (clientsRes.ok) setClients(await clientsRes.json());
   };
 
   useEffect(() => {
@@ -87,6 +91,7 @@ export default function RulesPage() {
     setPriority(0);
     setProjectId('');
     setTagId('');
+    setClientId('');
     setEditingRule(null);
   };
 
@@ -314,8 +319,8 @@ export default function RulesPage() {
                 <div className="space-y-2">
                   <Label>Assign Project</Label>
                   <Select
-                    value={projectId}
-                    onValueChange={(v) => setProjectId(v ?? '')}
+                    value={projectId || '__none__'}
+                    onValueChange={(v) => setProjectId(v === '__none__' ? '' : v ?? '')}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="None">
@@ -334,6 +339,7 @@ export default function RulesPage() {
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__none__">None</SelectItem>
                       {projects.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
                           <div className="flex items-center gap-2">
@@ -351,8 +357,8 @@ export default function RulesPage() {
                 <div className="space-y-2">
                   <Label>Assign Tag</Label>
                   <Select
-                    value={tagId}
-                    onValueChange={(v) => setTagId(v ?? '')}
+                    value={tagId || '__none__'}
+                    onValueChange={(v) => setTagId(v === '__none__' ? '' : v ?? '')}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="None">
@@ -360,6 +366,7 @@ export default function RulesPage() {
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__none__">None</SelectItem>
                       {tags.map((t) => (
                         <SelectItem key={t.id} value={t.id}>
                           {t.name}
@@ -371,10 +378,28 @@ export default function RulesPage() {
               </div>
               <div className="space-y-2">
                 <Label>Client</Label>
-                <Input
-                  value={projectId ? (projects.find((p) => p.id === projectId)?.client?.name ?? '—') : '—'}
-                  readOnly
-                />
+                {projectId ? (
+                  <Input
+                    value={projects.find((p) => p.id === projectId)?.client?.name ?? '—'}
+                    readOnly
+                  />
+                ) : (
+                  <Select
+                    value={clientId}
+                    onValueChange={(v) => setClientId(v ?? '')}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="None" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clients.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               <Button type="submit" className="w-full">
                 {editingRule ? 'Save Changes' : 'Create Rule'}
@@ -485,6 +510,11 @@ export default function RulesPage() {
                   {rule.project && (
                     <span className="shrink-0 text-muted-foreground">
                       → {rule.project.name}
+                    </span>
+                  )}
+                  {(rule.project?.client) && (
+                    <span className="shrink-0 text-muted-foreground">
+                      @{rule.project.client.name}
                     </span>
                   )}
                   {rule.tag && (
