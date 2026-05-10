@@ -16,6 +16,9 @@ import {
   Users,
   Tags,
   Wand2,
+  Plus,
+  Trash2,
+  Mail,
 } from 'lucide-react';
 import { ProjectsTab } from '@/components/settings/projects-tab';
 import { ClientsTab } from '@/components/settings/clients-tab';
@@ -27,11 +30,27 @@ type CalendarInfo = {
   name: string;
   primary: boolean;
   connected: boolean;
+  accountId: string | null;
+  accountEmail: string;
   connection: {
     id: string;
     syncEnabled: boolean;
     lastSyncAt: string | null;
   } | null;
+};
+
+type CalendarAccount = {
+  id: string;
+  provider: string;
+  email: string;
+  createdAt: string;
+  connections: Array<{
+    id: string;
+    calendarId: string;
+    calendarName: string;
+    syncEnabled: boolean;
+    lastSyncAt: string | null;
+  }>;
 };
 
 type SyncResult = {
@@ -42,11 +61,24 @@ type SyncResult = {
 };
 
 export default function SettingsPage() {
+  const [accounts, setAccounts] = useState<CalendarAccount[]>([]);
   const [calendars, setCalendars] = useState<CalendarInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [connecting, setConnecting] = useState(false);
+
+  const fetchAccounts = async () => {
+    try {
+      const res = await fetch('/api/calendar/accounts');
+      if (res.ok) {
+        setAccounts(await res.json());
+      }
+    } catch {
+      // silently fail, accounts list is supplementary
+    }
+  };
 
   const fetchCalendars = async () => {
     setLoading(true);
@@ -60,14 +92,42 @@ export default function SettingsPage() {
         setError(data.error || 'Failed to load calendars');
       }
     } catch {
-      setError('Failed to connect. Please sign in again with Google.');
+      setError('No calendar accounts connected.');
     }
     setLoading(false);
   };
 
   useEffect(() => {
+    fetchAccounts();
     fetchCalendars();
   }, []);
+
+  const connectGoogleAccount = async () => {
+    setConnecting(true);
+    try {
+      const res = await fetch('/api/calendar/connect');
+      if (res.ok) {
+        const { url } = await res.json();
+        window.location.href = url;
+      } else {
+        setError('Failed to start connection');
+        setConnecting(false);
+      }
+    } catch {
+      setError('Failed to connect');
+      setConnecting(false);
+    }
+  };
+
+  const disconnectAccount = async (accountId: string) => {
+    await fetch('/api/calendar/accounts', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ accountId }),
+    });
+    fetchAccounts();
+    fetchCalendars();
+  };
 
   const toggleCalendar = async (cal: CalendarInfo) => {
     await fetch('/api/calendar/calendars', {
@@ -77,6 +137,7 @@ export default function SettingsPage() {
         calendarId: cal.id,
         calendarName: cal.name,
         syncEnabled: !cal.connected || !cal.connection?.syncEnabled,
+        accountId: cal.accountId,
       }),
     });
     fetchCalendars();
@@ -151,8 +212,25 @@ export default function SettingsPage() {
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
                 Google Calendar
-                <div className="ml-auto">
-                  <Button size="sm" onClick={syncNow} disabled={syncing}>
+                <div className="ml-auto flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={connectGoogleAccount}
+                    disabled={connecting}
+                  >
+                    {connecting ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Plus className="mr-2 h-4 w-4" />
+                    )}
+                    Connect Account
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={syncNow}
+                    disabled={syncing || accounts.length === 0}
+                  >
                     {syncing ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
@@ -163,76 +241,157 @@ export default function SettingsPage() {
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* Connected Accounts */}
+              {accounts.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium text-muted-foreground">
+                    Connected Accounts
+                  </h3>
+                  <div className="space-y-2">
+                    {accounts.map((account) => (
+                      <div
+                        key={account.id}
+                        className="flex items-center justify-between rounded-md border p-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Mail className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium">
+                              {account.email}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {account.connections.filter((c) => c.syncEnabled)
+                                .length}{' '}
+                              calendars syncing
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => disconnectAccount(account.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {accounts.length === 0 && !loading && (
+                <div className="text-center py-6 space-y-3">
+                  <Calendar className="h-10 w-10 mx-auto text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    No calendar accounts connected. Connect a Google account to
+                    start syncing calendar events.
+                  </p>
+                  <Button onClick={connectGoogleAccount} disabled={connecting}>
+                    {connecting ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Plus className="mr-2 h-4 w-4" />
+                    )}
+                    Connect Google Account
+                  </Button>
+                </div>
+              )}
+
+              {/* Calendars */}
               {loading ? (
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Loading calendars...
                 </div>
-              ) : error ? (
+              ) : error && accounts.length > 0 ? (
                 <div className="space-y-2">
                   <p className="text-sm text-destructive">{error}</p>
                   <Button variant="outline" size="sm" onClick={fetchCalendars}>
                     Retry
                   </Button>
                 </div>
-              ) : (
+              ) : calendars.length > 0 ? (
                 <>
-                  <p className="text-sm text-muted-foreground">
-                    Select which calendars to sync. Events from enabled calendars
-                    will be automatically logged as time entries.
-                  </p>
-                  <div className="space-y-2">
-                    {calendars.map((cal) => (
-                      <div
-                        key={cal.id}
-                        className="flex items-center justify-between rounded-md border p-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          {cal.connection?.syncEnabled ? (
-                            <CheckCircle2 className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <XCircle className="h-4 w-4 text-muted-foreground" />
-                          )}
-                          <div>
-                            <p className="text-sm font-medium">{cal.name}</p>
-                            {cal.primary && (
-                              <Badge variant="secondary" className="text-xs">
-                                Primary
-                              </Badge>
-                            )}
-                            {cal.connection?.lastSyncAt && (
-                              <p className="text-xs text-muted-foreground">
-                                Last synced:{' '}
-                                {new Date(
-                                  cal.connection.lastSyncAt,
-                                ).toLocaleString()}
-                              </p>
-                            )}
+                  <Separator />
+                  <div className="space-y-4">
+                    {/* Group calendars by account */}
+                    {accounts.map((account) => {
+                      const accountCalendars = calendars.filter(
+                        (c) => c.accountId === account.id,
+                      );
+                      if (accountCalendars.length === 0) return null;
+                      return (
+                        <div key={account.id} className="space-y-2">
+                          <h4 className="text-sm font-medium flex items-center gap-2">
+                            <Mail className="h-3.5 w-3.5" />
+                            {account.email}
+                          </h4>
+                          <div className="space-y-2 ml-5">
+                            {accountCalendars.map((cal) => (
+                              <div
+                                key={cal.id}
+                                className="flex items-center justify-between rounded-md border p-3"
+                              >
+                                <div className="flex items-center gap-3">
+                                  {cal.connection?.syncEnabled ? (
+                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                  ) : (
+                                    <XCircle className="h-4 w-4 text-muted-foreground" />
+                                  )}
+                                  <div>
+                                    <p className="text-sm font-medium">
+                                      {cal.name}
+                                    </p>
+                                    {cal.primary && (
+                                      <Badge
+                                        variant="secondary"
+                                        className="text-xs"
+                                      >
+                                        Primary
+                                      </Badge>
+                                    )}
+                                    {cal.connection?.lastSyncAt && (
+                                      <p className="text-xs text-muted-foreground">
+                                        Last synced:{' '}
+                                        {new Date(
+                                          cal.connection.lastSyncAt,
+                                        ).toLocaleString()}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                                <Button
+                                  variant={
+                                    cal.connection?.syncEnabled
+                                      ? 'destructive'
+                                      : 'default'
+                                  }
+                                  size="sm"
+                                  onClick={() => toggleCalendar(cal)}
+                                >
+                                  {cal.connection?.syncEnabled
+                                    ? 'Disable'
+                                    : 'Enable'}
+                                </Button>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                        <Button
-                          variant={
-                            cal.connection?.syncEnabled ? 'destructive' : 'default'
-                          }
-                          size="sm"
-                          onClick={() => toggleCalendar(cal)}
-                        >
-                          {cal.connection?.syncEnabled ? 'Disable' : 'Enable'}
-                        </Button>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </>
-              )}
+              ) : null}
 
               {syncResult && (
                 <>
                   <Separator />
                   <div className="flex items-center gap-3">
                     <span className="text-sm text-muted-foreground">
-                      Synced: {syncResult.synced} events, {syncResult.created} new,{' '}
-                      {syncResult.updated} updated, {syncResult.skipped} skipped
+                      Synced: {syncResult.synced} events, {syncResult.created}{' '}
+                      new, {syncResult.updated} updated, {syncResult.skipped}{' '}
+                      skipped
                     </span>
                   </div>
                 </>

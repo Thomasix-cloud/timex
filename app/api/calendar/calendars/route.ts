@@ -3,33 +3,53 @@ import { listCalendars } from "@/lib/google-calendar";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Optional: filter by account
+  const url = new URL(request.url);
+  const accountId = url.searchParams.get("accountId");
+
   try {
     const calendars = await listCalendars(session.user.id);
+
+    // Filter by account if specified
+    const filtered = accountId
+      ? calendars.filter((c) => c.accountId === accountId)
+      : calendars;
 
     // Get existing connections
     const connections = await prisma.calendarConnection.findMany({
       where: { userId: session.user.id },
     });
 
-    const connectedIds = new Set(connections.map((c) => c.calendarId));
+    const connectionMap = new Map(
+      connections.map((c) => [c.calendarId, c])
+    );
 
     return NextResponse.json(
-      calendars.map((cal) => ({
-        ...cal,
-        connected: connectedIds.has(cal.id),
-        connection: connections.find((c) => c.calendarId === cal.id) ?? null,
-      }))
+      filtered.map((cal) => {
+        const conn = connectionMap.get(cal.id);
+        return {
+          ...cal,
+          connected: !!conn?.syncEnabled,
+          connection: conn
+            ? {
+                id: conn.id,
+                syncEnabled: conn.syncEnabled,
+                lastSyncAt: conn.lastSyncAt,
+              }
+            : null,
+        };
+      })
     );
   } catch (error) {
     console.error("Failed to list calendars:", error);
     return NextResponse.json(
-      { error: "Failed to list calendars. Please reconnect your Google account." },
+      { error: "Failed to list calendars. Please connect a Google calendar account." },
       { status: 500 }
     );
   }
@@ -42,7 +62,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { calendarId, calendarName, syncEnabled } = body;
+  const { calendarId, calendarName, syncEnabled, accountId } = body;
 
   if (!calendarId) {
     return NextResponse.json(
@@ -65,10 +85,12 @@ export async function POST(request: Request) {
       calendarId,
       calendarName: calendarName || "",
       syncEnabled: syncEnabled ?? true,
+      calendarAccountId: accountId || null,
     },
     update: {
       syncEnabled: syncEnabled ?? true,
       calendarName: calendarName || undefined,
+      calendarAccountId: accountId || undefined,
     },
   });
 

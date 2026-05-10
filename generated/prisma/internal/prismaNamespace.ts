@@ -392,6 +392,7 @@ export const ModelName = {
   Tag: 'Tag',
   TimeEntry: 'TimeEntry',
   MappingRule: 'MappingRule',
+  CalendarAccount: 'CalendarAccount',
   CalendarConnection: 'CalendarConnection',
   Client: 'Client'
 } as const
@@ -409,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "project" | "tag" | "timeEntry" | "mappingRule" | "calendarConnection" | "client"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "project" | "tag" | "timeEntry" | "mappingRule" | "calendarAccount" | "calendarConnection" | "client"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1005,6 +1006,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CalendarAccount: {
+      payload: Prisma.$CalendarAccountPayload<ExtArgs>
+      fields: Prisma.CalendarAccountFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CalendarAccountFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CalendarAccountFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload>
+        }
+        findFirst: {
+          args: Prisma.CalendarAccountFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CalendarAccountFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload>
+        }
+        findMany: {
+          args: Prisma.CalendarAccountFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload>[]
+        }
+        create: {
+          args: Prisma.CalendarAccountCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload>
+        }
+        createMany: {
+          args: Prisma.CalendarAccountCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CalendarAccountCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload>[]
+        }
+        delete: {
+          args: Prisma.CalendarAccountDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload>
+        }
+        update: {
+          args: Prisma.CalendarAccountUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload>
+        }
+        deleteMany: {
+          args: Prisma.CalendarAccountDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CalendarAccountUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CalendarAccountUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload>[]
+        }
+        upsert: {
+          args: Prisma.CalendarAccountUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CalendarAccountPayload>
+        }
+        aggregate: {
+          args: Prisma.CalendarAccountAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCalendarAccount>
+        }
+        groupBy: {
+          args: Prisma.CalendarAccountGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CalendarAccountGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CalendarAccountCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CalendarAccountCountAggregateOutputType> | number
+        }
+      }
+    }
     CalendarConnection: {
       payload: Prisma.$CalendarConnectionPayload<ExtArgs>
       fields: Prisma.CalendarConnectionFieldRefs
@@ -1198,6 +1273,7 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
+  password: 'password',
   googleAccessToken: 'googleAccessToken',
   googleRefreshToken: 'googleRefreshToken',
   googleTokenExpiry: 'googleTokenExpiry',
@@ -1308,6 +1384,21 @@ export const MappingRuleScalarFieldEnum = {
 export type MappingRuleScalarFieldEnum = (typeof MappingRuleScalarFieldEnum)[keyof typeof MappingRuleScalarFieldEnum]
 
 
+export const CalendarAccountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  provider: 'provider',
+  email: 'email',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  tokenExpiry: 'tokenExpiry',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CalendarAccountScalarFieldEnum = (typeof CalendarAccountScalarFieldEnum)[keyof typeof CalendarAccountScalarFieldEnum]
+
+
 export const CalendarConnectionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -1316,6 +1407,7 @@ export const CalendarConnectionScalarFieldEnum = {
   calendarName: 'calendarName',
   syncEnabled: 'syncEnabled',
   lastSyncAt: 'lastSyncAt',
+  calendarAccountId: 'calendarAccountId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1546,6 +1638,7 @@ export type GlobalOmitConfig = {
   tag?: Prisma.TagOmit
   timeEntry?: Prisma.TimeEntryOmit
   mappingRule?: Prisma.MappingRuleOmit
+  calendarAccount?: Prisma.CalendarAccountOmit
   calendarConnection?: Prisma.CalendarConnectionOmit
   client?: Prisma.ClientOmit
 }

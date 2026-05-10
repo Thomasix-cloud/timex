@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { fetchCalendarEvents, type CalendarEvent } from "@/lib/google-calendar";
+import { fetchCalendarEvents, fetchCalendarEventsForAccount, type CalendarEvent } from "@/lib/google-calendar";
 import { differenceInSeconds } from "date-fns";
 
 type MappingResult = {
@@ -75,6 +75,7 @@ export async function syncCalendarForUser(userId: string) {
   const [connections, rules, projects] = await Promise.all([
     prisma.calendarConnection.findMany({
       where: { userId, syncEnabled: true },
+      include: { calendarAccount: true },
     }),
     prisma.mappingRule.findMany({
       where: { userId, isActive: true },
@@ -111,12 +112,21 @@ export async function syncCalendarForUser(userId: string) {
 
     let events: CalendarEvent[];
     try {
-      events = await fetchCalendarEvents(
-        userId,
-        connection.calendarId,
-        timeMin,
-        timeMax
-      );
+      if (connection.calendarAccount) {
+        events = await fetchCalendarEventsForAccount(
+          connection.calendarAccount,
+          connection.calendarId,
+          timeMin,
+          timeMax
+        );
+      } else {
+        events = await fetchCalendarEvents(
+          userId,
+          connection.calendarId,
+          timeMin,
+          timeMax
+        );
+      }
     } catch (error) {
       console.error(
         `Failed to fetch events for calendar ${connection.calendarId}:`,

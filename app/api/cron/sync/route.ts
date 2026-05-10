@@ -16,7 +16,10 @@ export async function GET(request: NextRequest) {
   const users = await prisma.user.findMany({
     where: {
       calendarConnections: { some: { syncEnabled: true } },
-      googleAccessToken: { not: null },
+      OR: [
+        { googleAccessToken: { not: null } },
+        { calendarAccounts: { some: {} } },
+      ],
     },
     select: { id: true },
   });

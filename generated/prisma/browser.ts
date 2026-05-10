@@ -58,6 +58,11 @@ export type TimeEntry = Prisma.TimeEntryModel
  */
 export type MappingRule = Prisma.MappingRuleModel
 /**
+ * Model CalendarAccount
+ * 
+ */
+export type CalendarAccount = Prisma.CalendarAccountModel
+/**
  * Model CalendarConnection
  * 
  */

@@ -30,6 +30,7 @@ export type UserMinAggregateOutputType = {
   email: string | null
   emailVerified: Date | null
   image: string | null
+  password: string | null
   googleAccessToken: string | null
   googleRefreshToken: string | null
   googleTokenExpiry: Date | null
@@ -43,6 +44,7 @@ export type UserMaxAggregateOutputType = {
   email: string | null
   emailVerified: Date | null
   image: string | null
+  password: string | null
   googleAccessToken: string | null
   googleRefreshToken: string | null
   googleTokenExpiry: Date | null
@@ -56,6 +58,7 @@ export type UserCountAggregateOutputType = {
   email: number
   emailVerified: number
   image: number
+  password: number
   googleAccessToken: number
   googleRefreshToken: number
   googleTokenExpiry: number
@@ -71,6 +74,7 @@ export type UserMinAggregateInputType = {
   email?: true
   emailVerified?: true
   image?: true
+  password?: true
   googleAccessToken?: true
   googleRefreshToken?: true
   googleTokenExpiry?: true
@@ -84,6 +88,7 @@ export type UserMaxAggregateInputType = {
   email?: true
   emailVerified?: true
   image?: true
+  password?: true
   googleAccessToken?: true
   googleRefreshToken?: true
   googleTokenExpiry?: true
@@ -97,6 +102,7 @@ export type UserCountAggregateInputType = {
   email?: true
   emailVerified?: true
   image?: true
+  password?: true
   googleAccessToken?: true
   googleRefreshToken?: true
   googleTokenExpiry?: true
@@ -183,6 +189,7 @@ export type UserGroupByOutputType = {
   email: string
   emailVerified: Date | null
   image: string | null
+  password: string | null
   googleAccessToken: string | null
   googleRefreshToken: string | null
   googleTokenExpiry: Date | null
@@ -217,6 +224,7 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
+  password?: Prisma.StringNullableFilter<"User"> | string | null
   googleAccessToken?: Prisma.StringNullableFilter<"User"> | string | null
   googleRefreshToken?: Prisma.StringNullableFilter<"User"> | string | null
   googleTokenExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
@@ -230,6 +238,7 @@ export type UserWhereInput = {
   timeEntries?: Prisma.TimeEntryListRelationFilter
   mappingRules?: Prisma.MappingRuleListRelationFilter
   calendarConnections?: Prisma.CalendarConnectionListRelationFilter
+  calendarAccounts?: Prisma.CalendarAccountListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -238,6 +247,7 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
+  password?: Prisma.SortOrderInput | Prisma.SortOrder
   googleAccessToken?: Prisma.SortOrderInput | Prisma.SortOrder
   googleRefreshToken?: Prisma.SortOrderInput | Prisma.SortOrder
   googleTokenExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -251,6 +261,7 @@ export type UserOrderByWithRelationInput = {
   timeEntries?: Prisma.TimeEntryOrderByRelationAggregateInput
   mappingRules?: Prisma.MappingRuleOrderByRelationAggregateInput
   calendarConnections?: Prisma.CalendarConnectionOrderByRelationAggregateInput
+  calendarAccounts?: Prisma.CalendarAccountOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -262,6 +273,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
+  password?: Prisma.StringNullableFilter<"User"> | string | null
   googleAccessToken?: Prisma.StringNullableFilter<"User"> | string | null
   googleRefreshToken?: Prisma.StringNullableFilter<"User"> | string | null
   googleTokenExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
@@ -275,6 +287,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   timeEntries?: Prisma.TimeEntryListRelationFilter
   mappingRules?: Prisma.MappingRuleListRelationFilter
   calendarConnections?: Prisma.CalendarConnectionListRelationFilter
+  calendarAccounts?: Prisma.CalendarAccountListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -283,6 +296,7 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
+  password?: Prisma.SortOrderInput | Prisma.SortOrder
   googleAccessToken?: Prisma.SortOrderInput | Prisma.SortOrder
   googleRefreshToken?: Prisma.SortOrderInput | Prisma.SortOrder
   googleTokenExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -302,6 +316,7 @@ export type UserScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   emailVerified?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  password?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   googleAccessToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   googleRefreshToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   googleTokenExpiry?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
@@ -315,6 +330,7 @@ export type UserCreateInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -328,6 +344,7 @@ export type UserCreateInput = {
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -336,6 +353,7 @@ export type UserUncheckedCreateInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -349,6 +367,7 @@ export type UserUncheckedCreateInput = {
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -357,6 +376,7 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -370,6 +390,7 @@ export type UserUpdateInput = {
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -378,6 +399,7 @@ export type UserUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -391,6 +413,7 @@ export type UserUncheckedUpdateInput = {
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -399,6 +422,7 @@ export type UserCreateManyInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -412,6 +436,7 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -425,6 +450,7 @@ export type UserUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -438,6 +464,7 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  password?: Prisma.SortOrder
   googleAccessToken?: Prisma.SortOrder
   googleRefreshToken?: Prisma.SortOrder
   googleTokenExpiry?: Prisma.SortOrder
@@ -451,6 +478,7 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  password?: Prisma.SortOrder
   googleAccessToken?: Prisma.SortOrder
   googleRefreshToken?: Prisma.SortOrder
   googleTokenExpiry?: Prisma.SortOrder
@@ -464,6 +492,7 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
+  password?: Prisma.SortOrder
   googleAccessToken?: Prisma.SortOrder
   googleRefreshToken?: Prisma.SortOrder
   googleTokenExpiry?: Prisma.SortOrder
@@ -576,6 +605,20 @@ export type UserUpdateOneRequiredWithoutMappingRulesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMappingRulesInput, Prisma.UserUpdateWithoutMappingRulesInput>, Prisma.UserUncheckedUpdateWithoutMappingRulesInput>
 }
 
+export type UserCreateNestedOneWithoutCalendarAccountsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCalendarAccountsInput, Prisma.UserUncheckedCreateWithoutCalendarAccountsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCalendarAccountsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCalendarAccountsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCalendarAccountsInput, Prisma.UserUncheckedCreateWithoutCalendarAccountsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCalendarAccountsInput
+  upsert?: Prisma.UserUpsertWithoutCalendarAccountsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCalendarAccountsInput, Prisma.UserUpdateWithoutCalendarAccountsInput>, Prisma.UserUncheckedUpdateWithoutCalendarAccountsInput>
+}
+
 export type UserCreateNestedOneWithoutCalendarConnectionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutCalendarConnectionsInput, Prisma.UserUncheckedCreateWithoutCalendarConnectionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutCalendarConnectionsInput
@@ -610,6 +653,7 @@ export type UserCreateWithoutAccountsInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -622,6 +666,7 @@ export type UserCreateWithoutAccountsInput = {
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -630,6 +675,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -642,6 +688,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -666,6 +713,7 @@ export type UserUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -678,6 +726,7 @@ export type UserUpdateWithoutAccountsInput = {
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -686,6 +735,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -698,6 +748,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -706,6 +757,7 @@ export type UserCreateWithoutSessionsInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -718,6 +770,7 @@ export type UserCreateWithoutSessionsInput = {
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -726,6 +779,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -738,6 +792,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -762,6 +817,7 @@ export type UserUpdateWithoutSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -774,6 +830,7 @@ export type UserUpdateWithoutSessionsInput = {
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -782,6 +839,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -794,6 +852,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProjectsInput = {
@@ -802,6 +861,7 @@ export type UserCreateWithoutProjectsInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -814,6 +874,7 @@ export type UserCreateWithoutProjectsInput = {
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProjectsInput = {
@@ -822,6 +883,7 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -834,6 +896,7 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProjectsInput = {
@@ -858,6 +921,7 @@ export type UserUpdateWithoutProjectsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -870,6 +934,7 @@ export type UserUpdateWithoutProjectsInput = {
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -878,6 +943,7 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -890,6 +956,7 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTagsInput = {
@@ -898,6 +965,7 @@ export type UserCreateWithoutTagsInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -910,6 +978,7 @@ export type UserCreateWithoutTagsInput = {
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTagsInput = {
@@ -918,6 +987,7 @@ export type UserUncheckedCreateWithoutTagsInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -930,6 +1000,7 @@ export type UserUncheckedCreateWithoutTagsInput = {
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTagsInput = {
@@ -954,6 +1025,7 @@ export type UserUpdateWithoutTagsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -966,6 +1038,7 @@ export type UserUpdateWithoutTagsInput = {
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTagsInput = {
@@ -974,6 +1047,7 @@ export type UserUncheckedUpdateWithoutTagsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -986,6 +1060,7 @@ export type UserUncheckedUpdateWithoutTagsInput = {
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTimeEntriesInput = {
@@ -994,6 +1069,7 @@ export type UserCreateWithoutTimeEntriesInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -1006,6 +1082,7 @@ export type UserCreateWithoutTimeEntriesInput = {
   clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTimeEntriesInput = {
@@ -1014,6 +1091,7 @@ export type UserUncheckedCreateWithoutTimeEntriesInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -1026,6 +1104,7 @@ export type UserUncheckedCreateWithoutTimeEntriesInput = {
   clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTimeEntriesInput = {
@@ -1050,6 +1129,7 @@ export type UserUpdateWithoutTimeEntriesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1062,6 +1142,7 @@ export type UserUpdateWithoutTimeEntriesInput = {
   clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTimeEntriesInput = {
@@ -1070,6 +1151,7 @@ export type UserUncheckedUpdateWithoutTimeEntriesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1082,6 +1164,7 @@ export type UserUncheckedUpdateWithoutTimeEntriesInput = {
   clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMappingRulesInput = {
@@ -1090,6 +1173,7 @@ export type UserCreateWithoutMappingRulesInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -1102,6 +1186,7 @@ export type UserCreateWithoutMappingRulesInput = {
   clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMappingRulesInput = {
@@ -1110,6 +1195,7 @@ export type UserUncheckedCreateWithoutMappingRulesInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -1122,6 +1208,7 @@ export type UserUncheckedCreateWithoutMappingRulesInput = {
   clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMappingRulesInput = {
@@ -1146,6 +1233,7 @@ export type UserUpdateWithoutMappingRulesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1158,6 +1246,7 @@ export type UserUpdateWithoutMappingRulesInput = {
   clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMappingRulesInput = {
@@ -1166,6 +1255,7 @@ export type UserUncheckedUpdateWithoutMappingRulesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1178,14 +1268,16 @@ export type UserUncheckedUpdateWithoutMappingRulesInput = {
   clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedUpdateManyWithoutUserNestedInput
 }
 
-export type UserCreateWithoutCalendarConnectionsInput = {
+export type UserCreateWithoutCalendarAccountsInput = {
   id?: string
   name?: string | null
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -1198,14 +1290,16 @@ export type UserCreateWithoutCalendarConnectionsInput = {
   clients?: Prisma.ClientCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
+  calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
 }
 
-export type UserUncheckedCreateWithoutCalendarConnectionsInput = {
+export type UserUncheckedCreateWithoutCalendarAccountsInput = {
   id?: string
   name?: string | null
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -1218,6 +1312,111 @@ export type UserUncheckedCreateWithoutCalendarConnectionsInput = {
   clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
+  calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCalendarAccountsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCalendarAccountsInput, Prisma.UserUncheckedCreateWithoutCalendarAccountsInput>
+}
+
+export type UserUpsertWithoutCalendarAccountsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCalendarAccountsInput, Prisma.UserUncheckedUpdateWithoutCalendarAccountsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCalendarAccountsInput, Prisma.UserUncheckedCreateWithoutCalendarAccountsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCalendarAccountsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCalendarAccountsInput, Prisma.UserUncheckedUpdateWithoutCalendarAccountsInput>
+}
+
+export type UserUpdateWithoutCalendarAccountsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
+  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
+  timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
+  mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
+  calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCalendarAccountsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
+  timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
+  mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
+  calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCalendarConnectionsInput = {
+  id?: string
+  name?: string | null
+  email: string
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  googleAccessToken?: string | null
+  googleRefreshToken?: string | null
+  googleTokenExpiry?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
+  tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientCreateNestedManyWithoutUserInput
+  timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
+  mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCalendarConnectionsInput = {
+  id?: string
+  name?: string | null
+  email: string
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  googleAccessToken?: string | null
+  googleRefreshToken?: string | null
+  googleTokenExpiry?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutUserInput
+  timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
+  mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCalendarConnectionsInput = {
@@ -1242,6 +1441,7 @@ export type UserUpdateWithoutCalendarConnectionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1254,6 +1454,7 @@ export type UserUpdateWithoutCalendarConnectionsInput = {
   clients?: Prisma.ClientUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCalendarConnectionsInput = {
@@ -1262,6 +1463,7 @@ export type UserUncheckedUpdateWithoutCalendarConnectionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1274,6 +1476,7 @@ export type UserUncheckedUpdateWithoutCalendarConnectionsInput = {
   clients?: Prisma.ClientUncheckedUpdateManyWithoutUserNestedInput
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutClientsInput = {
@@ -1282,6 +1485,7 @@ export type UserCreateWithoutClientsInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -1294,6 +1498,7 @@ export type UserCreateWithoutClientsInput = {
   timeEntries?: Prisma.TimeEntryCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutClientsInput = {
@@ -1302,6 +1507,7 @@ export type UserUncheckedCreateWithoutClientsInput = {
   email: string
   emailVerified?: Date | string | null
   image?: string | null
+  password?: string | null
   googleAccessToken?: string | null
   googleRefreshToken?: string | null
   googleTokenExpiry?: Date | string | null
@@ -1314,6 +1520,7 @@ export type UserUncheckedCreateWithoutClientsInput = {
   timeEntries?: Prisma.TimeEntryUncheckedCreateNestedManyWithoutUserInput
   mappingRules?: Prisma.MappingRuleUncheckedCreateNestedManyWithoutUserInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedCreateNestedManyWithoutUserInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutClientsInput = {
@@ -1338,6 +1545,7 @@ export type UserUpdateWithoutClientsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1350,6 +1558,7 @@ export type UserUpdateWithoutClientsInput = {
   timeEntries?: Prisma.TimeEntryUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutClientsInput = {
@@ -1358,6 +1567,7 @@ export type UserUncheckedUpdateWithoutClientsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleAccessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleRefreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1370,6 +1580,7 @@ export type UserUncheckedUpdateWithoutClientsInput = {
   timeEntries?: Prisma.TimeEntryUncheckedUpdateManyWithoutUserNestedInput
   mappingRules?: Prisma.MappingRuleUncheckedUpdateManyWithoutUserNestedInput
   calendarConnections?: Prisma.CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput
+  calendarAccounts?: Prisma.CalendarAccountUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1386,6 +1597,7 @@ export type UserCountOutputType = {
   timeEntries: number
   mappingRules: number
   calendarConnections: number
+  calendarAccounts: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1397,6 +1609,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   timeEntries?: boolean | UserCountOutputTypeCountTimeEntriesArgs
   mappingRules?: boolean | UserCountOutputTypeCountMappingRulesArgs
   calendarConnections?: boolean | UserCountOutputTypeCountCalendarConnectionsArgs
+  calendarAccounts?: boolean | UserCountOutputTypeCountCalendarAccountsArgs
 }
 
 /**
@@ -1465,6 +1678,13 @@ export type UserCountOutputTypeCountCalendarConnectionsArgs<ExtArgs extends runt
   where?: Prisma.CalendarConnectionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCalendarAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CalendarAccountWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1472,6 +1692,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   email?: boolean
   emailVerified?: boolean
   image?: boolean
+  password?: boolean
   googleAccessToken?: boolean
   googleRefreshToken?: boolean
   googleTokenExpiry?: boolean
@@ -1485,6 +1706,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   timeEntries?: boolean | Prisma.User$timeEntriesArgs<ExtArgs>
   mappingRules?: boolean | Prisma.User$mappingRulesArgs<ExtArgs>
   calendarConnections?: boolean | Prisma.User$calendarConnectionsArgs<ExtArgs>
+  calendarAccounts?: boolean | Prisma.User$calendarAccountsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1494,6 +1716,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   emailVerified?: boolean
   image?: boolean
+  password?: boolean
   googleAccessToken?: boolean
   googleRefreshToken?: boolean
   googleTokenExpiry?: boolean
@@ -1507,6 +1730,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   emailVerified?: boolean
   image?: boolean
+  password?: boolean
   googleAccessToken?: boolean
   googleRefreshToken?: boolean
   googleTokenExpiry?: boolean
@@ -1520,6 +1744,7 @@ export type UserSelectScalar = {
   email?: boolean
   emailVerified?: boolean
   image?: boolean
+  password?: boolean
   googleAccessToken?: boolean
   googleRefreshToken?: boolean
   googleTokenExpiry?: boolean
@@ -1527,7 +1752,7 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "googleAccessToken" | "googleRefreshToken" | "googleTokenExpiry" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "password" | "googleAccessToken" | "googleRefreshToken" | "googleTokenExpiry" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
@@ -1537,6 +1762,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   timeEntries?: boolean | Prisma.User$timeEntriesArgs<ExtArgs>
   mappingRules?: boolean | Prisma.User$mappingRulesArgs<ExtArgs>
   calendarConnections?: boolean | Prisma.User$calendarConnectionsArgs<ExtArgs>
+  calendarAccounts?: boolean | Prisma.User$calendarAccountsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1553,6 +1779,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     timeEntries: Prisma.$TimeEntryPayload<ExtArgs>[]
     mappingRules: Prisma.$MappingRulePayload<ExtArgs>[]
     calendarConnections: Prisma.$CalendarConnectionPayload<ExtArgs>[]
+    calendarAccounts: Prisma.$CalendarAccountPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1560,6 +1787,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     email: string
     emailVerified: Date | null
     image: string | null
+    password: string | null
     googleAccessToken: string | null
     googleRefreshToken: string | null
     googleTokenExpiry: Date | null
@@ -1967,6 +2195,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   timeEntries<T extends Prisma.User$timeEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$timeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mappingRules<T extends Prisma.User$mappingRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mappingRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MappingRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   calendarConnections<T extends Prisma.User$calendarConnectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$calendarConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CalendarConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  calendarAccounts<T extends Prisma.User$calendarAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$calendarAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CalendarAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2001,6 +2230,7 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly emailVerified: Prisma.FieldRef<"User", 'DateTime'>
   readonly image: Prisma.FieldRef<"User", 'String'>
+  readonly password: Prisma.FieldRef<"User", 'String'>
   readonly googleAccessToken: Prisma.FieldRef<"User", 'String'>
   readonly googleRefreshToken: Prisma.FieldRef<"User", 'String'>
   readonly googleTokenExpiry: Prisma.FieldRef<"User", 'DateTime'>
@@ -2588,6 +2818,30 @@ export type User$calendarConnectionsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.CalendarConnectionScalarFieldEnum | Prisma.CalendarConnectionScalarFieldEnum[]
+}
+
+/**
+ * User.calendarAccounts
+ */
+export type User$calendarAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CalendarAccount
+   */
+  select?: Prisma.CalendarAccountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CalendarAccount
+   */
+  omit?: Prisma.CalendarAccountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CalendarAccountInclude<ExtArgs> | null
+  where?: Prisma.CalendarAccountWhereInput
+  orderBy?: Prisma.CalendarAccountOrderByWithRelationInput | Prisma.CalendarAccountOrderByWithRelationInput[]
+  cursor?: Prisma.CalendarAccountWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CalendarAccountScalarFieldEnum | Prisma.CalendarAccountScalarFieldEnum[]
 }
 
 /**

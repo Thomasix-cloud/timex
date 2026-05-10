@@ -59,6 +59,7 @@ export const ModelName = {
   Tag: 'Tag',
   TimeEntry: 'TimeEntry',
   MappingRule: 'MappingRule',
+  CalendarAccount: 'CalendarAccount',
   CalendarConnection: 'CalendarConnection',
   Client: 'Client'
 } as const
@@ -85,6 +86,7 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
+  password: 'password',
   googleAccessToken: 'googleAccessToken',
   googleRefreshToken: 'googleRefreshToken',
   googleTokenExpiry: 'googleTokenExpiry',
@@ -195,6 +197,21 @@ export const MappingRuleScalarFieldEnum = {
 export type MappingRuleScalarFieldEnum = (typeof MappingRuleScalarFieldEnum)[keyof typeof MappingRuleScalarFieldEnum]
 
 
+export const CalendarAccountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  provider: 'provider',
+  email: 'email',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  tokenExpiry: 'tokenExpiry',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CalendarAccountScalarFieldEnum = (typeof CalendarAccountScalarFieldEnum)[keyof typeof CalendarAccountScalarFieldEnum]
+
+
 export const CalendarConnectionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -203,6 +220,7 @@ export const CalendarConnectionScalarFieldEnum = {
   calendarName: 'calendarName',
   syncEnabled: 'syncEnabled',
   lastSyncAt: 'lastSyncAt',
+  calendarAccountId: 'calendarAccountId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

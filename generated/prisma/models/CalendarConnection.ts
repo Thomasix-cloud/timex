@@ -32,6 +32,7 @@ export type CalendarConnectionMinAggregateOutputType = {
   calendarName: string | null
   syncEnabled: boolean | null
   lastSyncAt: Date | null
+  calendarAccountId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +45,7 @@ export type CalendarConnectionMaxAggregateOutputType = {
   calendarName: string | null
   syncEnabled: boolean | null
   lastSyncAt: Date | null
+  calendarAccountId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +58,7 @@ export type CalendarConnectionCountAggregateOutputType = {
   calendarName: number
   syncEnabled: number
   lastSyncAt: number
+  calendarAccountId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -70,6 +73,7 @@ export type CalendarConnectionMinAggregateInputType = {
   calendarName?: true
   syncEnabled?: true
   lastSyncAt?: true
+  calendarAccountId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +86,7 @@ export type CalendarConnectionMaxAggregateInputType = {
   calendarName?: true
   syncEnabled?: true
   lastSyncAt?: true
+  calendarAccountId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -94,6 +99,7 @@ export type CalendarConnectionCountAggregateInputType = {
   calendarName?: true
   syncEnabled?: true
   lastSyncAt?: true
+  calendarAccountId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -179,6 +185,7 @@ export type CalendarConnectionGroupByOutputType = {
   calendarName: string
   syncEnabled: boolean
   lastSyncAt: Date | null
+  calendarAccountId: string | null
   createdAt: Date
   updatedAt: Date
   _count: CalendarConnectionCountAggregateOutputType | null
@@ -212,9 +219,11 @@ export type CalendarConnectionWhereInput = {
   calendarName?: Prisma.StringFilter<"CalendarConnection"> | string
   syncEnabled?: Prisma.BoolFilter<"CalendarConnection"> | boolean
   lastSyncAt?: Prisma.DateTimeNullableFilter<"CalendarConnection"> | Date | string | null
+  calendarAccountId?: Prisma.StringNullableFilter<"CalendarConnection"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CalendarConnection"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CalendarConnection"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  calendarAccount?: Prisma.XOR<Prisma.CalendarAccountNullableScalarRelationFilter, Prisma.CalendarAccountWhereInput> | null
 }
 
 export type CalendarConnectionOrderByWithRelationInput = {
@@ -225,9 +234,11 @@ export type CalendarConnectionOrderByWithRelationInput = {
   calendarName?: Prisma.SortOrder
   syncEnabled?: Prisma.SortOrder
   lastSyncAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  calendarAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  calendarAccount?: Prisma.CalendarAccountOrderByWithRelationInput
 }
 
 export type CalendarConnectionWhereUniqueInput = Prisma.AtLeast<{
@@ -242,9 +253,11 @@ export type CalendarConnectionWhereUniqueInput = Prisma.AtLeast<{
   calendarName?: Prisma.StringFilter<"CalendarConnection"> | string
   syncEnabled?: Prisma.BoolFilter<"CalendarConnection"> | boolean
   lastSyncAt?: Prisma.DateTimeNullableFilter<"CalendarConnection"> | Date | string | null
+  calendarAccountId?: Prisma.StringNullableFilter<"CalendarConnection"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CalendarConnection"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CalendarConnection"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  calendarAccount?: Prisma.XOR<Prisma.CalendarAccountNullableScalarRelationFilter, Prisma.CalendarAccountWhereInput> | null
 }, "id" | "userId_provider_calendarId">
 
 export type CalendarConnectionOrderByWithAggregationInput = {
@@ -255,6 +268,7 @@ export type CalendarConnectionOrderByWithAggregationInput = {
   calendarName?: Prisma.SortOrder
   syncEnabled?: Prisma.SortOrder
   lastSyncAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  calendarAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CalendarConnectionCountOrderByAggregateInput
@@ -273,6 +287,7 @@ export type CalendarConnectionScalarWhereWithAggregatesInput = {
   calendarName?: Prisma.StringWithAggregatesFilter<"CalendarConnection"> | string
   syncEnabled?: Prisma.BoolWithAggregatesFilter<"CalendarConnection"> | boolean
   lastSyncAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CalendarConnection"> | Date | string | null
+  calendarAccountId?: Prisma.StringNullableWithAggregatesFilter<"CalendarConnection"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CalendarConnection"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CalendarConnection"> | Date | string
 }
@@ -287,6 +302,7 @@ export type CalendarConnectionCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCalendarConnectionsInput
+  calendarAccount?: Prisma.CalendarAccountCreateNestedOneWithoutConnectionsInput
 }
 
 export type CalendarConnectionUncheckedCreateInput = {
@@ -297,6 +313,7 @@ export type CalendarConnectionUncheckedCreateInput = {
   calendarName?: string
   syncEnabled?: boolean
   lastSyncAt?: Date | string | null
+  calendarAccountId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -311,6 +328,7 @@ export type CalendarConnectionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCalendarConnectionsNestedInput
+  calendarAccount?: Prisma.CalendarAccountUpdateOneWithoutConnectionsNestedInput
 }
 
 export type CalendarConnectionUncheckedUpdateInput = {
@@ -321,6 +339,7 @@ export type CalendarConnectionUncheckedUpdateInput = {
   calendarName?: Prisma.StringFieldUpdateOperationsInput | string
   syncEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  calendarAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -333,6 +352,7 @@ export type CalendarConnectionCreateManyInput = {
   calendarName?: string
   syncEnabled?: boolean
   lastSyncAt?: Date | string | null
+  calendarAccountId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -356,6 +376,7 @@ export type CalendarConnectionUncheckedUpdateManyInput = {
   calendarName?: Prisma.StringFieldUpdateOperationsInput | string
   syncEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  calendarAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -384,6 +405,7 @@ export type CalendarConnectionCountOrderByAggregateInput = {
   calendarName?: Prisma.SortOrder
   syncEnabled?: Prisma.SortOrder
   lastSyncAt?: Prisma.SortOrder
+  calendarAccountId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -396,6 +418,7 @@ export type CalendarConnectionMaxOrderByAggregateInput = {
   calendarName?: Prisma.SortOrder
   syncEnabled?: Prisma.SortOrder
   lastSyncAt?: Prisma.SortOrder
+  calendarAccountId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -408,6 +431,7 @@ export type CalendarConnectionMinOrderByAggregateInput = {
   calendarName?: Prisma.SortOrder
   syncEnabled?: Prisma.SortOrder
   lastSyncAt?: Prisma.SortOrder
+  calendarAccountId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -454,6 +478,48 @@ export type CalendarConnectionUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.CalendarConnectionScalarWhereInput | Prisma.CalendarConnectionScalarWhereInput[]
 }
 
+export type CalendarConnectionCreateNestedManyWithoutCalendarAccountInput = {
+  create?: Prisma.XOR<Prisma.CalendarConnectionCreateWithoutCalendarAccountInput, Prisma.CalendarConnectionUncheckedCreateWithoutCalendarAccountInput> | Prisma.CalendarConnectionCreateWithoutCalendarAccountInput[] | Prisma.CalendarConnectionUncheckedCreateWithoutCalendarAccountInput[]
+  connectOrCreate?: Prisma.CalendarConnectionCreateOrConnectWithoutCalendarAccountInput | Prisma.CalendarConnectionCreateOrConnectWithoutCalendarAccountInput[]
+  createMany?: Prisma.CalendarConnectionCreateManyCalendarAccountInputEnvelope
+  connect?: Prisma.CalendarConnectionWhereUniqueInput | Prisma.CalendarConnectionWhereUniqueInput[]
+}
+
+export type CalendarConnectionUncheckedCreateNestedManyWithoutCalendarAccountInput = {
+  create?: Prisma.XOR<Prisma.CalendarConnectionCreateWithoutCalendarAccountInput, Prisma.CalendarConnectionUncheckedCreateWithoutCalendarAccountInput> | Prisma.CalendarConnectionCreateWithoutCalendarAccountInput[] | Prisma.CalendarConnectionUncheckedCreateWithoutCalendarAccountInput[]
+  connectOrCreate?: Prisma.CalendarConnectionCreateOrConnectWithoutCalendarAccountInput | Prisma.CalendarConnectionCreateOrConnectWithoutCalendarAccountInput[]
+  createMany?: Prisma.CalendarConnectionCreateManyCalendarAccountInputEnvelope
+  connect?: Prisma.CalendarConnectionWhereUniqueInput | Prisma.CalendarConnectionWhereUniqueInput[]
+}
+
+export type CalendarConnectionUpdateManyWithoutCalendarAccountNestedInput = {
+  create?: Prisma.XOR<Prisma.CalendarConnectionCreateWithoutCalendarAccountInput, Prisma.CalendarConnectionUncheckedCreateWithoutCalendarAccountInput> | Prisma.CalendarConnectionCreateWithoutCalendarAccountInput[] | Prisma.CalendarConnectionUncheckedCreateWithoutCalendarAccountInput[]
+  connectOrCreate?: Prisma.CalendarConnectionCreateOrConnectWithoutCalendarAccountInput | Prisma.CalendarConnectionCreateOrConnectWithoutCalendarAccountInput[]
+  upsert?: Prisma.CalendarConnectionUpsertWithWhereUniqueWithoutCalendarAccountInput | Prisma.CalendarConnectionUpsertWithWhereUniqueWithoutCalendarAccountInput[]
+  createMany?: Prisma.CalendarConnectionCreateManyCalendarAccountInputEnvelope
+  set?: Prisma.CalendarConnectionWhereUniqueInput | Prisma.CalendarConnectionWhereUniqueInput[]
+  disconnect?: Prisma.CalendarConnectionWhereUniqueInput | Prisma.CalendarConnectionWhereUniqueInput[]
+  delete?: Prisma.CalendarConnectionWhereUniqueInput | Prisma.CalendarConnectionWhereUniqueInput[]
+  connect?: Prisma.CalendarConnectionWhereUniqueInput | Prisma.CalendarConnectionWhereUniqueInput[]
+  update?: Prisma.CalendarConnectionUpdateWithWhereUniqueWithoutCalendarAccountInput | Prisma.CalendarConnectionUpdateWithWhereUniqueWithoutCalendarAccountInput[]
+  updateMany?: Prisma.CalendarConnectionUpdateManyWithWhereWithoutCalendarAccountInput | Prisma.CalendarConnectionUpdateManyWithWhereWithoutCalendarAccountInput[]
+  deleteMany?: Prisma.CalendarConnectionScalarWhereInput | Prisma.CalendarConnectionScalarWhereInput[]
+}
+
+export type CalendarConnectionUncheckedUpdateManyWithoutCalendarAccountNestedInput = {
+  create?: Prisma.XOR<Prisma.CalendarConnectionCreateWithoutCalendarAccountInput, Prisma.CalendarConnectionUncheckedCreateWithoutCalendarAccountInput> | Prisma.CalendarConnectionCreateWithoutCalendarAccountInput[] | Prisma.CalendarConnectionUncheckedCreateWithoutCalendarAccountInput[]
+  connectOrCreate?: Prisma.CalendarConnectionCreateOrConnectWithoutCalendarAccountInput | Prisma.CalendarConnectionCreateOrConnectWithoutCalendarAccountInput[]
+  upsert?: Prisma.CalendarConnectionUpsertWithWhereUniqueWithoutCalendarAccountInput | Prisma.CalendarConnectionUpsertWithWhereUniqueWithoutCalendarAccountInput[]
+  createMany?: Prisma.CalendarConnectionCreateManyCalendarAccountInputEnvelope
+  set?: Prisma.CalendarConnectionWhereUniqueInput | Prisma.CalendarConnectionWhereUniqueInput[]
+  disconnect?: Prisma.CalendarConnectionWhereUniqueInput | Prisma.CalendarConnectionWhereUniqueInput[]
+  delete?: Prisma.CalendarConnectionWhereUniqueInput | Prisma.CalendarConnectionWhereUniqueInput[]
+  connect?: Prisma.CalendarConnectionWhereUniqueInput | Prisma.CalendarConnectionWhereUniqueInput[]
+  update?: Prisma.CalendarConnectionUpdateWithWhereUniqueWithoutCalendarAccountInput | Prisma.CalendarConnectionUpdateWithWhereUniqueWithoutCalendarAccountInput[]
+  updateMany?: Prisma.CalendarConnectionUpdateManyWithWhereWithoutCalendarAccountInput | Prisma.CalendarConnectionUpdateManyWithWhereWithoutCalendarAccountInput[]
+  deleteMany?: Prisma.CalendarConnectionScalarWhereInput | Prisma.CalendarConnectionScalarWhereInput[]
+}
+
 export type CalendarConnectionCreateWithoutUserInput = {
   id?: string
   provider?: string
@@ -463,6 +529,7 @@ export type CalendarConnectionCreateWithoutUserInput = {
   lastSyncAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  calendarAccount?: Prisma.CalendarAccountCreateNestedOneWithoutConnectionsInput
 }
 
 export type CalendarConnectionUncheckedCreateWithoutUserInput = {
@@ -472,6 +539,7 @@ export type CalendarConnectionUncheckedCreateWithoutUserInput = {
   calendarName?: string
   syncEnabled?: boolean
   lastSyncAt?: Date | string | null
+  calendarAccountId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -513,8 +581,59 @@ export type CalendarConnectionScalarWhereInput = {
   calendarName?: Prisma.StringFilter<"CalendarConnection"> | string
   syncEnabled?: Prisma.BoolFilter<"CalendarConnection"> | boolean
   lastSyncAt?: Prisma.DateTimeNullableFilter<"CalendarConnection"> | Date | string | null
+  calendarAccountId?: Prisma.StringNullableFilter<"CalendarConnection"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CalendarConnection"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CalendarConnection"> | Date | string
+}
+
+export type CalendarConnectionCreateWithoutCalendarAccountInput = {
+  id?: string
+  provider?: string
+  calendarId: string
+  calendarName?: string
+  syncEnabled?: boolean
+  lastSyncAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutCalendarConnectionsInput
+}
+
+export type CalendarConnectionUncheckedCreateWithoutCalendarAccountInput = {
+  id?: string
+  userId: string
+  provider?: string
+  calendarId: string
+  calendarName?: string
+  syncEnabled?: boolean
+  lastSyncAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CalendarConnectionCreateOrConnectWithoutCalendarAccountInput = {
+  where: Prisma.CalendarConnectionWhereUniqueInput
+  create: Prisma.XOR<Prisma.CalendarConnectionCreateWithoutCalendarAccountInput, Prisma.CalendarConnectionUncheckedCreateWithoutCalendarAccountInput>
+}
+
+export type CalendarConnectionCreateManyCalendarAccountInputEnvelope = {
+  data: Prisma.CalendarConnectionCreateManyCalendarAccountInput | Prisma.CalendarConnectionCreateManyCalendarAccountInput[]
+  skipDuplicates?: boolean
+}
+
+export type CalendarConnectionUpsertWithWhereUniqueWithoutCalendarAccountInput = {
+  where: Prisma.CalendarConnectionWhereUniqueInput
+  update: Prisma.XOR<Prisma.CalendarConnectionUpdateWithoutCalendarAccountInput, Prisma.CalendarConnectionUncheckedUpdateWithoutCalendarAccountInput>
+  create: Prisma.XOR<Prisma.CalendarConnectionCreateWithoutCalendarAccountInput, Prisma.CalendarConnectionUncheckedCreateWithoutCalendarAccountInput>
+}
+
+export type CalendarConnectionUpdateWithWhereUniqueWithoutCalendarAccountInput = {
+  where: Prisma.CalendarConnectionWhereUniqueInput
+  data: Prisma.XOR<Prisma.CalendarConnectionUpdateWithoutCalendarAccountInput, Prisma.CalendarConnectionUncheckedUpdateWithoutCalendarAccountInput>
+}
+
+export type CalendarConnectionUpdateManyWithWhereWithoutCalendarAccountInput = {
+  where: Prisma.CalendarConnectionScalarWhereInput
+  data: Prisma.XOR<Prisma.CalendarConnectionUpdateManyMutationInput, Prisma.CalendarConnectionUncheckedUpdateManyWithoutCalendarAccountInput>
 }
 
 export type CalendarConnectionCreateManyUserInput = {
@@ -524,6 +643,7 @@ export type CalendarConnectionCreateManyUserInput = {
   calendarName?: string
   syncEnabled?: boolean
   lastSyncAt?: Date | string | null
+  calendarAccountId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -537,6 +657,7 @@ export type CalendarConnectionUpdateWithoutUserInput = {
   lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  calendarAccount?: Prisma.CalendarAccountUpdateOneWithoutConnectionsNestedInput
 }
 
 export type CalendarConnectionUncheckedUpdateWithoutUserInput = {
@@ -546,12 +667,62 @@ export type CalendarConnectionUncheckedUpdateWithoutUserInput = {
   calendarName?: Prisma.StringFieldUpdateOperationsInput | string
   syncEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  calendarAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CalendarConnectionUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarId?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarName?: Prisma.StringFieldUpdateOperationsInput | string
+  syncEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  calendarAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CalendarConnectionCreateManyCalendarAccountInput = {
+  id?: string
+  userId: string
+  provider?: string
+  calendarId: string
+  calendarName?: string
+  syncEnabled?: boolean
+  lastSyncAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CalendarConnectionUpdateWithoutCalendarAccountInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarId?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarName?: Prisma.StringFieldUpdateOperationsInput | string
+  syncEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutCalendarConnectionsNestedInput
+}
+
+export type CalendarConnectionUncheckedUpdateWithoutCalendarAccountInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarId?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarName?: Prisma.StringFieldUpdateOperationsInput | string
+  syncEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CalendarConnectionUncheckedUpdateManyWithoutCalendarAccountInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   calendarId?: Prisma.StringFieldUpdateOperationsInput | string
   calendarName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -571,9 +742,11 @@ export type CalendarConnectionSelect<ExtArgs extends runtime.Types.Extensions.In
   calendarName?: boolean
   syncEnabled?: boolean
   lastSyncAt?: boolean
+  calendarAccountId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  calendarAccount?: boolean | Prisma.CalendarConnection$calendarAccountArgs<ExtArgs>
 }, ExtArgs["result"]["calendarConnection"]>
 
 export type CalendarConnectionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -584,9 +757,11 @@ export type CalendarConnectionSelectCreateManyAndReturn<ExtArgs extends runtime.
   calendarName?: boolean
   syncEnabled?: boolean
   lastSyncAt?: boolean
+  calendarAccountId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  calendarAccount?: boolean | Prisma.CalendarConnection$calendarAccountArgs<ExtArgs>
 }, ExtArgs["result"]["calendarConnection"]>
 
 export type CalendarConnectionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -597,9 +772,11 @@ export type CalendarConnectionSelectUpdateManyAndReturn<ExtArgs extends runtime.
   calendarName?: boolean
   syncEnabled?: boolean
   lastSyncAt?: boolean
+  calendarAccountId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  calendarAccount?: boolean | Prisma.CalendarConnection$calendarAccountArgs<ExtArgs>
 }, ExtArgs["result"]["calendarConnection"]>
 
 export type CalendarConnectionSelectScalar = {
@@ -610,25 +787,30 @@ export type CalendarConnectionSelectScalar = {
   calendarName?: boolean
   syncEnabled?: boolean
   lastSyncAt?: boolean
+  calendarAccountId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CalendarConnectionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "provider" | "calendarId" | "calendarName" | "syncEnabled" | "lastSyncAt" | "createdAt" | "updatedAt", ExtArgs["result"]["calendarConnection"]>
+export type CalendarConnectionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "provider" | "calendarId" | "calendarName" | "syncEnabled" | "lastSyncAt" | "calendarAccountId" | "createdAt" | "updatedAt", ExtArgs["result"]["calendarConnection"]>
 export type CalendarConnectionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  calendarAccount?: boolean | Prisma.CalendarConnection$calendarAccountArgs<ExtArgs>
 }
 export type CalendarConnectionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  calendarAccount?: boolean | Prisma.CalendarConnection$calendarAccountArgs<ExtArgs>
 }
 export type CalendarConnectionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  calendarAccount?: boolean | Prisma.CalendarConnection$calendarAccountArgs<ExtArgs>
 }
 
 export type $CalendarConnectionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CalendarConnection"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    calendarAccount: Prisma.$CalendarAccountPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -638,6 +820,7 @@ export type $CalendarConnectionPayload<ExtArgs extends runtime.Types.Extensions.
     calendarName: string
     syncEnabled: boolean
     lastSyncAt: Date | null
+    calendarAccountId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["calendarConnection"]>
@@ -1035,6 +1218,7 @@ readonly fields: CalendarConnectionFieldRefs;
 export interface Prisma__CalendarConnectionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  calendarAccount<T extends Prisma.CalendarConnection$calendarAccountArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CalendarConnection$calendarAccountArgs<ExtArgs>>): Prisma.Prisma__CalendarAccountClient<runtime.Types.Result.GetResult<Prisma.$CalendarAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1071,6 +1255,7 @@ export interface CalendarConnectionFieldRefs {
   readonly calendarName: Prisma.FieldRef<"CalendarConnection", 'String'>
   readonly syncEnabled: Prisma.FieldRef<"CalendarConnection", 'Boolean'>
   readonly lastSyncAt: Prisma.FieldRef<"CalendarConnection", 'DateTime'>
+  readonly calendarAccountId: Prisma.FieldRef<"CalendarConnection", 'String'>
   readonly createdAt: Prisma.FieldRef<"CalendarConnection", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CalendarConnection", 'DateTime'>
 }
@@ -1471,6 +1656,25 @@ export type CalendarConnectionDeleteManyArgs<ExtArgs extends runtime.Types.Exten
    * Limit how many CalendarConnections to delete.
    */
   limit?: number
+}
+
+/**
+ * CalendarConnection.calendarAccount
+ */
+export type CalendarConnection$calendarAccountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CalendarAccount
+   */
+  select?: Prisma.CalendarAccountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CalendarAccount
+   */
+  omit?: Prisma.CalendarAccountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CalendarAccountInclude<ExtArgs> | null
+  where?: Prisma.CalendarAccountWhereInput
 }
 
 /**
