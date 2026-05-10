@@ -133,12 +133,18 @@ export async function listCalendars(userId: string) {
   });
 
   const allCalendars: Array<{ id: string; name: string; primary: boolean; accountId: string | null; accountEmail: string }> = [];
+  const seenCalendarIds = new Set<string>();
 
   // Try each CalendarAccount individually (skip failed ones)
   for (const acct of calendarAccounts) {
     try {
       const cals = await listCalendarsForAccount(acct);
-      allCalendars.push(...cals.map(c => ({ ...c, accountId: acct.id, accountEmail: acct.email })));
+      for (const c of cals) {
+        if (!seenCalendarIds.has(c.id)) {
+          seenCalendarIds.add(c.id);
+          allCalendars.push({ ...c, accountId: acct.id, accountEmail: acct.email });
+        }
+      }
     } catch (e) {
       console.error(`Failed to list calendars for account ${acct.email}:`, e instanceof Error ? e.message : e);
     }
@@ -157,10 +163,9 @@ export async function listCalendars(userId: string) {
         accountId: null as string | null,
         accountEmail: "" as string,
       })) ?? [];
-      // Only add legacy calendars not already present from CalendarAccount
-      const existingIds = new Set(allCalendars.map(c => c.id));
       for (const cal of legacyCals) {
-        if (!existingIds.has(cal.id)) {
+        if (!seenCalendarIds.has(cal.id)) {
+          seenCalendarIds.add(cal.id);
           allCalendars.push(cal);
         }
       }
