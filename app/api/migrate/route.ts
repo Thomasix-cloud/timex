@@ -35,6 +35,17 @@ export async function GET() {
     // Project columns
     `ALTER TABLE "Project" ADD COLUMN IF NOT EXISTS "clientId" TEXT`,
     `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'Project_clientId_fkey') THEN ALTER TABLE "Project" ADD CONSTRAINT "Project_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE SET NULL; END IF; END $$`,
+    // User password for credentials login
+    `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "password" TEXT`,
+    // CalendarAccount table
+    `CREATE TABLE IF NOT EXISTS "CalendarAccount" ("id" TEXT NOT NULL, "userId" TEXT NOT NULL, "provider" TEXT NOT NULL DEFAULT 'google', "email" TEXT NOT NULL, "accessToken" TEXT NOT NULL, "refreshToken" TEXT, "tokenExpiry" TIMESTAMP(3), "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, CONSTRAINT "CalendarAccount_pkey" PRIMARY KEY ("id"))`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS "CalendarAccount_userId_provider_email_key" ON "CalendarAccount"("userId", "provider", "email")`,
+    `CREATE INDEX IF NOT EXISTS "CalendarAccount_userId_idx" ON "CalendarAccount"("userId")`,
+    `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'CalendarAccount_userId_fkey') THEN ALTER TABLE "CalendarAccount" ADD CONSTRAINT "CalendarAccount_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE; END IF; END $$`,
+    // CalendarConnection -> CalendarAccount link
+    `ALTER TABLE "CalendarConnection" ADD COLUMN IF NOT EXISTS "calendarAccountId" TEXT`,
+    `CREATE INDEX IF NOT EXISTS "CalendarConnection_calendarAccountId_idx" ON "CalendarConnection"("calendarAccountId")`,
+    `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'CalendarConnection_calendarAccountId_fkey') THEN ALTER TABLE "CalendarConnection" ADD CONSTRAINT "CalendarConnection_calendarAccountId_fkey" FOREIGN KEY ("calendarAccountId") REFERENCES "CalendarAccount"("id") ON DELETE SET NULL; END IF; END $$`,
   ];
 
   for (const sql of migrations) {

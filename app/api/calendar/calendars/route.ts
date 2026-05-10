@@ -49,7 +49,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("Failed to list calendars:", error);
     return NextResponse.json(
-      { error: "Failed to list calendars. Please connect a Google calendar account." },
+      { error: "Failed to list calendars", detail: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

@@ -19,6 +19,8 @@ import {
   Plus,
   Trash2,
   Mail,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { ProjectsTab } from '@/components/settings/projects-tab';
 import { ClientsTab } from '@/components/settings/clients-tab';
@@ -68,6 +70,7 @@ export default function SettingsPage() {
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [connecting, setConnecting] = useState(false);
+  const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
 
   const fetchAccounts = async () => {
     try {
@@ -89,7 +92,7 @@ export default function SettingsPage() {
         setCalendars(await res.json());
       } else {
         const data = await res.json();
-        setError(data.error || 'Failed to load calendars');
+        setError(data.detail || data.error || 'Failed to load calendars');
       }
     } catch {
       setError('No calendar accounts connected.');
@@ -242,44 +245,6 @@ export default function SettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Connected Accounts */}
-              {accounts.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-muted-foreground">
-                    Connected Accounts
-                  </h3>
-                  <div className="space-y-2">
-                    {accounts.map((account) => (
-                      <div
-                        key={account.id}
-                        className="flex items-center justify-between rounded-md border p-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Mail className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="text-sm font-medium">
-                              {account.email}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {account.connections.filter((c) => c.syncEnabled)
-                                .length}{' '}
-                              calendars syncing
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => disconnectAccount(account.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {accounts.length === 0 && !loading && (
                 <div className="text-center py-6 space-y-3">
                   <Calendar className="h-10 w-10 mx-auto text-muted-foreground" />
@@ -298,91 +263,164 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              {/* Calendars */}
-              {loading ? (
+              {/* Loading */}
+              {loading && (
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Loading calendars...
                 </div>
-              ) : error && accounts.length > 0 ? (
+              )}
+
+              {/* Error */}
+              {error && accounts.length > 0 && !loading && (
                 <div className="space-y-2">
                   <p className="text-sm text-destructive">{error}</p>
                   <Button variant="outline" size="sm" onClick={fetchCalendars}>
                     Retry
                   </Button>
                 </div>
-              ) : calendars.length > 0 ? (
-                <>
-                  <Separator />
-                  <div className="space-y-4">
-                    {/* Group calendars by account */}
-                    {accounts.map((account) => {
-                      const accountCalendars = calendars.filter(
-                        (c) => c.accountId === account.id,
-                      );
-                      if (accountCalendars.length === 0) return null;
-                      return (
-                        <div key={account.id} className="space-y-2">
-                          <h4 className="text-sm font-medium flex items-center gap-2">
-                            <Mail className="h-3.5 w-3.5" />
-                            {account.email}
-                          </h4>
-                          <div className="space-y-2 ml-5">
-                            {accountCalendars.map((cal) => (
+              )}
+
+              {/* Accounts with calendars */}
+              {!loading && accounts.map((account) => {
+                const accountCalendars = calendars.filter(
+                  (c) => c.accountId === account.id,
+                );
+                // Also include legacy calendars (accountId === null) for the first account
+                const legacyCalendars = accounts.indexOf(account) === 0
+                  ? calendars.filter((c) => c.accountId === null)
+                  : [];
+                const allAccountCalendars = [...accountCalendars, ...legacyCalendars];
+
+                const syncedCalendars = allAccountCalendars.filter(
+                  (c) => c.connection?.syncEnabled,
+                );
+                const otherCalendars = allAccountCalendars.filter(
+                  (c) => !c.connection?.syncEnabled,
+                );
+                const isExpanded = expandedAccounts.has(account.id);
+
+                return (
+                  <div key={account.id} className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <p className="text-sm font-medium">{account.email}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {syncedCalendars.length} of {allAccountCalendars.length} calendars syncing
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => disconnectAccount(account.id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+
+                    {/* Synced calendars - always visible */}
+                    {syncedCalendars.length > 0 && (
+                      <div className="space-y-1.5 ml-7">
+                        {syncedCalendars.map((cal) => (
+                          <div
+                            key={cal.id}
+                            className="flex items-center justify-between rounded-md border p-2.5"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                              <div>
+                                <p className="text-sm font-medium">{cal.name}</p>
+                                {cal.primary && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    Primary
+                                  </Badge>
+                                )}
+                                {cal.connection?.lastSyncAt && (
+                                  <p className="text-xs text-muted-foreground">
+                                    Last synced:{' '}
+                                    {new Date(cal.connection.lastSyncAt).toLocaleString()}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => toggleCalendar(cal)}
+                            >
+                              Disable
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Other calendars - behind expand button */}
+                    {otherCalendars.length > 0 && (
+                      <div className="ml-7">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-muted-foreground"
+                          onClick={() => {
+                            setExpandedAccounts((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(account.id)) {
+                                next.delete(account.id);
+                              } else {
+                                next.add(account.id);
+                              }
+                              return next;
+                            });
+                          }}
+                        >
+                          {isExpanded ? (
+                            <ChevronUp className="mr-1.5 h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="mr-1.5 h-4 w-4" />
+                          )}
+                          {otherCalendars.length} more calendars
+                        </Button>
+                        {isExpanded && (
+                          <div className="space-y-1.5 mt-1.5">
+                            {otherCalendars.map((cal) => (
                               <div
                                 key={cal.id}
-                                className="flex items-center justify-between rounded-md border p-3"
+                                className="flex items-center justify-between rounded-md border border-dashed p-2.5"
                               >
-                                <div className="flex items-center gap-3">
-                                  {cal.connection?.syncEnabled ? (
-                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                  ) : (
-                                    <XCircle className="h-4 w-4 text-muted-foreground" />
-                                  )}
+                                <div className="flex items-center gap-2.5">
+                                  <XCircle className="h-4 w-4 text-muted-foreground shrink-0" />
                                   <div>
-                                    <p className="text-sm font-medium">
-                                      {cal.name}
-                                    </p>
+                                    <p className="text-sm">{cal.name}</p>
                                     {cal.primary && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="text-xs"
-                                      >
+                                      <Badge variant="secondary" className="text-xs">
                                         Primary
                                       </Badge>
-                                    )}
-                                    {cal.connection?.lastSyncAt && (
-                                      <p className="text-xs text-muted-foreground">
-                                        Last synced:{' '}
-                                        {new Date(
-                                          cal.connection.lastSyncAt,
-                                        ).toLocaleString()}
-                                      </p>
                                     )}
                                   </div>
                                 </div>
                                 <Button
-                                  variant={
-                                    cal.connection?.syncEnabled
-                                      ? 'destructive'
-                                      : 'default'
-                                  }
                                   size="sm"
                                   onClick={() => toggleCalendar(cal)}
                                 >
-                                  {cal.connection?.syncEnabled
-                                    ? 'Disable'
-                                    : 'Enable'}
+                                  Enable
                                 </Button>
                               </div>
                             ))}
                           </div>
-                        </div>
-                      );
-                    })}
+                        )}
+                      </div>
+                    )}
+
+                    {accounts.indexOf(account) < accounts.length - 1 && (
+                      <Separator />
+                    )}
                   </div>
-                </>
-              ) : null}
+                );
+              })}
 
               {syncResult && (
                 <>

@@ -19,10 +19,11 @@ type CalendarAccountTokens = {
 };
 
 function createOAuth2Client() {
+  const baseUrl = process.env.AUTH_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
   return new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    `${process.env.NEXTAUTH_URL}/api/calendar/callback`
+    `${baseUrl}/api/calendar/callback`
   );
 }
 
@@ -131,33 +132,48 @@ export async function listCalendars(userId: string) {
     where: { userId, provider: "google" },
   });
 
-  if (calendarAccounts.length > 0) {
-    const allCalendars: Array<{ id: string; name: string; primary: boolean; accountId: string; accountEmail: string }> = [];
-    for (const acct of calendarAccounts) {
+  const allCalendars: Array<{ id: string; name: string; primary: boolean; accountId: string | null; accountEmail: string }> = [];
+
+  // Try each CalendarAccount individually (skip failed ones)
+  for (const acct of calendarAccounts) {
+    try {
       const cals = await listCalendarsForAccount(acct);
       allCalendars.push(...cals.map(c => ({ ...c, accountId: acct.id, accountEmail: acct.email })));
+    } catch (e) {
+      console.error(`Failed to list calendars for account ${acct.email}:`, e instanceof Error ? e.message : e);
     }
-    return allCalendars;
   }
 
-  // Legacy fallback
-  const auth = await getOAuth2ClientLegacy(userId);
-  if (!auth) {
-    throw new Error("No Google tokens found. Please connect a calendar account.");
+  // Also try legacy Account tokens (from NextAuth Google login)
+  try {
+    const legacyAuth = await getOAuth2ClientLegacy(userId);
+    if (legacyAuth) {
+      const calendar = google.calendar({ version: "v3", auth: legacyAuth });
+      const res = await calendar.calendarList.list();
+      const legacyCals = res.data.items?.map((cal) => ({
+        id: cal.id!,
+        name: cal.summary ?? cal.id!,
+        primary: cal.primary ?? false,
+        accountId: null as string | null,
+        accountEmail: "" as string,
+      })) ?? [];
+      // Only add legacy calendars not already present from CalendarAccount
+      const existingIds = new Set(allCalendars.map(c => c.id));
+      for (const cal of legacyCals) {
+        if (!existingIds.has(cal.id)) {
+          allCalendars.push(cal);
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Failed to list calendars via legacy tokens:", e instanceof Error ? e.message : e);
   }
 
-  const calendar = google.calendar({ version: "v3", auth });
-  const res = await calendar.calendarList.list();
+  if (allCalendars.length === 0) {
+    throw new Error("No Google tokens found or all accounts failed. Please reconnect a calendar account.");
+  }
 
-  return (
-    res.data.items?.map((cal) => ({
-      id: cal.id!,
-      name: cal.summary ?? cal.id!,
-      primary: cal.primary ?? false,
-      accountId: null as string | null,
-      accountEmail: "" as string,
-    })) ?? []
-  );
+  return allCalendars;
 }
 
 export async function fetchCalendarEventsForAccount(
