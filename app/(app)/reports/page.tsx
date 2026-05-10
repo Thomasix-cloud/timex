@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   format,
+  startOfDay,
+  endOfDay,
   startOfWeek,
   endOfWeek,
   startOfMonth,
@@ -13,7 +15,7 @@ import {
   subWeeks,
   subMonths,
 } from 'date-fns';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3, Download, FileText } from 'lucide-react';
 
 type ProjectReport = {
   name: string;
@@ -28,6 +30,34 @@ type DayReport = {
   count: number;
 };
 
+type Client = { id: string; name: string; color: string };
+
+const sourceFilters = [
+  { key: 'all', label: 'All' },
+  { key: 'tracker', label: 'Tracker' },
+  { key: 'calendar', label: 'Calendar' },
+  { key: 'manual', label: 'Manual' },
+] as const;
+type SourceKey = (typeof sourceFilters)[number]['key'];
+
+const periods = [
+  { key: 'today', label: 'Today' },
+  { key: 'this-week', label: 'This Week' },
+  { key: 'last-week', label: 'Last Week' },
+  { key: 'this-month', label: 'This Month' },
+  { key: 'last-month', label: 'Last Month' },
+] as const;
+type PeriodKey = (typeof periods)[number]['key'];
+
+type DetailEntry = {
+  date: string;
+  project: string;
+  tag: string;
+  description: string;
+  hours: number;
+  client: string;
+};
+
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -39,27 +69,83 @@ function formatHours(seconds: number): string {
 }
 
 export default function ReportsPage() {
-  const [period, setPeriod] = useState<'week' | 'month'>('week');
+  const [period, setPeriod] = useState<PeriodKey>('this-week');
   const [projectData, setProjectData] = useState<ProjectReport[]>([]);
   const [dayData, setDayData] = useState<DayReport[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filtersReady, setFiltersReady] = useState(false);
+
+  // Filter state
+  const [sourceFilter, setSourceFilter] = useState<SourceKey>('all');
+  const [clientFilter, setClientFilter] = useState('all');
+  const [billableFilter, setBillableFilter] = useState('all');
+  const [clients, setClients] = useState<Client[]>([]);
+
+  // Load saved filters from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('reports-filters');
+      if (saved) {
+        const f = JSON.parse(saved);
+        if (f.period && periods.some((p) => p.key === f.period)) setPeriod(f.period);
+        if (f.source && sourceFilters.some((s) => s.key === f.source)) setSourceFilter(f.source);
+        if (f.client) setClientFilter(f.client);
+        if (f.billable) setBillableFilter(f.billable);
+      }
+    } catch {}
+    setFiltersReady(true);
+  }, []);
+
+  // Persist filters to localStorage
+  useEffect(() => {
+    if (!filtersReady) return;
+    localStorage.setItem('reports-filters', JSON.stringify({
+      period,
+      source: sourceFilter,
+      client: clientFilter,
+      billable: billableFilter,
+    }));
+  }, [period, sourceFilter, clientFilter, billableFilter, filtersReady]);
+
+  useEffect(() => {
+    fetch('/api/clients')
+      .then((r) => (r.ok ? r.json() : []))
+      .then(setClients);
+  }, []);
 
   const getDateRange = () => {
     const now = new Date();
-    if (period === 'week') {
-      return {
-        from: startOfWeek(now, { weekStartsOn: 1 }),
-        to: endOfWeek(now, { weekStartsOn: 1 }),
-      };
+    switch (period) {
+      case 'today':
+        return { from: startOfDay(now), to: endOfDay(now) };
+      case 'this-week':
+        return { from: startOfWeek(now, { weekStartsOn: 1 }), to: endOfWeek(now, { weekStartsOn: 1 }) };
+      case 'last-week': {
+        const lw = subWeeks(now, 1);
+        return { from: startOfWeek(lw, { weekStartsOn: 1 }), to: endOfWeek(lw, { weekStartsOn: 1 }) };
+      }
+      case 'this-month':
+        return { from: startOfMonth(now), to: endOfMonth(now) };
+      case 'last-month': {
+        const lm = subMonths(now, 1);
+        return { from: startOfMonth(lm), to: endOfMonth(lm) };
+      }
     }
-    return { from: startOfMonth(now), to: endOfMonth(now) };
   };
 
   useEffect(() => {
+    if (!filtersReady) return;
     const fetchReports = async () => {
       setLoading(true);
       const { from, to } = getDateRange();
-      const params = `from=${from.toISOString()}&to=${to.toISOString()}`;
+      const params = new URLSearchParams({
+        from: from.toISOString(),
+        to: to.toISOString(),
+      });
+      if (sourceFilter !== 'all') params.set('source', sourceFilter);
+      if (clientFilter !== 'all') params.set('clientId', clientFilter);
+      if (billableFilter === 'billable') params.set('billable', 'true');
+      if (billableFilter === 'non-billable') params.set('billable', 'false');
 
       const [projectRes, dayRes] = await Promise.all([
         fetch(`/api/reports?${params}&groupBy=project`),
@@ -73,10 +159,162 @@ export default function ReportsPage() {
 
     fetchReports();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period]);
+  }, [period, sourceFilter, clientFilter, billableFilter, filtersReady]);
 
   const totalSeconds = projectData.reduce((s, p) => s + p.totalSeconds, 0);
   const maxDaySeconds = Math.max(...dayData.map((d) => d.totalSeconds), 1);
+
+  const { from, to } = getDateRange();
+  const periodLabel = `${format(from, 'dd.MM.yyyy')} - ${format(to, 'dd.MM.yyyy')}`;
+  const monthLabel = format(from, 'yyMM');
+
+  const buildFilterParams = () => {
+    const params = new URLSearchParams({
+      from: from.toISOString(),
+      to: to.toISOString(),
+      groupBy: 'detail',
+    });
+    if (sourceFilter !== 'all') params.set('source', sourceFilter);
+    if (clientFilter !== 'all') params.set('clientId', clientFilter);
+    if (billableFilter === 'billable') params.set('billable', 'true');
+    if (billableFilter === 'non-billable') params.set('billable', 'false');
+    return params;
+  };
+
+  const fetchDetailEntries = async (): Promise<DetailEntry[]> => {
+    const params = buildFilterParams();
+    const res = await fetch(`/api/reports?${params}`);
+    if (!res.ok) return [];
+    return res.json();
+  };
+
+  const getClientName = () => {
+    if (clientFilter !== 'all') {
+      return clients.find((c) => c.id === clientFilter)?.name ?? '';
+    }
+    return '';
+  };
+
+  const exportCSV = async () => {
+    const entries = await fetchDetailEntries();
+    const clientName = getClientName();
+
+    const rows: string[][] = [];
+    rows.push(['Výkaz odpracovaných hodin']);
+    if (clientName) rows.push(['Zákazník:', clientName]);
+    rows.push(['Měsíc:', monthLabel]);
+    rows.push([]);
+    rows.push(['Datum', 'Zakázka', 'Modul', 'Popis', 'Hodiny']);
+    entries.forEach((e) => {
+      rows.push([
+        format(new Date(e.date), 'dd.MM.yyyy'),
+        e.project,
+        e.tag,
+        e.description,
+        e.hours.toFixed(2).replace('.', ','),
+      ]);
+    });
+    rows.push([]);
+    const totalHours = entries.reduce((s, e) => s + e.hours, 0);
+    rows.push(['', '', '', 'Celkem', totalHours.toFixed(2).replace('.', ',')]);
+
+    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(';')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `!${monthLabel}_Vykaz${clientName ? '-' + clientName : ''}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportPDF = async () => {
+    const entries = await fetchDetailEntries();
+    const clientName = getClientName();
+    const totalHours = entries.reduce((s, e) => s + e.hours, 0);
+
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
+    const doc = new jsPDF();
+
+    // Load Roboto font for Czech diacritics
+    const fontRes = await fetch('/fonts/Roboto-Regular.ttf');
+    const fontBuf = await fontRes.arrayBuffer();
+    const fontBase64 = btoa(String.fromCharCode(...new Uint8Array(fontBuf)));
+    doc.addFileToVFS('Roboto-Regular.ttf', fontBase64);
+    doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+    doc.addFont('Roboto-Regular.ttf', 'Roboto', 'bold');
+    doc.setFont('Roboto');
+
+    // Header
+    doc.setFontSize(18);
+    doc.text('Výkaz odpracovaných hodin', 14, 20);
+
+    doc.setFontSize(11);
+    let y = 30;
+    if (clientName) {
+      doc.setFont('Roboto', 'bold');
+      doc.text('Zákazník:', 14, y);
+      doc.setFont('Roboto', 'normal');
+      doc.text(clientName, 50, y);
+      y += 7;
+    }
+    doc.setFont('Roboto', 'bold');
+    doc.text('Měsíc:', 14, y);
+    doc.setFont('Roboto', 'normal');
+    doc.text(monthLabel, 50, y);
+    y += 10;
+
+    // Table
+    const body = entries.map((e) => [
+      format(new Date(e.date), 'dd.MM.yyyy'),
+      e.project,
+      e.tag,
+      e.description,
+      e.hours.toFixed(2).replace('.', ','),
+    ]);
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Datum', 'Zakázka', 'Úloha', 'Popis', 'Hodiny']],
+      body,
+      foot: [['', '', '', 'Celkem', totalHours.toFixed(2).replace('.', ',')]],
+      showFoot: 'lastPage',
+      theme: 'grid',
+      headStyles: { fillColor: [139, 195, 74], textColor: [0, 0, 0], fontStyle: 'bold' },
+      footStyles: { fillColor: [245, 245, 245], textColor: [0, 0, 0], fontStyle: 'bold' },
+      styles: { fontSize: 9, font: 'Roboto', cellPadding: 1 },
+      columnStyles: {
+        0: { cellWidth: 25 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 'auto' },
+        4: { cellWidth: 20, halign: 'right' },
+      },
+      didParseCell: (data: { section: string; column: { index: number }; cell: { styles: { halign: string } } }) => {
+        if (data.section === 'foot' && data.column.index === 4) {
+          data.cell.styles.halign = 'right';
+        }
+      },
+    });
+
+    // Add page footer with page numbers
+    const pageCount = doc.getNumberOfPages();
+    const fileName = `!${monthLabel}_Vykaz${clientName ? '-' + clientName : ''}`;
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFont('Roboto', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(100);
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      doc.text(fileName, 14, pageH - 10);
+      doc.text(`str.${i}/${pageCount}`, pageW - 14, pageH - 10, { align: 'right' });
+    }
+
+    doc.save(`${fileName}.pdf`);
+  };
 
   return (
     <div className="space-y-6">
@@ -84,21 +322,103 @@ export default function ReportsPage() {
         <h1 className="text-2xl font-bold">Reports</h1>
         <div className="flex gap-2">
           <Button
-            variant={period === 'week' ? 'default' : 'outline'}
+            variant="outline"
             size="sm"
-            onClick={() => setPeriod('week')}
+            onClick={exportCSV}
+            disabled={loading || projectData.length === 0}
           >
-            This Week
+            <Download className="mr-1 h-4 w-4" />
+            CSV
           </Button>
           <Button
-            variant={period === 'month' ? 'default' : 'outline'}
+            variant="outline"
             size="sm"
-            onClick={() => setPeriod('month')}
+            onClick={exportPDF}
+            disabled={loading || projectData.length === 0}
           >
-            This Month
+            <FileText className="mr-1 h-4 w-4" />
+            PDF
           </Button>
         </div>
       </div>
+
+      {/* Filters */}
+      <Card>
+        <CardContent className="py-3">
+          <div className="flex items-center gap-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex gap-1 shrink-0">
+              {periods.map((p) => (
+                <Button
+                  key={p.key}
+                  variant={period === p.key ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setPeriod(p.key)}
+                >
+                  {p.label}
+                </Button>
+              ))}
+            </div>
+            <div className="h-5 w-px bg-border shrink-0" />
+            <div className="flex gap-1 shrink-0">
+              {sourceFilters.map((s) => (
+                <Button
+                  key={s.key}
+                  variant={sourceFilter === s.key ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSourceFilter(s.key)}
+                >
+                  {s.label}
+                </Button>
+              ))}
+            </div>
+            <div className="h-5 w-px bg-border shrink-0" />
+            <div className="flex gap-1 shrink-0">
+              <Button
+                variant={clientFilter === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setClientFilter('all')}
+              >
+                All Clients
+              </Button>
+              {clients.map((c) => (
+                <Button
+                  key={c.id}
+                  variant={clientFilter === c.id ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setClientFilter(c.id)}
+                >
+                  <div className="mr-1.5 h-2 w-2 rounded-full" style={{ backgroundColor: c.color }} />
+                  {c.name}
+                </Button>
+              ))}
+            </div>
+            <div className="h-5 w-px bg-border shrink-0" />
+            <div className="flex gap-1 shrink-0">
+              <Button
+                variant={billableFilter === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setBillableFilter('all')}
+              >
+                All
+              </Button>
+              <Button
+                variant={billableFilter === 'billable' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setBillableFilter('billable')}
+              >
+                $ Billable
+              </Button>
+              <Button
+                variant={billableFilter === 'non-billable' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setBillableFilter('non-billable')}
+              >
+                Non-billable
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Summary */}
       <div className="grid gap-4 sm:grid-cols-3">

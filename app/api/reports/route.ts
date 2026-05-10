@@ -13,6 +13,9 @@ export async function GET(request: NextRequest) {
   const from = url.searchParams.get("from");
   const to = url.searchParams.get("to");
   const groupBy = url.searchParams.get("groupBy") || "project"; // "project" | "tag" | "day"
+  const clientId = url.searchParams.get("clientId");
+  const source = url.searchParams.get("source");
+  const billable = url.searchParams.get("billable");
 
   if (!from || !to) {
     return NextResponse.json(
@@ -21,11 +24,16 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const whereBase = {
+  const whereBase: Record<string, unknown> = {
     userId: session.user.id,
     startTime: { gte: new Date(from), lte: new Date(to) },
     endTime: { not: null },
-  } as const;
+  };
+
+  if (clientId) whereBase.clientId = clientId;
+  if (source) whereBase.source = source;
+  if (billable === "true") whereBase.billable = true;
+  if (billable === "false") whereBase.billable = false;
 
   if (groupBy === "project") {
     const grouped = await prisma.timeEntry.groupBy({
@@ -107,6 +115,29 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       Object.values(grouped).sort((a, b) => a.date.localeCompare(b.date))
     );
+  }
+
+  if (groupBy === "detail") {
+    const entries = await prisma.timeEntry.findMany({
+      where: whereBase,
+      include: {
+        project: { select: { name: true } },
+        tag: { select: { name: true } },
+        client: { select: { name: true } },
+      },
+      orderBy: { startTime: "desc" },
+    });
+
+    const result = entries.map((e) => ({
+      date: e.startTime.toISOString().split("T")[0],
+      project: e.project?.name ?? "",
+      tag: e.tag?.name ?? "",
+      description: e.description,
+      hours: e.duration ? +(e.duration / 3600).toFixed(2) : 0,
+      client: e.client?.name ?? "",
+    }));
+
+    return NextResponse.json(result);
   }
 
   return NextResponse.json([]);
