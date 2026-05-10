@@ -552,9 +552,9 @@ export default function ReportsPage() {
                                 {billableFilter === 'all' && <span className="text-green-600">{projectEntries.filter(e => e.billable).reduce((s, e) => s + e.hours, 0).toFixed(1)}h</span>}
                               </span>
                             </div>
-                            <div className="h-2 rounded-full bg-muted ml-8">
+                            <div className="h-4 rounded-full bg-muted ml-5">
                               <div
-                                className="h-2 rounded-full transition-all"
+                                className="h-4 rounded-full transition-all"
                                 style={{
                                   width: `${percent}%`,
                                   backgroundColor: project.color,
