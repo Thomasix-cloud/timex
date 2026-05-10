@@ -167,6 +167,7 @@ export const TimeEntryScalarFieldEnum = {
   duration: 'duration',
   source: 'source',
   calendarEventId: 'calendarEventId',
+  calendarName: 'calendarName',
   billable: 'billable',
   projectId: 'projectId',
   tagId: 'tagId',

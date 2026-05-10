@@ -35,6 +35,8 @@ export async function GET() {
     // Project columns
     `ALTER TABLE "Project" ADD COLUMN IF NOT EXISTS "clientId" TEXT`,
     `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'Project_clientId_fkey') THEN ALTER TABLE "Project" ADD CONSTRAINT "Project_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE SET NULL; END IF; END $$`,
+    // TimeEntry calendarName
+    `ALTER TABLE "TimeEntry" ADD COLUMN IF NOT EXISTS "calendarName" TEXT`,
     // User password for credentials login
     `ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "password" TEXT`,
     // CalendarAccount table

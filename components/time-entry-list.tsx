@@ -33,6 +33,7 @@ export type SerializedTimeEntry = {
   endTime: string | null;
   duration: number | null;
   source: string;
+  calendarName: string | null;
   billable: boolean;
   project: Project | null;
   tag: Tag | null;
@@ -127,6 +128,7 @@ export function TimeEntryList({
               endTime: data.entry.endTime ?? null,
               duration: data.entry.duration,
               source: data.entry.source,
+              calendarName: data.entry.calendarName ?? null,
               billable: data.entry.billable !== false,
               project: data.entry.project ? { id: data.entry.project.id, name: data.entry.project.name, color: data.entry.project.color } : null,
               tag: data.entry.tag ? { id: data.entry.tag.id, name: data.entry.tag.name, color: data.entry.tag.color } : null,
@@ -191,6 +193,7 @@ export function TimeEntryList({
         endTime: data.endTime ?? null,
         duration: data.duration,
         source: data.source,
+        calendarName: data.calendarName ?? null,
         billable: data.billable,
         project: data.project ? { id: data.project.id, name: data.project.name, color: data.project.color } : null,
         tag: data.tag ? { id: data.tag.id, name: data.tag.name, color: data.tag.color } : null,
@@ -248,6 +251,7 @@ export function TimeEntryList({
                       endTime: data.endTime ?? null,
                       duration: data.duration,
                       source: data.source,
+                      calendarName: data.calendarName ?? null,
                       billable: data.billable,
                       project: data.project ? { id: data.project.id, name: data.project.name, color: data.project.color } : null,
                       tag: data.tag ? { id: data.tag.id, name: data.tag.name, color: data.tag.color } : null,
@@ -280,7 +284,7 @@ export function TimeEntryList({
                   )}
                   {entry.source === 'calendar' && (
                     <Badge variant="outline" className="text-xs">
-                      Calendar
+                      {entry.calendarName || 'Calendar'}
                     </Badge>
                   )}
                 </div>

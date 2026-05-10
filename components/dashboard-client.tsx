@@ -239,6 +239,7 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
             endTime: e.endTime ?? null,
             duration: e.duration,
             source: e.source,
+            calendarName: e.calendarName ?? null,
             billable: e.billable !== false,
             project: e.project
               ? { id: (e.project as Record<string, string>).id, name: (e.project as Record<string, string>).name, color: (e.project as Record<string, string>).color }

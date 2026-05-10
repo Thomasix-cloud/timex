@@ -222,6 +222,7 @@ export async function syncCalendarForUser(userId: string) {
               duration,
               source: "calendar",
               calendarEventId: event.id,
+              calendarName: connection.calendarName || null,
               projectId: mapping.projectId,
               tagId: mapping.tagId,
               clientId,

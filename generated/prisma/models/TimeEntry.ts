@@ -42,6 +42,7 @@ export type TimeEntryMinAggregateOutputType = {
   duration: number | null
   source: string | null
   calendarEventId: string | null
+  calendarName: string | null
   billable: boolean | null
   projectId: string | null
   tagId: string | null
@@ -59,6 +60,7 @@ export type TimeEntryMaxAggregateOutputType = {
   duration: number | null
   source: string | null
   calendarEventId: string | null
+  calendarName: string | null
   billable: boolean | null
   projectId: string | null
   tagId: string | null
@@ -76,6 +78,7 @@ export type TimeEntryCountAggregateOutputType = {
   duration: number
   source: number
   calendarEventId: number
+  calendarName: number
   billable: number
   projectId: number
   tagId: number
@@ -103,6 +106,7 @@ export type TimeEntryMinAggregateInputType = {
   duration?: true
   source?: true
   calendarEventId?: true
+  calendarName?: true
   billable?: true
   projectId?: true
   tagId?: true
@@ -120,6 +124,7 @@ export type TimeEntryMaxAggregateInputType = {
   duration?: true
   source?: true
   calendarEventId?: true
+  calendarName?: true
   billable?: true
   projectId?: true
   tagId?: true
@@ -137,6 +142,7 @@ export type TimeEntryCountAggregateInputType = {
   duration?: true
   source?: true
   calendarEventId?: true
+  calendarName?: true
   billable?: true
   projectId?: true
   tagId?: true
@@ -241,6 +247,7 @@ export type TimeEntryGroupByOutputType = {
   duration: number | null
   source: string
   calendarEventId: string | null
+  calendarName: string | null
   billable: boolean
   projectId: string | null
   tagId: string | null
@@ -281,6 +288,7 @@ export type TimeEntryWhereInput = {
   duration?: Prisma.IntNullableFilter<"TimeEntry"> | number | null
   source?: Prisma.StringFilter<"TimeEntry"> | string
   calendarEventId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
+  calendarName?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   billable?: Prisma.BoolFilter<"TimeEntry"> | boolean
   projectId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   tagId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
@@ -302,6 +310,7 @@ export type TimeEntryOrderByWithRelationInput = {
   duration?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
   calendarEventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  calendarName?: Prisma.SortOrderInput | Prisma.SortOrder
   billable?: Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   tagId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -326,6 +335,7 @@ export type TimeEntryWhereUniqueInput = Prisma.AtLeast<{
   duration?: Prisma.IntNullableFilter<"TimeEntry"> | number | null
   source?: Prisma.StringFilter<"TimeEntry"> | string
   calendarEventId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
+  calendarName?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   billable?: Prisma.BoolFilter<"TimeEntry"> | boolean
   projectId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   tagId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
@@ -347,6 +357,7 @@ export type TimeEntryOrderByWithAggregationInput = {
   duration?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
   calendarEventId?: Prisma.SortOrderInput | Prisma.SortOrder
+  calendarName?: Prisma.SortOrderInput | Prisma.SortOrder
   billable?: Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   tagId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -372,6 +383,7 @@ export type TimeEntryScalarWhereWithAggregatesInput = {
   duration?: Prisma.IntNullableWithAggregatesFilter<"TimeEntry"> | number | null
   source?: Prisma.StringWithAggregatesFilter<"TimeEntry"> | string
   calendarEventId?: Prisma.StringNullableWithAggregatesFilter<"TimeEntry"> | string | null
+  calendarName?: Prisma.StringNullableWithAggregatesFilter<"TimeEntry"> | string | null
   billable?: Prisma.BoolWithAggregatesFilter<"TimeEntry"> | boolean
   projectId?: Prisma.StringNullableWithAggregatesFilter<"TimeEntry"> | string | null
   tagId?: Prisma.StringNullableWithAggregatesFilter<"TimeEntry"> | string | null
@@ -389,6 +401,7 @@ export type TimeEntryCreateInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -406,6 +419,7 @@ export type TimeEntryUncheckedCreateInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   projectId?: string | null
   tagId?: string | null
@@ -423,6 +437,7 @@ export type TimeEntryUpdateInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -440,6 +455,7 @@ export type TimeEntryUncheckedUpdateInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -457,6 +473,7 @@ export type TimeEntryCreateManyInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   projectId?: string | null
   tagId?: string | null
@@ -474,6 +491,7 @@ export type TimeEntryUpdateManyMutationInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -487,6 +505,7 @@ export type TimeEntryUncheckedUpdateManyInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -514,6 +533,7 @@ export type TimeEntryCountOrderByAggregateInput = {
   duration?: Prisma.SortOrder
   source?: Prisma.SortOrder
   calendarEventId?: Prisma.SortOrder
+  calendarName?: Prisma.SortOrder
   billable?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   tagId?: Prisma.SortOrder
@@ -535,6 +555,7 @@ export type TimeEntryMaxOrderByAggregateInput = {
   duration?: Prisma.SortOrder
   source?: Prisma.SortOrder
   calendarEventId?: Prisma.SortOrder
+  calendarName?: Prisma.SortOrder
   billable?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   tagId?: Prisma.SortOrder
@@ -552,6 +573,7 @@ export type TimeEntryMinOrderByAggregateInput = {
   duration?: Prisma.SortOrder
   source?: Prisma.SortOrder
   calendarEventId?: Prisma.SortOrder
+  calendarName?: Prisma.SortOrder
   billable?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   tagId?: Prisma.SortOrder
@@ -745,6 +767,7 @@ export type TimeEntryCreateWithoutUserInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -761,6 +784,7 @@ export type TimeEntryUncheckedCreateWithoutUserInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   projectId?: string | null
   tagId?: string | null
@@ -806,6 +830,7 @@ export type TimeEntryScalarWhereInput = {
   duration?: Prisma.IntNullableFilter<"TimeEntry"> | number | null
   source?: Prisma.StringFilter<"TimeEntry"> | string
   calendarEventId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
+  calendarName?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   billable?: Prisma.BoolFilter<"TimeEntry"> | boolean
   projectId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
   tagId?: Prisma.StringNullableFilter<"TimeEntry"> | string | null
@@ -823,6 +848,7 @@ export type TimeEntryCreateWithoutProjectInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -839,6 +865,7 @@ export type TimeEntryUncheckedCreateWithoutProjectInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   tagId?: string | null
   clientId?: string | null
@@ -881,6 +908,7 @@ export type TimeEntryCreateWithoutTagInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -897,6 +925,7 @@ export type TimeEntryUncheckedCreateWithoutTagInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   projectId?: string | null
   clientId?: string | null
@@ -939,6 +968,7 @@ export type TimeEntryCreateWithoutClientInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -955,6 +985,7 @@ export type TimeEntryUncheckedCreateWithoutClientInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   projectId?: string | null
   tagId?: string | null
@@ -997,6 +1028,7 @@ export type TimeEntryCreateManyUserInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   projectId?: string | null
   tagId?: string | null
@@ -1013,6 +1045,7 @@ export type TimeEntryUpdateWithoutUserInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1029,6 +1062,7 @@ export type TimeEntryUncheckedUpdateWithoutUserInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1045,6 +1079,7 @@ export type TimeEntryUncheckedUpdateManyWithoutUserInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1061,6 +1096,7 @@ export type TimeEntryCreateManyProjectInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   tagId?: string | null
   clientId?: string | null
@@ -1077,6 +1113,7 @@ export type TimeEntryUpdateWithoutProjectInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1093,6 +1130,7 @@ export type TimeEntryUncheckedUpdateWithoutProjectInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1109,6 +1147,7 @@ export type TimeEntryUncheckedUpdateManyWithoutProjectInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1125,6 +1164,7 @@ export type TimeEntryCreateManyTagInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   projectId?: string | null
   clientId?: string | null
@@ -1141,6 +1181,7 @@ export type TimeEntryUpdateWithoutTagInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1157,6 +1198,7 @@ export type TimeEntryUncheckedUpdateWithoutTagInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1173,6 +1215,7 @@ export type TimeEntryUncheckedUpdateManyWithoutTagInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1189,6 +1232,7 @@ export type TimeEntryCreateManyClientInput = {
   duration?: number | null
   source?: string
   calendarEventId?: string | null
+  calendarName?: string | null
   billable?: boolean
   projectId?: string | null
   tagId?: string | null
@@ -1205,6 +1249,7 @@ export type TimeEntryUpdateWithoutClientInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1221,6 +1266,7 @@ export type TimeEntryUncheckedUpdateWithoutClientInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1237,6 +1283,7 @@ export type TimeEntryUncheckedUpdateManyWithoutClientInput = {
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   calendarEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  calendarName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1255,6 +1302,7 @@ export type TimeEntrySelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   duration?: boolean
   source?: boolean
   calendarEventId?: boolean
+  calendarName?: boolean
   billable?: boolean
   projectId?: boolean
   tagId?: boolean
@@ -1276,6 +1324,7 @@ export type TimeEntrySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   duration?: boolean
   source?: boolean
   calendarEventId?: boolean
+  calendarName?: boolean
   billable?: boolean
   projectId?: boolean
   tagId?: boolean
@@ -1297,6 +1346,7 @@ export type TimeEntrySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   duration?: boolean
   source?: boolean
   calendarEventId?: boolean
+  calendarName?: boolean
   billable?: boolean
   projectId?: boolean
   tagId?: boolean
@@ -1318,6 +1368,7 @@ export type TimeEntrySelectScalar = {
   duration?: boolean
   source?: boolean
   calendarEventId?: boolean
+  calendarName?: boolean
   billable?: boolean
   projectId?: boolean
   tagId?: boolean
@@ -1327,7 +1378,7 @@ export type TimeEntrySelectScalar = {
   updatedAt?: boolean
 }
 
-export type TimeEntryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "description" | "startTime" | "endTime" | "duration" | "source" | "calendarEventId" | "billable" | "projectId" | "tagId" | "clientId" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["timeEntry"]>
+export type TimeEntryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "description" | "startTime" | "endTime" | "duration" | "source" | "calendarEventId" | "calendarName" | "billable" | "projectId" | "tagId" | "clientId" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["timeEntry"]>
 export type TimeEntryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.TimeEntry$projectArgs<ExtArgs>
   tag?: boolean | Prisma.TimeEntry$tagArgs<ExtArgs>
@@ -1363,6 +1414,7 @@ export type $TimeEntryPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     duration: number | null
     source: string
     calendarEventId: string | null
+    calendarName: string | null
     billable: boolean
     projectId: string | null
     tagId: string | null
@@ -1804,6 +1856,7 @@ export interface TimeEntryFieldRefs {
   readonly duration: Prisma.FieldRef<"TimeEntry", 'Int'>
   readonly source: Prisma.FieldRef<"TimeEntry", 'String'>
   readonly calendarEventId: Prisma.FieldRef<"TimeEntry", 'String'>
+  readonly calendarName: Prisma.FieldRef<"TimeEntry", 'String'>
   readonly billable: Prisma.FieldRef<"TimeEntry", 'Boolean'>
   readonly projectId: Prisma.FieldRef<"TimeEntry", 'String'>
   readonly tagId: Prisma.FieldRef<"TimeEntry", 'String'>
