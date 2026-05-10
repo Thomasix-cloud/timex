@@ -73,6 +73,11 @@ function formatDuration(seconds: number): string {
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
+function formatDecimal(seconds: number): string {
+  const hours = seconds / 3600;
+  return hours.toFixed(2).replace('.', ',');
+}
+
 type Props = {
   projectCount: number;
   runningEntry: { projectName: string | null; startTime: string } | null;
@@ -409,21 +414,21 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Total</p>
-                  <p className="text-xl font-bold">{formatDuration(totalSeconds)}</p>
+                  <p className="text-xl font-bold">{formatDecimal(totalSeconds)}h</p>
                 </div>
                 <div className="h-8 w-px bg-border" />
                 <div className="flex items-center gap-1.5">
                   <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
                   <div>
                     <p className="text-[10px] text-muted-foreground">Billable</p>
-                    <p className="text-sm font-bold text-green-600">{formatDuration(billableSeconds)}</p>
+                    <p className="text-sm font-bold text-green-600">{formatDecimal(billableSeconds)}h</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
                   <div>
                     <p className="text-[10px] text-muted-foreground">Non-billable</p>
-                    <p className="text-sm font-bold text-muted-foreground">{formatDuration(nonBillableSeconds)}</p>
+                    <p className="text-sm font-bold text-muted-foreground">{formatDecimal(nonBillableSeconds)}h</p>
                   </div>
                 </div>
                 <div className="h-8 w-px bg-border" />

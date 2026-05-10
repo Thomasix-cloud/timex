@@ -66,7 +66,7 @@ function formatDuration(seconds: number): string {
 }
 
 function formatHours(seconds: number): string {
-  return (seconds / 3600).toFixed(1);
+  return (seconds / 3600).toFixed(2).replace('.', ',');
 }
 
 export default function ReportsPage() {
@@ -467,21 +467,21 @@ export default function ReportsPage() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Total</p>
-                    <p className="text-xl font-bold">{totalHrs.toFixed(1)}h</p>
+                    <p className="text-xl font-bold">{totalHrs.toFixed(2).replace('.', ',')}h</p>
                   </div>
                   <div className="h-8 w-px bg-border" />
                   <div className="flex items-center gap-1.5">
                     <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
                     <div>
                       <p className="text-[10px] text-muted-foreground">Billable</p>
-                      <p className="text-sm font-bold text-green-600">{billableHours.toFixed(1)}h</p>
+                      <p className="text-sm font-bold text-green-600">{billableHours.toFixed(2).replace('.', ',')}h</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
                     <div>
                       <p className="text-[10px] text-muted-foreground">Non-billable</p>
-                      <p className="text-sm font-bold text-muted-foreground">{nonBillableHours.toFixed(1)}h</p>
+                      <p className="text-sm font-bold text-muted-foreground">{nonBillableHours.toFixed(2).replace('.', ',')}h</p>
                     </div>
                   </div>
                 </div>
@@ -548,8 +548,8 @@ export default function ReportsPage() {
                               <span className="text-muted-foreground flex items-center gap-2">
                                 <span className="text-foreground font-medium">{formatHours(project.totalSeconds)}h</span>
                                 <span>({percent.toFixed(0)}%)</span>
-                                {billableFilter === 'all' && <span>{projectEntries.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0).toFixed(1)}h</span>}
-                                {billableFilter === 'all' && <span className="text-green-600">{projectEntries.filter(e => e.billable).reduce((s, e) => s + e.hours, 0).toFixed(1)}h</span>}
+                                {billableFilter === 'all' && <span>{projectEntries.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0).toFixed(2).replace('.', ',')}h</span>}
+                                {billableFilter === 'all' && <span className="text-green-600">{projectEntries.filter(e => e.billable).reduce((s, e) => s + e.hours, 0).toFixed(2).replace('.', ',')}h</span>}
                               </span>
                             </div>
                             <div className="h-4 rounded-full bg-muted ml-5">
@@ -648,8 +648,8 @@ export default function ReportsPage() {
                             </div>
                             <span className="text-muted-foreground flex items-center gap-2">
                               <span className="text-foreground font-medium">{formatHours(day.totalSeconds)}h</span>
-                              {billableFilter === 'all' && <span>{dayEntries.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0).toFixed(1)}h</span>}
-                              {billableFilter === 'all' && <span className="text-green-600">{dayEntries.filter(e => e.billable).reduce((s, e) => s + e.hours, 0).toFixed(1)}h</span>}
+                              {billableFilter === 'all' && <span>{dayEntries.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0).toFixed(2).replace('.', ',')}h</span>}
+                              {billableFilter === 'all' && <span className="text-green-600">{dayEntries.filter(e => e.billable).reduce((s, e) => s + e.hours, 0).toFixed(2).replace('.', ',')}h</span>}
                             </span>
                           </div>
                           <div className="h-4 rounded-full bg-muted ml-5">
