@@ -87,23 +87,7 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
   const [period, setPeriod] = useState<PeriodKey>('today');
   const [periodReady, setPeriodReady] = useState(false);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('dashboard-period');
-    if (saved && periods.some((p) => p.key === saved)) {
-      setPeriod(saved as PeriodKey);
-    }
-    setPeriodReady(true);
-  }, []);
-
-  const changePeriod = (p: PeriodKey) => {
-    setPeriod(p);
-    localStorage.setItem('dashboard-period', p);
-  };
-  const [entries, setEntries] = useState<SerializedTimeEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false);
-  const [applyingRules, setApplyingRules] = useState(false);
-
+  // Filter state
   const sourceFilters = [
     { key: 'all', label: 'All' },
     { key: 'tracker', label: 'Tracker' },
@@ -112,6 +96,45 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
   ] as const;
   type SourceKey = (typeof sourceFilters)[number]['key'];
   const [sourceFilter, setSourceFilter] = useState<SourceKey>('all');
+  const [clientFilter, setClientFilter] = useState<string>('all');
+  const [billableFilter, setBillableFilter] = useState<string>('all');
+  const [textFilter, setTextFilter] = useState('');
+
+  // Load saved filters from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('dashboard-filters');
+      if (saved) {
+        const f = JSON.parse(saved);
+        if (f.period && periods.some((p) => p.key === f.period)) setPeriod(f.period);
+        if (f.source && sourceFilters.some((s) => s.key === f.source)) setSourceFilter(f.source);
+        if (f.client) setClientFilter(f.client);
+        if (f.billable) setBillableFilter(f.billable);
+        if (f.text != null) setTextFilter(f.text);
+      }
+    } catch {}
+    setPeriodReady(true);
+  }, []);
+
+  // Persist filters to localStorage
+  useEffect(() => {
+    if (!periodReady) return;
+    localStorage.setItem('dashboard-filters', JSON.stringify({
+      period,
+      source: sourceFilter,
+      client: clientFilter,
+      billable: billableFilter,
+      text: textFilter,
+    }));
+  }, [period, sourceFilter, clientFilter, billableFilter, textFilter, periodReady]);
+
+  const changePeriod = (p: PeriodKey) => {
+    setPeriod(p);
+  };
+  const [entries, setEntries] = useState<SerializedTimeEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [applyingRules, setApplyingRules] = useState(false);
 
   // Tracker state
   const [trackerDesc, setTrackerDesc] = useState('');
@@ -122,9 +145,6 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
-  const [clientFilter, setClientFilter] = useState<string>('all');
-  const [billableFilter, setBillableFilter] = useState<string>('all');
-  const [textFilter, setTextFilter] = useState('');
 
   // Manual entry dialog state
   const [manualOpen, setManualOpen] = useState(false);
