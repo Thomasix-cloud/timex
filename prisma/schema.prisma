@@ -113,7 +113,6 @@ model TimeEntry {
 
   source          String @default("manual") // "manual" | "calendar" | "tracker"
   calendarEventId String?
-  calendarName    String?
   billable        Boolean @default(true)
 
   projectId String?
