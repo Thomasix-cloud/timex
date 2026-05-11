@@ -637,7 +637,7 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
 
       {/* Manual Entry Dialog */}
       <Dialog open={manualOpen} onOpenChange={setManualOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Add Manual Entry</DialogTitle>
           </DialogHeader>

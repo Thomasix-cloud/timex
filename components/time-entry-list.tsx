@@ -350,7 +350,7 @@ export function TimeEntryList({
       </div>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Entry</DialogTitle>
           </DialogHeader>

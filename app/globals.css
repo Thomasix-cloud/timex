@@ -127,4 +127,7 @@
   html {
     @apply font-sans;
   }
+  input[type="datetime-local"] {
+    min-width: 10rem;
+  }
 }
