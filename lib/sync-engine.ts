@@ -174,6 +174,12 @@ export async function syncCalendarForUser(userId: string) {
       const duration = differenceInSeconds(event.end, event.start);
 
       if (existing) {
+        // Skip entries that already have a client assigned — they are considered "owned" by the user
+        if (existing.clientId) {
+          totalSkipped++;
+          continue;
+        }
+
         const timeChanged =
           existing.startTime.getTime() !== event.start.getTime() ||
           (existing.endTime && existing.endTime.getTime() !== event.end.getTime());
