@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Timer, Loader2, RefreshCw, Play, Square, Plus, Wand2, Search } from 'lucide-react';
+import { Timer, Loader2, RefreshCw, Play, Square, Plus, Wand2, Search, ChevronUp, ChevronDown } from 'lucide-react';
 import { TimeEntryList, type SerializedTimeEntry } from '@/components/time-entry-list';
 import {
   startOfDay,
@@ -154,6 +154,7 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
   const [manualClientId, setManualClientId] = useState('');
   const [manualStart, setManualStart] = useState('');
   const [manualEnd, setManualEnd] = useState('');
+  const [manualDurationMin, setManualDurationMin] = useState(0);
 
   const fetchOptions = useCallback(async () => {
     const [pRes, tRes, cRes] = await Promise.all([
@@ -215,6 +216,7 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
     const now = new Date();
     setManualStart(format(now, "yyyy-MM-dd'T'HH:mm"));
     setManualEnd(format(now, "yyyy-MM-dd'T'HH:mm"));
+    setManualDurationMin(0);
     setManualOpen(true);
   };
 
@@ -650,7 +652,7 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
                 placeholder="What did you work on?"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-[1fr_1fr_auto] gap-4">
               <div className="space-y-2">
                 <Label>Start</Label>
                 <Input
@@ -667,6 +669,46 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
                   value={manualEnd}
                   onChange={(e) => setManualEnd(e.target.value)}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label>Duration</Label>
+                <div className="flex items-center rounded-md border h-9">
+                  <div className="px-2 text-sm font-medium min-w-[4rem] text-center">
+                    {manualDurationMin >= 60 ? `${Math.floor(manualDurationMin / 60)}h ${manualDurationMin % 60}m` : `${manualDurationMin}m`}
+                  </div>
+                  <div className="flex flex-col border-l">
+                    <button
+                      type="button"
+                      className="px-1 py-0 hover:bg-muted transition-colors leading-none"
+                      onClick={() => {
+                        const mins = Math.min(Math.floor(manualDurationMin / 15) * 15 + 15, 480);
+                        setManualDurationMin(mins);
+                        if (manualStart) {
+                          const start = new Date(manualStart);
+                          const end = new Date(start.getTime() + mins * 60000);
+                          setManualEnd(format(end, "yyyy-MM-dd'T'HH:mm"));
+                        }
+                      }}
+                    >
+                      <ChevronUp className="h-3 w-3" />
+                    </button>
+                    <button
+                      type="button"
+                      className="px-1 py-0 hover:bg-muted transition-colors border-t leading-none"
+                      onClick={() => {
+                        const mins = Math.max(manualDurationMin % 15 === 0 ? manualDurationMin - 15 : Math.floor(manualDurationMin / 15) * 15, 0);
+                        setManualDurationMin(mins);
+                        if (manualStart) {
+                          const start = new Date(manualStart);
+                          const end = new Date(start.getTime() + mins * 60000);
+                          setManualEnd(format(end, "yyyy-MM-dd'T'HH:mm"));
+                        }
+                      }}
+                    >
+                      <ChevronDown className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">

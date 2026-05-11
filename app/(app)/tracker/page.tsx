@@ -19,7 +19,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Play, Square, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Play, Square, Plus, Pencil, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 
 type Project = { id: string; name: string; color: string };
@@ -79,6 +79,7 @@ export default function TrackerPage() {
   const [manualTagId, setManualTagId] = useState<string>('');
   const [manualStart, setManualStart] = useState('');
   const [manualEnd, setManualEnd] = useState('');
+  const [manualDurationMin, setManualDurationMin] = useState(0);
 
   const fetchAll = useCallback(async () => {
     const today = new Date();
@@ -135,6 +136,7 @@ export default function TrackerPage() {
     const now = new Date();
     setManualStart(format(now, "yyyy-MM-dd'T'HH:mm"));
     setManualEnd(format(now, "yyyy-MM-dd'T'HH:mm"));
+    setManualDurationMin(0);
     setManualOpen(true);
   };
 
@@ -144,11 +146,14 @@ export default function TrackerPage() {
     setManualProjectId(entry.project?.id ?? '');
     setManualTagId(entry.tag?.id ?? '');
     setManualStart(format(new Date(entry.startTime), "yyyy-MM-dd'T'HH:mm"));
-    setManualEnd(
-      entry.endTime
-        ? format(new Date(entry.endTime), "yyyy-MM-dd'T'HH:mm")
-        : '',
-    );
+    const endStr = entry.endTime
+      ? format(new Date(entry.endTime), "yyyy-MM-dd'T'HH:mm")
+      : '';
+    setManualEnd(endStr);
+    const dur = entry.endTime
+      ? Math.min(60, Math.max(0, Math.round((new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime()) / 60000)))
+      : 0;
+    setManualDurationMin(dur);
     setManualOpen(true);
   };
 
@@ -364,7 +369,7 @@ export default function TrackerPage() {
                 placeholder="What did you work on?"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-[1fr_1fr_auto] gap-4">
               <div className="space-y-2">
                 <Label>Start</Label>
                 <Input
@@ -381,6 +386,46 @@ export default function TrackerPage() {
                   value={manualEnd}
                   onChange={(e) => setManualEnd(e.target.value)}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label>Duration</Label>
+                <div className="flex items-center rounded-md border h-9">
+                  <div className="px-2 text-sm font-medium min-w-[4rem] text-center">
+                    {manualDurationMin >= 60 ? `${Math.floor(manualDurationMin / 60)}h ${manualDurationMin % 60}m` : `${manualDurationMin}m`}
+                  </div>
+                  <div className="flex flex-col border-l">
+                    <button
+                      type="button"
+                      className="px-1 py-0 hover:bg-muted transition-colors leading-none"
+                      onClick={() => {
+                        const mins = Math.min(Math.floor(manualDurationMin / 15) * 15 + 15, 480);
+                        setManualDurationMin(mins);
+                        if (manualStart) {
+                          const start = new Date(manualStart);
+                          const end = new Date(start.getTime() + mins * 60000);
+                          setManualEnd(format(end, "yyyy-MM-dd'T'HH:mm"));
+                        }
+                      }}
+                    >
+                      <ChevronUp className="h-3 w-3" />
+                    </button>
+                    <button
+                      type="button"
+                      className="px-1 py-0 hover:bg-muted transition-colors border-t leading-none"
+                      onClick={() => {
+                        const mins = Math.max(manualDurationMin % 15 === 0 ? manualDurationMin - 15 : Math.floor(manualDurationMin / 15) * 15, 0);
+                        setManualDurationMin(mins);
+                        if (manualStart) {
+                          const start = new Date(manualStart);
+                          const end = new Date(start.getTime() + mins * 60000);
+                          setManualEnd(format(end, "yyyy-MM-dd'T'HH:mm"));
+                        }
+                      }}
+                    >
+                      <ChevronDown className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">

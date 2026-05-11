@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Pencil, Trash2, Play, DollarSign } from 'lucide-react';
+import { Pencil, Trash2, Play, DollarSign, ChevronUp, ChevronDown } from 'lucide-react';
 import { format, differenceInSeconds } from 'date-fns';
 
 type Project = { id: string; name: string; color: string };
@@ -70,6 +70,7 @@ export function TimeEntryList({
   const [billable, setBillable] = useState(true);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [durationMin, setDurationMin] = useState(0);
 
   const fetchOptions = useCallback(async () => {
     const [pRes, tRes, cRes] = await Promise.all([
@@ -157,11 +158,14 @@ export function TimeEntryList({
     setClientId(entry.client?.id ?? '');
     setBillable(entry.billable);
     setStartTime(format(new Date(entry.startTime), "yyyy-MM-dd'T'HH:mm"));
-    setEndTime(
-      entry.endTime
-        ? format(new Date(entry.endTime), "yyyy-MM-dd'T'HH:mm")
-        : '',
-    );
+    const endStr = entry.endTime
+      ? format(new Date(entry.endTime), "yyyy-MM-dd'T'HH:mm")
+      : '';
+    setEndTime(endStr);
+    const dur = entry.endTime
+      ? Math.min(60, Math.max(0, Math.round((new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime()) / 60000)))
+      : 0;
+    setDurationMin(dur);
     setEditOpen(true);
   };
 
@@ -313,6 +317,70 @@ export function TimeEntryList({
                     : 'now'}
                 </p>
               </div>
+              {entry.endTime && (
+                <div className="flex flex-col border rounded-md">
+                  <button
+                    type="button"
+                    className="px-1 py-0 hover:bg-muted transition-colors leading-none"
+                    onClick={async () => {
+                      const cur = new Date(entry.endTime!);
+                      const curMin = cur.getMinutes();
+                      const nextQuarter = Math.floor(curMin / 15) * 15 + 15;
+                      const newEnd = new Date(cur);
+                      newEnd.setMinutes(nextQuarter, 0, 0);
+                      const res = await fetch(`/api/time-entries/${entry.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ endTime: newEnd.toISOString() }),
+                      });
+                      if (res.ok && onEntryUpdated) {
+                        const data = await res.json();
+                        onEntryUpdated({
+                          id: data.id, description: data.description, startTime: data.startTime,
+                          endTime: data.endTime ?? null, duration: data.duration, source: data.source,
+                          calendarName: data.calendarName ?? null, billable: data.billable,
+                          project: data.project ? { id: data.project.id, name: data.project.name, color: data.project.color } : null,
+                          tag: data.tag ? { id: data.tag.id, name: data.tag.name, color: data.tag.color } : null,
+                          client: data.client ? { id: data.client.id, name: data.client.name, color: data.client.color } : null,
+                        });
+                      }
+                    }}
+                  >
+                    <ChevronUp className="h-3 w-3" />
+                  </button>
+                  <button
+                    type="button"
+                    className="px-1 py-0 hover:bg-muted transition-colors border-t leading-none"
+                    onClick={async () => {
+                      const cur = new Date(entry.endTime!);
+                      const start = new Date(entry.startTime);
+                      const curMin = cur.getMinutes();
+                      const prevQuarter = curMin % 15 === 0 ? curMin - 15 : Math.floor(curMin / 15) * 15;
+                      const candidate = new Date(cur);
+                      candidate.setMinutes(prevQuarter, 0, 0);
+                      const newEnd = new Date(Math.max(candidate.getTime(), start.getTime()));
+                      const res = await fetch(`/api/time-entries/${entry.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ endTime: newEnd.toISOString() }),
+                      });
+                      if (res.ok && onEntryUpdated) {
+                        const data = await res.json();
+                        onEntryUpdated({
+                          id: data.id, description: data.description, startTime: data.startTime,
+                          endTime: data.endTime ?? null, duration: data.duration, source: data.source,
+                          calendarName: data.calendarName ?? null, billable: data.billable,
+                          project: data.project ? { id: data.project.id, name: data.project.name, color: data.project.color } : null,
+                          tag: data.tag ? { id: data.tag.id, name: data.tag.name, color: data.tag.color } : null,
+                          client: data.client ? { id: data.client.id, name: data.client.name, color: data.client.color } : null,
+                        });
+                      }
+                    }}
+                  >
+                    <ChevronDown className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
               {applyResult?.id === entry.id && (
                 <span className={`text-xs ${applyResult.ok ? 'text-green-600' : 'text-muted-foreground'}`}>
                   {applyResult.message}
@@ -363,7 +431,7 @@ export function TimeEntryList({
                 placeholder="What did you work on?"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-[1fr_1fr_auto] gap-4">
               <div className="space-y-2">
                 <Label>Start</Label>
                 <Input
@@ -380,6 +448,46 @@ export function TimeEntryList({
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label>Duration</Label>
+                <div className="flex items-center rounded-md border h-9">
+                  <div className="px-2 text-sm font-medium min-w-[4rem] text-center">
+                    {durationMin >= 60 ? `${Math.floor(durationMin / 60)}h ${durationMin % 60}m` : `${durationMin}m`}
+                  </div>
+                  <div className="flex flex-col border-l">
+                    <button
+                      type="button"
+                      className="px-1 py-0 hover:bg-muted transition-colors leading-none"
+                      onClick={() => {
+                        const mins = Math.min(Math.floor(durationMin / 15) * 15 + 15, 480);
+                        setDurationMin(mins);
+                        if (startTime) {
+                          const start = new Date(startTime);
+                          const end = new Date(start.getTime() + mins * 60000);
+                          setEndTime(format(end, "yyyy-MM-dd'T'HH:mm"));
+                        }
+                      }}
+                    >
+                      <ChevronUp className="h-3 w-3" />
+                    </button>
+                    <button
+                      type="button"
+                      className="px-1 py-0 hover:bg-muted transition-colors border-t leading-none"
+                      onClick={() => {
+                        const mins = Math.max(durationMin % 15 === 0 ? durationMin - 15 : Math.floor(durationMin / 15) * 15, 0);
+                        setDurationMin(mins);
+                        if (startTime) {
+                          const start = new Date(startTime);
+                          const end = new Date(start.getTime() + mins * 60000);
+                          setEndTime(format(end, "yyyy-MM-dd'T'HH:mm"));
+                        }
+                      }}
+                    >
+                      <ChevronDown className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
