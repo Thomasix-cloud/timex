@@ -161,7 +161,7 @@ export function TagsTab() {
               key={tag.id}
               className="flex items-center gap-2 rounded-lg border p-3"
             >
-              <Badge style={{ backgroundColor: tag.color, color: 'white' }}>
+              <Badge variant="outline" className="font-medium text-foreground" style={{ borderColor: tag.color }}>
                 {tag.name}
               </Badge>
               <span className="text-xs text-muted-foreground">

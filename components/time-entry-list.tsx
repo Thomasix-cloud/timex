@@ -278,7 +278,7 @@ export function TimeEntryList({
                     </Badge>
                   )}
                   {entry.tag && (
-                    <Badge variant="secondary" className="text-xs text-foreground" style={{ backgroundColor: entry.tag.color + '20' }}>
+                    <Badge variant="outline" className="text-xs font-medium text-foreground" style={{ borderColor: entry.tag.color }}>
                       {entry.tag.name}
                     </Badge>
                   )}
