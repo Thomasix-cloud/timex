@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Timer, Loader2, RefreshCw, Play, Square, Plus, Wand2 } from 'lucide-react';
+import { Timer, Loader2, RefreshCw, Play, Square, Plus, Wand2, Search } from 'lucide-react';
 import { TimeEntryList, type SerializedTimeEntry } from '@/components/time-entry-list';
 import {
   startOfDay,
@@ -124,6 +124,7 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
   const [clients, setClients] = useState<Client[]>([]);
   const [clientFilter, setClientFilter] = useState<string>('all');
   const [billableFilter, setBillableFilter] = useState<string>('all');
+  const [textFilter, setTextFilter] = useState('');
 
   // Manual entry dialog state
   const [manualOpen, setManualOpen] = useState(false);
@@ -295,6 +296,24 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
     if (clientFilter !== 'all' && (e.client?.id ?? '') !== clientFilter) return false;
     if (billableFilter === 'billable' && !e.billable) return false;
     if (billableFilter === 'non-billable' && e.billable) return false;
+    if (textFilter.trim()) {
+      const pattern = textFilter.trim().toLowerCase();
+      const regex = new RegExp(
+        '^' + pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*') + '$',
+        'i',
+      );
+      const haystack = [
+        e.description,
+        e.project?.name,
+        e.tag?.name,
+        e.client?.name,
+        e.calendarName,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      if (!regex.test(haystack) && !haystack.includes(pattern.replace(/\*/g, ''))) return false;
+    }
     return true;
   });
 
@@ -554,6 +573,16 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
                   {s.label}
                 </Button>
               ))}
+            </div>
+            <div className="h-4 w-px bg-border shrink-0" />
+            <div className="relative shrink-0">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                placeholder="Filter… (* = wildcard)"
+                value={textFilter}
+                onChange={(e) => setTextFilter(e.target.value)}
+                className="h-7 w-44 pl-7 text-xs"
+              />
             </div>
           </div>
         </CardHeader>
