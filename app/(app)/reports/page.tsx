@@ -302,7 +302,7 @@ export default function ReportsPage() {
     });
 
     // Add page footer with page numbers
-    const pageCount = doc.getNumberOfPages();
+    const pageCount = (doc as unknown as { getNumberOfPages(): number }).getNumberOfPages();
     const fileName = `!${monthLabel}_Vykaz${clientName ? '-' + clientName : ''}`;
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);

@@ -293,7 +293,8 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
 
   const filteredEntries = entries.filter((e) => {
     if (sourceFilter !== 'all' && e.source !== sourceFilter) return false;
-    if (clientFilter !== 'all' && (e.client?.id ?? '') !== clientFilter) return false;
+    if (clientFilter === '_none' && e.client) return false;
+    if (clientFilter !== 'all' && clientFilter !== '_none' && (e.client?.id ?? '') !== clientFilter) return false;
     if (billableFilter === 'billable' && !e.billable) return false;
     if (billableFilter === 'non-billable' && e.billable) return false;
     if (textFilter.trim()) {
@@ -519,6 +520,14 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
                 onClick={() => setClientFilter('all')}
               >
                 All
+              </Button>
+              <Button
+                variant={clientFilter === '_none' ? 'default' : 'outline'}
+                size="sm"
+                className="h-7 px-2 text-xs"
+                onClick={() => setClientFilter('_none')}
+              >
+                No
               </Button>
               {clients.map((c) => (
                 <Button
