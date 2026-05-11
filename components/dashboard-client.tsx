@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Timer, Loader2, RefreshCw, Play, Square, Plus } from 'lucide-react';
+import { Timer, Loader2, RefreshCw, Play, Square, Plus, Wand2 } from 'lucide-react';
 import { TimeEntryList, type SerializedTimeEntry } from '@/components/time-entry-list';
 import {
   startOfDay,
@@ -102,6 +102,7 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
   const [entries, setEntries] = useState<SerializedTimeEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [applyingRules, setApplyingRules] = useState(false);
 
   const sourceFilters = [
     { key: 'all', label: 'All' },
@@ -223,6 +224,23 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
       // ignore
     }
     setSyncing(false);
+  };
+
+  const applyRules = async () => {
+    const ids = filteredEntries.map((e) => e.id);
+    if (ids.length === 0) return;
+    setApplyingRules(true);
+    try {
+      await fetch('/api/time-entries/apply-rules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entryIds: ids }),
+      });
+      await fetchEntries(period);
+    } catch {
+      // ignore
+    }
+    setApplyingRules(false);
   };
 
   const fetchEntries = useCallback(async (p: PeriodKey, signal?: AbortSignal) => {
@@ -384,6 +402,9 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
           </Button>
           <Button variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={syncCalendar} disabled={syncing} title="Sync Calendar">
             <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+          </Button>
+          <Button variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={applyRules} disabled={applyingRules || filteredEntries.length === 0} title="Apply Rules">
+            <Wand2 className={`h-4 w-4 ${applyingRules ? 'animate-pulse' : ''}`} />
           </Button>
           <Input
             placeholder="What are you working on?"
