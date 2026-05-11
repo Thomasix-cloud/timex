@@ -295,10 +295,85 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
   }, 0);
   const nonBillableSeconds = totalSeconds - billableSeconds;
 
+  const billablePct = totalSeconds > 0 ? Math.round((billableSeconds / totalSeconds) * 100) : 0;
+  const r = 34;
+  const halfC = Math.PI * r;
+  const fillArc = (billablePct / 100) * halfC;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div className="flex items-center gap-5">
+          {/* Gauge */}
+          <div className="relative shrink-0" style={{ width: 80, height: 48 }}>
+            <svg width="80" height="48" viewBox="0 0 80 48" className="overflow-visible">
+              <path
+                d="M 6 44 A 34 34 0 0 1 74 44"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="7"
+                strokeLinecap="round"
+                className="text-muted/40"
+              />
+              {totalSeconds > 0 && (
+                <path
+                  d="M 6 44 A 34 34 0 0 1 74 44"
+                  fill="none"
+                  stroke="#22c55e"
+                  strokeWidth="7"
+                  strokeLinecap="round"
+                  strokeDasharray={`${fillArc} ${halfC}`}
+                />
+              )}
+            </svg>
+            <div className="absolute inset-0 flex items-end justify-center pb-0.5">
+              <span className="text-sm font-bold">{billablePct}%</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Total</p>
+            <p className="text-xl font-bold">{formatDecimal(totalSeconds)}h</p>
+          </div>
+          <div className="h-8 w-px bg-border" />
+          <div className="flex items-center gap-1.5">
+            <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
+            <div>
+              <p className="text-[10px] text-muted-foreground">Billable</p>
+              <p className="text-sm font-bold text-green-600">{formatDecimal(billableSeconds)}h</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
+            <div>
+              <p className="text-[10px] text-muted-foreground">Non-billable</p>
+              <p className="text-sm font-bold text-muted-foreground">{formatDecimal(nonBillableSeconds)}h</p>
+            </div>
+          </div>
+          <div className="h-8 w-px bg-border" />
+          <div className="flex items-center gap-1.5">
+            <Timer className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <div>
+              <p className="text-[10px] text-muted-foreground">Running</p>
+              <p className="text-sm font-bold">
+                {trackerRunning ? (
+                  <span className="text-green-600">Active</span>
+                ) : (
+                  <span className="text-muted-foreground">None</span>
+                )}
+              </p>
+            </div>
+          </div>
+          <div className="h-8 w-px bg-border" />
+          <div className="text-right">
+            <p className="text-xs text-muted-foreground">Projects</p>
+            <p className="text-xl font-bold">{projectCount}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-muted-foreground">Entries</p>
+            <p className="text-xl font-bold">{filteredEntries.length}</p>
+          </div>
+        </div>
       </div>
 
       {/* Timer Bar */}
@@ -376,90 +451,6 @@ export function DashboardClient({ projectCount, runningEntry }: Props) {
           )}
         </CardContent>
       </Card>
-
-      {(() => {
-        const billablePct = totalSeconds > 0 ? Math.round((billableSeconds / totalSeconds) * 100) : 0;
-        const r = 34;
-        const halfC = Math.PI * r;
-        const fillArc = (billablePct / 100) * halfC;
-        return (
-          <Card>
-            <CardContent className="flex items-center justify-between py-3 px-4">
-              <div className="flex items-center gap-5">
-                {/* Gauge */}
-                <div className="relative shrink-0" style={{ width: 80, height: 48 }}>
-                  <svg width="80" height="48" viewBox="0 0 80 48" className="overflow-visible">
-                    <path
-                      d="M 6 44 A 34 34 0 0 1 74 44"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="7"
-                      strokeLinecap="round"
-                      className="text-muted/40"
-                    />
-                    {totalSeconds > 0 && (
-                      <path
-                        d="M 6 44 A 34 34 0 0 1 74 44"
-                        fill="none"
-                        stroke="#22c55e"
-                        strokeWidth="7"
-                        strokeLinecap="round"
-                        strokeDasharray={`${fillArc} ${halfC}`}
-                      />
-                    )}
-                  </svg>
-                  <div className="absolute inset-0 flex items-end justify-center pb-0.5">
-                    <span className="text-sm font-bold">{billablePct}%</span>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Total</p>
-                  <p className="text-xl font-bold">{formatDecimal(totalSeconds)}h</p>
-                </div>
-                <div className="h-8 w-px bg-border" />
-                <div className="flex items-center gap-1.5">
-                  <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
-                  <div>
-                    <p className="text-[10px] text-muted-foreground">Billable</p>
-                    <p className="text-sm font-bold text-green-600">{formatDecimal(billableSeconds)}h</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
-                  <div>
-                    <p className="text-[10px] text-muted-foreground">Non-billable</p>
-                    <p className="text-sm font-bold text-muted-foreground">{formatDecimal(nonBillableSeconds)}h</p>
-                  </div>
-                </div>
-                <div className="h-8 w-px bg-border" />
-                <div className="flex items-center gap-1.5">
-                  <Timer className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                  <div>
-                    <p className="text-[10px] text-muted-foreground">Running</p>
-                    <p className="text-sm font-bold">
-                      {trackerRunning ? (
-                        <span className="text-green-600">Active</span>
-                      ) : (
-                        <span className="text-muted-foreground">None</span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-5">
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Projects</p>
-                  <p className="text-xl font-bold">{projectCount}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Entries</p>
-                  <p className="text-xl font-bold">{filteredEntries.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })()}
 
       <Card>
         <CardHeader className="space-y-3">

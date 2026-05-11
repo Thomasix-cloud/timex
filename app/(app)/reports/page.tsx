@@ -206,10 +206,6 @@ export default function ReportsPage() {
     const clientName = getClientName();
 
     const rows: string[][] = [];
-    rows.push(['Výkaz odpracovaných hodin']);
-    if (clientName) rows.push(['Zákazník:', clientName]);
-    rows.push(['Měsíc:', monthLabel]);
-    rows.push([]);
     rows.push(['Datum', 'Zakázka', 'Modul', 'Popis', 'Hodiny']);
     entries.forEach((e) => {
       rows.push([
@@ -322,29 +318,69 @@ export default function ReportsPage() {
     doc.save(`${fileName}.pdf`);
   };
 
+  const billableHours = detailData.filter(e => e.billable).reduce((s, e) => s + e.hours, 0);
+  const nonBillableHours = detailData.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0);
+  const totalHrs = billableHours + nonBillableHours;
+  const billablePct = totalHrs > 0 ? Math.round((billableHours / totalHrs) * 100) : 0;
+  const r = 34;
+  const halfC = Math.PI * r;
+  const fillArc = (billablePct / 100) * halfC;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Reports</h1>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={exportCSV}
-            disabled={loading || projectData.length === 0}
-          >
-            <Download className="mr-1 h-4 w-4" />
-            CSV
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={exportPDF}
-            disabled={loading || projectData.length === 0}
-          >
-            <FileText className="mr-1 h-4 w-4" />
-            PDF
-          </Button>
+        <div className="flex items-center gap-5">
+          {/* Gauge */}
+          <div className="relative shrink-0" style={{ width: 80, height: 48 }}>
+            <svg width="80" height="48" viewBox="0 0 80 48" className="overflow-visible">
+              <path
+                d="M 6 44 A 34 34 0 0 1 74 44"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="7"
+                strokeLinecap="round"
+                className="text-muted/40"
+              />
+              {totalHrs > 0 && (
+                <path
+                  d="M 6 44 A 34 34 0 0 1 74 44"
+                  fill="none"
+                  stroke="#22c55e"
+                  strokeWidth="7"
+                  strokeLinecap="round"
+                  strokeDasharray={`${fillArc} ${halfC}`}
+                />
+              )}
+            </svg>
+            <div className="absolute inset-0 flex items-end justify-center pb-0.5">
+              <span className="text-sm font-bold">{billablePct}%</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Total</p>
+            <p className="text-xl font-bold">{totalHrs.toFixed(2).replace('.', ',')}h</p>
+          </div>
+          <div className="h-8 w-px bg-border" />
+          <div className="flex items-center gap-1.5">
+            <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
+            <div>
+              <p className="text-[10px] text-muted-foreground">Billable</p>
+              <p className="text-sm font-bold text-green-600">{billableHours.toFixed(2).replace('.', ',')}h</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
+            <div>
+              <p className="text-[10px] text-muted-foreground">Non-billable</p>
+              <p className="text-sm font-bold text-muted-foreground">{nonBillableHours.toFixed(2).replace('.', ',')}h</p>
+            </div>
+          </div>
+          <div className="h-8 w-px bg-border" />
+          <div className="text-right">
+            <p className="text-xs text-muted-foreground">Projects</p>
+            <p className="text-xl font-bold">{projectData.length}</p>
+          </div>
         </div>
       </div>
 
@@ -417,83 +453,32 @@ export default function ReportsPage() {
                 NonBill
               </Button>
             </div>
+            <div className="flex-1" />
+            <div className="flex gap-2 shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7"
+                onClick={exportCSV}
+                disabled={loading || projectData.length === 0}
+              >
+                <Download className="mr-1 h-4 w-4" />
+                CSV
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7"
+                onClick={exportPDF}
+                disabled={loading || projectData.length === 0}
+              >
+                <FileText className="mr-1 h-4 w-4" />
+                PDF
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Summary */}
-      {(() => {
-        const billableHours = detailData.filter(e => e.billable).reduce((s, e) => s + e.hours, 0);
-        const nonBillableHours = detailData.filter(e => !e.billable).reduce((s, e) => s + e.hours, 0);
-        const totalHrs = billableHours + nonBillableHours;
-        const billablePct = totalHrs > 0 ? Math.round((billableHours / totalHrs) * 100) : 0;
-        // Gauge: semicircle from 180° to 0° (left to right)
-        const r = 34;
-        const halfC = Math.PI * r; // semicircle circumference
-        const fillArc = (billablePct / 100) * halfC;
-        return (
-          <div className="flex items-center gap-4">
-            <Card className="flex-1">
-              <CardContent className="flex items-center justify-between py-3 px-4">
-                <div className="flex items-center gap-5">
-                  {/* Gauge */}
-                  <div className="relative shrink-0" style={{ width: 80, height: 48 }}>
-                    <svg width="80" height="48" viewBox="0 0 80 48" className="overflow-visible">
-                      {/* Background arc */}
-                      <path
-                        d="M 6 44 A 34 34 0 0 1 74 44"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="7"
-                        strokeLinecap="round"
-                        className="text-muted/40"
-                      />
-                      {/* Filled arc */}
-                      {totalHrs > 0 && (
-                        <path
-                          d="M 6 44 A 34 34 0 0 1 74 44"
-                          fill="none"
-                          stroke="#22c55e"
-                          strokeWidth="7"
-                          strokeLinecap="round"
-                          strokeDasharray={`${fillArc} ${halfC}`}
-                        />
-                      )}
-                    </svg>
-                    {/* Center label */}
-                    <div className="absolute inset-0 flex items-end justify-center pb-0.5">
-                      <span className="text-sm font-bold">{billablePct}%</span>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Total</p>
-                    <p className="text-xl font-bold">{totalHrs.toFixed(2).replace('.', ',')}h</p>
-                  </div>
-                  <div className="h-8 w-px bg-border" />
-                  <div className="flex items-center gap-1.5">
-                    <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">Billable</p>
-                      <p className="text-sm font-bold text-green-600">{billableHours.toFixed(2).replace('.', ',')}h</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">Non-billable</p>
-                      <p className="text-sm font-bold text-muted-foreground">{nonBillableHours.toFixed(2).replace('.', ',')}h</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Projects</p>
-                  <p className="text-xl font-bold">{projectData.length}</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        );
-      })()}
 
       <Tabs defaultValue="byProject">
         <TabsList>
