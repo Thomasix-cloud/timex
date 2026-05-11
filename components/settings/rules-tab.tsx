@@ -516,14 +516,14 @@ export function RulesTab() {
                   )}
                 </div>
                 <div className="flex items-center gap-0 shrink-0">
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleRule(rule)} title={rule.isActive ? 'Disable' : 'Enable'}>
-                    <span className="text-xs">{rule.isActive ? '●' : '○'}</span>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEdit(rule)}>
+                    <Pencil className="h-3 w-3" />
                   </Button>
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyRule(rule)} title="Copy">
                     <Copy className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEdit(rule)}>
-                    <Pencil className="h-3 w-3" />
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleRule(rule)} title={rule.isActive ? 'Disable' : 'Enable'}>
+                    <span className={`text-3xl ${rule.isActive ? 'text-green-500' : 'text-foreground'}`}>{rule.isActive ? '●' : '○'}</span>
                   </Button>
                   <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deleteRule(rule.id)}>
                     <Trash2 className="h-3 w-3" />
